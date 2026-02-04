@@ -1,0 +1,169 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "RedlineComparison",
+  "description": "Schema for contract redline comparison results",
+  "type": "object",
+  "required": ["metadata", "summary", "changes"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["generatedAt", "baselineDocument", "comparisonDocument"],
+      "properties": {
+        "generatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the comparison was generated"
+        },
+        "baselineDocument": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "version": { "type": "string" },
+            "pageCount": { "type": "integer" }
+          }
+        },
+        "comparisonDocument": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "version": { "type": "string" },
+            "pageCount": { "type": "integer" }
+          }
+        },
+        "documentType": {
+          "type": "string",
+          "enum": ["nda", "service_agreement", "lease", "employment", "purchase", "license", "other"],
+          "description": "Type of contract being compared"
+        },
+        "parties": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "role": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "totalChanges": { "type": "integer" },
+        "highImpact": { "type": "integer" },
+        "mediumImpact": { "type": "integer" },
+        "lowImpact": { "type": "integer" },
+        "keyConcerns": {
+          "type": "array",
+          "items": { "type": "string" },
+          "maxItems": 5
+        },
+        "overallAssessment": {
+          "type": "string",
+          "enum": ["favorable", "neutral", "unfavorable", "requires_review"]
+        }
+      }
+    },
+    "changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "section", "changeType", "impactLevel"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for this change"
+          },
+          "section": {
+            "type": "string",
+            "description": "Section or article where change occurs"
+          },
+          "sectionName": {
+            "type": "string",
+            "description": "Name of the section"
+          },
+          "pageNumber": {
+            "type": "integer"
+          },
+          "changeType": {
+            "type": "string",
+            "enum": ["addition", "deletion", "modification", "structural"]
+          },
+          "impactLevel": {
+            "type": "string",
+            "enum": ["high", "medium", "low"]
+          },
+          "favorability": {
+            "type": "string",
+            "enum": ["favorable", "unfavorable", "neutral", "unclear"]
+          },
+          "baselineText": {
+            "type": "string",
+            "description": "Original text from baseline document"
+          },
+          "newText": {
+            "type": "string",
+            "description": "Text in counterparty's version"
+          },
+          "plainEnglishSummary": {
+            "type": "string",
+            "description": "What this change means in simple terms"
+          },
+          "businessImpact": {
+            "type": "string",
+            "description": "How this affects the organization"
+          },
+          "likelyRationale": {
+            "type": "string",
+            "description": "Why counterparty might have requested this"
+          },
+          "recommendation": {
+            "type": "string",
+            "description": "Suggested response or action"
+          },
+          "suggestedEdit": {
+            "type": "string",
+            "description": "Specific language to propose if rejecting change"
+          },
+          "requiresAttorneyDecision": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      }
+    },
+    "suggestedEdits": {
+      "type": "array",
+      "description": "Consolidated list of suggested edits based on preferred language",
+      "items": {
+        "type": "object",
+        "properties": {
+          "changeId": { "type": "string" },
+          "currentText": { "type": "string" },
+          "proposedText": { "type": "string" },
+          "rationale": { "type": "string" },
+          "priority": {
+            "type": "string",
+            "enum": ["must_change", "strongly_recommend", "nice_to_have"]
+          }
+        }
+      }
+    },
+    "attorneyItems": {
+      "type": "array",
+      "description": "Issues requiring attorney decision",
+      "items": {
+        "type": "object",
+        "properties": {
+          "changeId": { "type": "string" },
+          "issue": { "type": "string" },
+          "options": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}

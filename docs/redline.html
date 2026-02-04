@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Services Portal - Redline Assistant</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // Auth check - redirect to login if not authenticated
+        (function() {
+            var auth = localStorage.getItem('legal-portal-auth');
+            var authTime = localStorage.getItem('legal-portal-auth-time');
+            var maxAge = 24 * 60 * 60 * 1000; // 24 hours
+            if (auth !== 'authenticated' || !authTime || (Date.now() - parseInt(authTime)) > maxAge) {
+                window.location.href = 'index.html';
+            }
+        })();
+    </script>
+    <style>
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--background);
+        }
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: rgba(0, 102, 204, 0.05);
+        }
+        .upload-zone.dragover {
+            border-color: var(--primary);
+            background: rgba(0, 102, 204, 0.1);
+        }
+        .upload-zone.has-file {
+            border-color: var(--success);
+            background: rgba(34, 197, 94, 0.05);
+        }
+        .upload-zone .icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .upload-zone input[type="file"] {
+            display: none;
+        }
+        .upload-zone .file-name {
+            color: var(--success);
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        .document-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 768px) {
+            .document-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .change-item {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            background: var(--background);
+        }
+        .change-item.high {
+            border-left: 4px solid #EF4444;
+        }
+        .change-item.medium {
+            border-left: 4px solid #F59E0B;
+        }
+        .change-item.low {
+            border-left: 4px solid #22C55E;
+        }
+        .change-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .change-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .badge-impact {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-impact.high { background: #FEE2E2; color: #DC2626; }
+        .badge-impact.medium { background: #FEF3C7; color: #D97706; }
+        .badge-impact.low { background: #DCFCE7; color: #16A34A; }
+        .badge-favor {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-favor.favorable { background: #DCFCE7; color: #16A34A; }
+        .badge-favor.unfavorable { background: #FEE2E2; color: #DC2626; }
+        .badge-favor.neutral { background: #E5E7EB; color: #6B7280; }
+        .badge-favor.unclear { background: #FEF3C7; color: #D97706; }
+        .text-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 16px 0;
+        }
+        @media (max-width: 600px) {
+            .text-comparison {
+                grid-template-columns: 1fr;
+            }
+        }
+        .text-box {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .text-box.baseline {
+            background: #FEE2E2;
+            border: 1px solid #FECACA;
+        }
+        .text-box.new {
+            background: #DCFCE7;
+            border: 1px solid #BBF7D0;
+        }
+        .text-box-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 4px;
+        }
+        .explanation-box {
+            background: var(--secondary);
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        .explanation-box h5 {
+            margin: 0 0 8px 0;
+            color: var(--primary);
+            font-size: 13px;
+        }
+        .explanation-box p {
+            margin: 0;
+            color: var(--text);
+            font-size: 14px;
+        }
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        @media (max-width: 600px) {
+            .summary-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        .stat-box {
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .stat-number.high { color: #EF4444; }
+        .stat-number.medium { color: #F59E0B; }
+        .stat-number.low { color: #22C55E; }
+        .stat-label {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+        .concerns-list {
+            background: #FEF3C7;
+            border: 1px solid #FDE68A;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .concerns-list h4 {
+            margin: 0 0 12px 0;
+            color: #92400E;
+        }
+        .concerns-list ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .concerns-list li {
+            color: #78350F;
+            margin-bottom: 8px;
+        }
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: var(--background);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        .filter-btn:hover {
+            border-color: var(--primary);
+        }
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .results-section {
+            display: none;
+        }
+        .results-section.visible {
+            display: block;
+        }
+        .attorney-items {
+            background: #EDE9FE;
+            border: 1px solid #DDD6FE;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+        .attorney-items h4 {
+            margin: 0 0 12px 0;
+            color: #5B21B6;
+        }
+        .attorney-items ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .attorney-items li {
+            color: #6D28D9;
+            margin-bottom: 8px;
+        }
+        .demo-note {
+            background: linear-gradient(135deg, #EDE9FE 0%, #FCE7F3 100%);
+            border: 1px solid #DDD6FE;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .demo-note h4 {
+            margin: 0 0 8px 0;
+            color: #7C3AED;
+        }
+        .demo-note p {
+            margin: 0;
+            color: #6B7280;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Legal Services Portal</h1>
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="intake.html">Intake</a>
+            <a href="checklist.html">Checklists</a>
+            <a href="deadlines.html">Deadlines</a>
+            <a href="about.html">How It Works</a>
+            <a href="#" onclick="logout(); return false;">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="card">
+            <h2>AI-Powered Redline Assistant</h2>
+            <p>Compare a counterparty draft to your baseline template. Get plain-English summaries of changes and suggested edits.</p>
+        </div>
+
+        <div class="alert alert-warning">
+            <strong>DRAFT - ATTORNEY REVIEW REQUIRED</strong><br>
+            This analysis is for informational purposes only. All changes and recommendations must be reviewed by legal counsel before taking action.
+        </div>
+
+        <!-- Upload Section -->
+        <div id="uploadSection" class="card">
+            <h3>Step 1: Upload Documents</h3>
+
+            <div class="document-grid">
+                <div>
+                    <label class="form-label">Baseline Document (Your Template)</label>
+                    <div class="upload-zone" id="baselineZone" onclick="document.getElementById('baselineFile').click()">
+                        <div class="icon">📄</div>
+                        <p><strong>Click to upload</strong> or drag and drop</p>
+                        <p style="font-size: 13px; color: var(--text-light);">PDF, DOCX, or TXT</p>
+                        <input type="file" id="baselineFile" accept=".pdf,.docx,.txt" onchange="handleFileSelect(this, 'baseline')">
+                        <div class="file-name" id="baselineName"></div>
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Counterparty Draft</label>
+                    <div class="upload-zone" id="counterpartyZone" onclick="document.getElementById('counterpartyFile').click()">
+                        <div class="icon">📄</div>
+                        <p><strong>Click to upload</strong> or drag and drop</p>
+                        <p style="font-size: 13px; color: var(--text-light);">PDF, DOCX, or TXT</p>
+                        <input type="file" id="counterpartyFile" accept=".pdf,.docx,.txt" onchange="handleFileSelect(this, 'counterparty')">
+                        <div class="file-name" id="counterpartyName"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Document Type</label>
+                <select id="docType" class="form-input">
+                    <option value="">Select document type...</option>
+                    <option value="nda">Non-Disclosure Agreement (NDA)</option>
+                    <option value="service_agreement">Service Agreement / MSA</option>
+                    <option value="employment">Employment Agreement</option>
+                    <option value="lease">Lease / Rental Agreement</option>
+                    <option value="purchase">Purchase Agreement</option>
+                    <option value="license">License Agreement</option>
+                    <option value="other">Other Contract</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Preferred Language / Reference Clauses (Optional)</label>
+                <textarea id="preferredLanguage" class="form-input" rows="4" placeholder="Paste any preferred language or standard clauses you'd like to restore or reference in the comparison..."></textarea>
+            </div>
+
+            <button class="btn btn-primary" onclick="analyzeDocuments()" id="analyzeBtn">
+                Analyze Documents
+            </button>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="results-section">
+            <div class="demo-note">
+                <h4>Demo Mode</h4>
+                <p>This is a demonstration with sample comparison data. When connected to the Claude API, this tool will perform actual document comparison and analysis.</p>
+            </div>
+
+            <div class="card">
+                <h3>Comparison Summary</h3>
+
+                <div class="summary-stats">
+                    <div class="stat-box">
+                        <div class="stat-number" id="totalChanges">12</div>
+                        <div class="stat-label">Total Changes</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number high" id="highChanges">3</div>
+                        <div class="stat-label">High Impact</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number medium" id="mediumChanges">5</div>
+                        <div class="stat-label">Medium Impact</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number low" id="lowChanges">4</div>
+                        <div class="stat-label">Low Impact</div>
+                    </div>
+                </div>
+
+                <div class="concerns-list">
+                    <h4>Key Concerns</h4>
+                    <ol id="keyConcerns">
+                        <li>Liability cap reduced from $1M to fees paid in last 12 months</li>
+                        <li>Indemnification scope expanded to include third-party claims</li>
+                        <li>Termination for convenience added (counterparty only)</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Detailed Changes</h3>
+
+                <div class="filter-bar">
+                    <button class="filter-btn active" onclick="filterChanges('all')">All Changes</button>
+                    <button class="filter-btn" onclick="filterChanges('high')">High Impact</button>
+                    <button class="filter-btn" onclick="filterChanges('medium')">Medium Impact</button>
+                    <button class="filter-btn" onclick="filterChanges('low')">Low Impact</button>
+                </div>
+
+                <div id="changesList">
+                    <!-- Sample changes for demo -->
+                    <div class="change-item high" data-impact="high">
+                        <div class="change-header">
+                            <div>
+                                <strong>Section 8.2: Limitation of Liability</strong>
+                            </div>
+                            <div class="change-badges">
+                                <span class="badge-impact high">High Impact</span>
+                                <span class="badge-favor unfavorable">Unfavorable</span>
+                            </div>
+                        </div>
+                        <div class="text-comparison">
+                            <div class="text-box baseline">
+                                <div class="text-box-label">Baseline Text</div>
+                                "In no event shall either party's liability exceed One Million Dollars ($1,000,000)."
+                            </div>
+                            <div class="text-box new">
+                                <div class="text-box-label">Counterparty Version</div>
+                                "In no event shall either party's liability exceed the fees paid under this Agreement in the twelve (12) months preceding the claim."
+                            </div>
+                        </div>
+                        <div class="explanation-box">
+                            <h5>Plain-English Explanation</h5>
+                            <p>The counterparty changed the liability cap from a fixed $1 million to a rolling 12-month fee calculation. For a contract with $50K annual fees, this reduces your maximum recovery from $1M to $50K - a 95% reduction in protection.</p>
+                        </div>
+                        <div class="explanation-box" style="background: #FEE2E2;">
+                            <h5>Recommendation</h5>
+                            <p>Reject this change. Propose restoring the $1M cap, or negotiate a minimum floor (e.g., "the greater of $500,000 or fees paid in the preceding 12 months").</p>
+                        </div>
+                    </div>
+
+                    <div class="change-item high" data-impact="high">
+                        <div class="change-header">
+                            <div>
+                                <strong>Section 9.1: Indemnification</strong>
+                            </div>
+                            <div class="change-badges">
+                                <span class="badge-impact high">High Impact</span>
+                                <span class="badge-favor unfavorable">Unfavorable</span>
+                            </div>
+                        </div>
+                        <div class="text-comparison">
+                            <div class="text-box baseline">
+                                <div class="text-box-label">Baseline Text</div>
+                                "Each party shall indemnify the other against claims arising from its own negligence or willful misconduct."
+                            </div>
+                            <div class="text-box new">
+                                <div class="text-box-label">Counterparty Version</div>
+                                "Client shall indemnify Provider against any and all claims, including third-party claims, arising from or related to Client's use of the Services."
+                            </div>
+                        </div>
+                        <div class="explanation-box">
+                            <h5>Plain-English Explanation</h5>
+                            <p>The indemnification was changed from mutual (both parties protect each other) to one-sided (only you indemnify them). It also expands scope to include third-party claims regardless of fault.</p>
+                        </div>
+                        <div class="explanation-box" style="background: #FEE2E2;">
+                            <h5>Recommendation</h5>
+                            <p>Push back strongly. Restore mutual indemnification and limit scope to claims caused by the indemnifying party's actions.</p>
+                        </div>
+                    </div>
+
+                    <div class="change-item medium" data-impact="medium">
+                        <div class="change-header">
+                            <div>
+                                <strong>Section 11.2: Termination for Convenience</strong>
+                            </div>
+                            <div class="change-badges">
+                                <span class="badge-impact medium">Medium Impact</span>
+                                <span class="badge-favor unfavorable">Unfavorable</span>
+                            </div>
+                        </div>
+                        <div class="text-comparison">
+                            <div class="text-box baseline">
+                                <div class="text-box-label">Baseline Text</div>
+                                [No termination for convenience provision]
+                            </div>
+                            <div class="text-box new">
+                                <div class="text-box-label">Counterparty Version</div>
+                                "Provider may terminate this Agreement for any reason upon thirty (30) days written notice."
+                            </div>
+                        </div>
+                        <div class="explanation-box">
+                            <h5>Plain-English Explanation</h5>
+                            <p>The counterparty added a right to terminate the contract at any time for any reason with 30 days notice. You don't have the same right.</p>
+                        </div>
+                        <div class="explanation-box" style="background: #FEF3C7;">
+                            <h5>Recommendation</h5>
+                            <p>Either delete this provision or make it mutual. If they insist, negotiate for longer notice period (60-90 days) and pro-rata refund of prepaid fees.</p>
+                        </div>
+                    </div>
+
+                    <div class="change-item medium" data-impact="medium">
+                        <div class="change-header">
+                            <div>
+                                <strong>Section 7.3: Payment Terms</strong>
+                            </div>
+                            <div class="change-badges">
+                                <span class="badge-impact medium">Medium Impact</span>
+                                <span class="badge-favor unfavorable">Unfavorable</span>
+                            </div>
+                        </div>
+                        <div class="text-comparison">
+                            <div class="text-box baseline">
+                                <div class="text-box-label">Baseline Text</div>
+                                "Payment is due within forty-five (45) days of invoice date."
+                            </div>
+                            <div class="text-box new">
+                                <div class="text-box-label">Counterparty Version</div>
+                                "Payment is due within fifteen (15) days of invoice date. Late payments shall accrue interest at 1.5% per month."
+                            </div>
+                        </div>
+                        <div class="explanation-box">
+                            <h5>Plain-English Explanation</h5>
+                            <p>Payment terms shortened from 45 to 15 days, and late payment interest of 18% annually was added. This significantly tightens cash flow requirements.</p>
+                        </div>
+                        <div class="explanation-box" style="background: #FEF3C7;">
+                            <h5>Recommendation</h5>
+                            <p>Negotiate back to 30 days minimum. If interest must be included, cap it at the lesser of 1% per month or the maximum rate allowed by law.</p>
+                        </div>
+                    </div>
+
+                    <div class="change-item low" data-impact="low">
+                        <div class="change-header">
+                            <div>
+                                <strong>Section 15.1: Governing Law</strong>
+                            </div>
+                            <div class="change-badges">
+                                <span class="badge-impact low">Low Impact</span>
+                                <span class="badge-favor neutral">Neutral</span>
+                            </div>
+                        </div>
+                        <div class="text-comparison">
+                            <div class="text-box baseline">
+                                <div class="text-box-label">Baseline Text</div>
+                                "This Agreement shall be governed by the laws of the State of New York."
+                            </div>
+                            <div class="text-box new">
+                                <div class="text-box-label">Counterparty Version</div>
+                                "This Agreement shall be governed by the laws of the State of Delaware."
+                            </div>
+                        </div>
+                        <div class="explanation-box">
+                            <h5>Plain-English Explanation</h5>
+                            <p>Governing law changed from New York to Delaware. Both are business-friendly jurisdictions with well-developed contract law. Impact depends on where disputes would be litigated.</p>
+                        </div>
+                        <div class="explanation-box" style="background: #DCFCE7;">
+                            <h5>Recommendation</h5>
+                            <p>Acceptable if venue remains reasonable. Confirm whether jurisdiction clause also changed and consider litigation convenience.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="attorney-items">
+                <h4>Items Requiring Attorney Decision</h4>
+                <ul>
+                    <li>Whether to accept modified liability cap or counter with alternative structure</li>
+                    <li>Acceptability of one-sided termination right given business relationship</li>
+                    <li>Review IP ownership clause changes against company policy</li>
+                </ul>
+            </div>
+
+            <div class="card" style="margin-top: 24px;">
+                <h3>Export Options</h3>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="exportReport('pdf')">Export PDF Report</button>
+                    <button class="btn btn-secondary" onclick="exportReport('docx')">Export Word Document</button>
+                    <button class="btn btn-secondary" onclick="exportReport('email')">Email Summary</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let baselineFile = null;
+        let counterpartyFile = null;
+
+        function handleFileSelect(input, type) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (type === 'baseline') {
+                baselineFile = file;
+                document.getElementById('baselineZone').classList.add('has-file');
+                document.getElementById('baselineName').textContent = file.name;
+            } else {
+                counterpartyFile = file;
+                document.getElementById('counterpartyZone').classList.add('has-file');
+                document.getElementById('counterpartyName').textContent = file.name;
+            }
+        }
+
+        // Drag and drop handlers
+        ['baselineZone', 'counterpartyZone'].forEach(zoneId => {
+            const zone = document.getElementById(zoneId);
+            const type = zoneId === 'baselineZone' ? 'baseline' : 'counterparty';
+            const input = document.getElementById(type + 'File');
+
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('dragover');
+            });
+
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('dragover');
+            });
+
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    input.files = files;
+                    handleFileSelect(input, type);
+                }
+            });
+        });
+
+        function analyzeDocuments() {
+            const docType = document.getElementById('docType').value;
+
+            if (!baselineFile || !counterpartyFile) {
+                alert('Please upload both documents to continue.');
+                return;
+            }
+
+            if (!docType) {
+                alert('Please select a document type.');
+                return;
+            }
+
+            // Show loading state
+            const btn = document.getElementById('analyzeBtn');
+            btn.textContent = 'Analyzing...';
+            btn.disabled = true;
+
+            // Simulate API call
+            setTimeout(() => {
+                document.getElementById('uploadSection').style.display = 'none';
+                document.getElementById('resultsSection').classList.add('visible');
+                btn.textContent = 'Analyze Documents';
+                btn.disabled = false;
+            }, 2000);
+        }
+
+        function filterChanges(impact) {
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Filter changes
+            document.querySelectorAll('.change-item').forEach(item => {
+                if (impact === 'all' || item.dataset.impact === impact) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function exportReport(format) {
+            alert('Export to ' + format.toUpperCase() + ' would be generated here. This feature requires API integration.');
+        }
+
+        function logout() {
+            localStorage.removeItem('legal-portal-auth');
+            localStorage.removeItem('legal-portal-auth-time');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
