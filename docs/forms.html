@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Services Portal - Form Assembly</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        (function() {
+            var auth = localStorage.getItem('legal-portal-auth');
+            var authTime = localStorage.getItem('legal-portal-auth-time');
+            var maxAge = 24 * 60 * 60 * 1000;
+            if (auth !== 'authenticated' || !authTime || (Date.now() - parseInt(authTime)) > maxAge) {
+                window.location.href = 'index.html';
+            }
+        })();
+    </script>
+    <style>
+        .form-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 24px 0;
+        }
+        .form-option {
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            cursor: pointer;
+            transition: all var(--transition);
+            background: var(--bg-card);
+        }
+        .form-option:hover {
+            border-color: var(--primary);
+            background: var(--primary-lighter);
+        }
+        .form-option.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .form-option h4 {
+            margin: 0 0 4px 0;
+            font-size: 15px;
+        }
+        .form-option p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .client-selector {
+            background: var(--bg-subtle);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .client-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .client-card:hover {
+            border-color: var(--primary);
+        }
+        .client-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-lighter);
+        }
+        .client-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 18px;
+        }
+        .client-info h4 {
+            margin: 0 0 4px 0;
+        }
+        .client-info p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .field-mapping {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 16px;
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+        .field-row:last-child {
+            border-bottom: none;
+        }
+        .field-row:nth-child(even) {
+            background: var(--bg-subtle);
+        }
+        .field-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .field-value {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .field-value.missing {
+            color: var(--danger);
+            font-style: italic;
+        }
+        .field-status {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .field-status.complete {
+            background: var(--success-light);
+            color: var(--success);
+        }
+        .field-status.missing {
+            background: var(--danger-light);
+            color: var(--danger);
+        }
+        .preview-section {
+            background: var(--bg-subtle);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin: 24px 0;
+        }
+        .form-preview {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+            box-shadow: var(--shadow-md);
+        }
+        .form-preview h2 {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+        .preview-field {
+            margin-bottom: 16px;
+        }
+        .preview-field label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 2px;
+        }
+        .preview-field .value {
+            font-size: 14px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            min-height: 24px;
+        }
+        .preview-field .value.filled {
+            color: var(--text-primary);
+        }
+        .preview-field .value.empty {
+            color: var(--text-subtle);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Legal Services Portal</h1>
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="intake.html">Intake</a>
+            <a href="checklist.html">Checklists</a>
+            <a href="deadlines.html">Deadlines</a>
+            <a href="about.html">How It Works</a>
+            <a href="#" onclick="logout(); return false;">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="draft-notice">
+            <strong>DRAFT - PENDING ATTORNEY REVIEW</strong><br>
+            Auto-populated forms must be reviewed and verified before filing.
+        </div>
+
+        <div class="card">
+            <h2>Form Assembly</h2>
+            <p>Auto-populate USCIS forms using data from client intake. Select a client and form to begin.</p>
+        </div>
+
+        <!-- Step 1: Select Client -->
+        <div class="card" id="step1">
+            <h3>Step 1: Select Client</h3>
+            <div class="client-selector" id="clientList">
+                <p class="text-muted">Loading clients...</p>
+            </div>
+        </div>
+
+        <!-- Step 2: Select Form -->
+        <div class="card" id="step2" style="display: none;">
+            <h3>Step 2: Select Form</h3>
+            <p>Choose the USCIS form to populate based on case type.</p>
+            <div class="form-selector">
+                <div class="form-option" data-form="i-589" onclick="selectForm('i-589')">
+                    <h4>I-589</h4>
+                    <p>Application for Asylum and Withholding of Removal</p>
+                </div>
+                <div class="form-option" data-form="i-130" onclick="selectForm('i-130')">
+                    <h4>I-130</h4>
+                    <p>Petition for Alien Relative</p>
+                </div>
+                <div class="form-option" data-form="i-485" onclick="selectForm('i-485')">
+                    <h4>I-485</h4>
+                    <p>Application to Register Permanent Residence</p>
+                </div>
+                <div class="form-option" data-form="i-765" onclick="selectForm('i-765')">
+                    <h4>I-765</h4>
+                    <p>Application for Employment Authorization</p>
+                </div>
+                <div class="form-option" data-form="i-918" onclick="selectForm('i-918')">
+                    <h4>I-918</h4>
+                    <p>Petition for U Nonimmigrant Status</p>
+                </div>
+                <div class="form-option" data-form="n-400" onclick="selectForm('n-400')">
+                    <h4>N-400</h4>
+                    <p>Application for Naturalization</p>
+                </div>
+            </div>
+            <button class="btn btn-outline" onclick="backToStep1()">Back to Client Selection</button>
+        </div>
+
+        <!-- Step 3: Review Mapping -->
+        <div class="card" id="step3" style="display: none;">
+            <h3>Step 3: Review Field Mapping</h3>
+            <p>Review the data that will be used to populate the form. Missing fields are highlighted.</p>
+
+            <div class="alert alert-info">
+                <strong>Data Source:</strong> <span id="clientNameDisplay"></span> |
+                <strong>Form:</strong> <span id="formNameDisplay"></span>
+            </div>
+
+            <div class="field-mapping" id="fieldMapping">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <div id="missingFieldsAlert" class="alert alert-warning" style="display: none;">
+                <strong>Missing Required Fields</strong><br>
+                Some required fields are missing. The form can still be generated, but you'll need to complete these manually.
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button class="btn btn-outline" onclick="backToStep2()">Back</button>
+                <button class="btn btn-primary" onclick="generatePreview()">Generate Form Preview</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Preview & Export -->
+        <div class="card" id="step4" style="display: none;">
+            <h3>Step 4: Preview & Export</h3>
+            <p>Review the populated form below. Make any necessary corrections before exporting.</p>
+
+            <div class="preview-section">
+                <div class="form-preview" id="formPreview">
+                    <!-- Generated form preview -->
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button class="btn btn-outline" onclick="backToStep3()">Back to Review</button>
+                <button class="btn btn-primary" onclick="exportForm('pdf')">Export as PDF</button>
+                <button class="btn btn-secondary" onclick="exportForm('print')">Print Form</button>
+            </div>
+        </div>
+
+        <!-- No Clients Message -->
+        <div class="card" id="noClients" style="display: none;">
+            <div style="text-align: center; padding: 40px 20px;">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom: 16px;">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <h3>No Client Intakes Found</h3>
+                <p>Complete a client intake form first to use Form Assembly.</p>
+                <a href="intake.html" class="btn btn-primary" style="margin-top: 16px;">Start Client Intake</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let selectedClient = null;
+        let selectedForm = null;
+        let clients = [];
+
+        const formFields = {
+            'i-589': {
+                name: 'I-589 - Application for Asylum',
+                fields: [
+                    { label: 'Family Name (Last Name)', key: 'lastName', required: true },
+                    { label: 'First Name', key: 'firstName', required: true },
+                    { label: 'Middle Name', key: 'middleName', required: false },
+                    { label: 'Other Names Used', key: 'otherNames', required: false },
+                    { label: 'Date of Birth', key: 'dateOfBirth', required: true },
+                    { label: 'City of Birth', key: 'cityOfBirth', required: true },
+                    { label: 'Country of Birth', key: 'countryOfBirth', required: true },
+                    { label: 'Country of Citizenship', key: 'countryOfCitizenship', required: true },
+                    { label: 'Gender', key: 'gender', required: true },
+                    { label: 'Marital Status', key: 'maritalStatus', required: true },
+                    { label: 'A-Number', key: 'aNumber', required: false },
+                    { label: 'Social Security Number', key: 'ssn', required: false },
+                    { label: 'Street Address', key: 'streetAddress', required: true },
+                    { label: 'City', key: 'city', required: true },
+                    { label: 'State', key: 'state', required: true },
+                    { label: 'ZIP Code', key: 'zipCode', required: true },
+                    { label: 'Phone Number', key: 'phone', required: true },
+                    { label: 'Date of Last Entry', key: 'entryDate', required: true },
+                    { label: 'Place of Last Entry', key: 'entryPlace', required: false },
+                    { label: 'Status at Entry', key: 'entryStatus', required: true },
+                    { label: 'I-94 Number', key: 'i94Number', required: false },
+                    { label: 'Passport Number', key: 'passportNumber', required: false },
+                    { label: 'Passport Country', key: 'passportCountry', required: false }
+                ]
+            },
+            'i-130': {
+                name: 'I-130 - Petition for Alien Relative',
+                fields: [
+                    { label: 'Beneficiary Last Name', key: 'lastName', required: true },
+                    { label: 'Beneficiary First Name', key: 'firstName', required: true },
+                    { label: 'Date of Birth', key: 'dateOfBirth', required: true },
+                    { label: 'Country of Birth', key: 'countryOfBirth', required: true },
+                    { label: 'Country of Citizenship', key: 'countryOfCitizenship', required: true },
+                    { label: 'A-Number', key: 'aNumber', required: false },
+                    { label: 'Current Address', key: 'streetAddress', required: true },
+                    { label: 'City', key: 'city', required: true },
+                    { label: 'State', key: 'state', required: true },
+                    { label: 'ZIP Code', key: 'zipCode', required: true }
+                ]
+            },
+            'i-485': {
+                name: 'I-485 - Adjustment of Status',
+                fields: [
+                    { label: 'Family Name', key: 'lastName', required: true },
+                    { label: 'Given Name', key: 'firstName', required: true },
+                    { label: 'Middle Name', key: 'middleName', required: false },
+                    { label: 'Date of Birth', key: 'dateOfBirth', required: true },
+                    { label: 'Country of Birth', key: 'countryOfBirth', required: true },
+                    { label: 'Country of Citizenship', key: 'countryOfCitizenship', required: true },
+                    { label: 'Gender', key: 'gender', required: true },
+                    { label: 'Marital Status', key: 'maritalStatus', required: true },
+                    { label: 'A-Number', key: 'aNumber', required: false },
+                    { label: 'Social Security Number', key: 'ssn', required: false },
+                    { label: 'Current Address', key: 'streetAddress', required: true },
+                    { label: 'City', key: 'city', required: true },
+                    { label: 'State', key: 'state', required: true },
+                    { label: 'ZIP Code', key: 'zipCode', required: true },
+                    { label: 'Date of Last Entry', key: 'entryDate', required: true },
+                    { label: 'I-94 Number', key: 'i94Number', required: false },
+                    { label: 'Current Immigration Status', key: 'currentStatus', required: true }
+                ]
+            },
+            'i-765': {
+                name: 'I-765 - Employment Authorization',
+                fields: [
+                    { label: 'Family Name', key: 'lastName', required: true },
+                    { label: 'Given Name', key: 'firstName', required: true },
+                    { label: 'Middle Name', key: 'middleName', required: false },
+                    { label: 'Date of Birth', key: 'dateOfBirth', required: true },
+                    { label: 'Country of Birth', key: 'countryOfBirth', required: true },
+                    { label: 'A-Number', key: 'aNumber', required: false },
+                    { label: 'Social Security Number', key: 'ssn', required: false },
+                    { label: 'Current Address', key: 'streetAddress', required: true },
+                    { label: 'City', key: 'city', required: true },
+                    { label: 'State', key: 'state', required: true },
+                    { label: 'ZIP Code', key: 'zipCode', required: true },
+                    { label: 'Date of Last Entry', key: 'entryDate', required: true },
+                    { label: 'I-94 Number', key: 'i94Number', required: false }
+                ]
+            },
+            'i-918': {
+                name: 'I-918 - U Visa Petition',
+                fields: [
+                    { label: 'Family Name', key: 'lastName', required: true },
+                    { label: 'Given Name', key: 'firstName', required: true },
+                    { label: 'Date of Birth', key: 'dateOfBirth', required: true },
+                    { label: 'Country of Birth', key: 'countryOfBirth', required: true },
+                    { label: 'Country of Citizenship', key: 'countryOfCitizenship', required: true },
+                    { label: 'A-Number', key: 'aNumber', required: false },
+                    { label: 'Current Address', key: 'streetAddress', required: true },
+                    { label: 'City', key: 'city', required: true },
+                    { label: 'State', key: 'state', required: true },
+                    { label: 'ZIP Code', key: 'zipCode', required: true }
+                ]
+            },
+            'n-400': {
+                name: 'N-400 - Naturalization',
+                fields: [
+                    { label: 'Current Legal Name - Last', key: 'lastName', required: true },
+                    { label: 'Current Legal Name - First', key: 'firstName', required: true },
+                    { label: 'Current Legal Name - Middle', key: 'middleName', required: false },
+                    { label: 'Date of Birth', key: 'dateOfBirth', required: true },
+                    { label: 'Country of Birth', key: 'countryOfBirth', required: true },
+                    { label: 'Country of Citizenship', key: 'countryOfCitizenship', required: true },
+                    { label: 'A-Number', key: 'aNumber', required: true },
+                    { label: 'Social Security Number', key: 'ssn', required: true },
+                    { label: 'Home Address', key: 'streetAddress', required: true },
+                    { label: 'City', key: 'city', required: true },
+                    { label: 'State', key: 'state', required: true },
+                    { label: 'ZIP Code', key: 'zipCode', required: true },
+                    { label: 'Email Address', key: 'email', required: false },
+                    { label: 'Phone Number', key: 'phone', required: true },
+                    { label: 'Marital Status', key: 'maritalStatus', required: true }
+                ]
+            }
+        };
+
+        function loadClients() {
+            clients = JSON.parse(localStorage.getItem('legal-portal-intakes') || '[]');
+
+            if (clients.length === 0) {
+                document.getElementById('step1').style.display = 'none';
+                document.getElementById('noClients').style.display = 'block';
+                return;
+            }
+
+            const container = document.getElementById('clientList');
+            container.innerHTML = clients.map((client, index) => `
+                <div class="client-card" onclick="selectClient(${index})">
+                    <div class="client-avatar">${(client.firstName || 'C')[0]}${(client.lastName || '')[0]}</div>
+                    <div class="client-info">
+                        <h4>${client.firstName || ''} ${client.lastName || 'Client ' + (index + 1)}</h4>
+                        <p>Case: ${client.caseType || 'Not specified'} | Intake: ${new Date(client.meta?.intakeDate || Date.now()).toLocaleDateString()}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectClient(index) {
+            selectedClient = clients[index];
+            document.querySelectorAll('.client-card').forEach((card, i) => {
+                card.classList.toggle('selected', i === index);
+            });
+
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+        }
+
+        function selectForm(formId) {
+            selectedForm = formId;
+            document.querySelectorAll('.form-option').forEach(opt => {
+                opt.classList.toggle('selected', opt.dataset.form === formId);
+            });
+
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step3').style.display = 'block';
+
+            renderFieldMapping();
+        }
+
+        function renderFieldMapping() {
+            const form = formFields[selectedForm];
+            document.getElementById('clientNameDisplay').textContent = `${selectedClient.firstName} ${selectedClient.lastName}`;
+            document.getElementById('formNameDisplay').textContent = form.name;
+
+            let missingRequired = 0;
+            const rows = form.fields.map(field => {
+                const value = selectedClient[field.key];
+                const hasValue = value && value.trim() !== '';
+                if (field.required && !hasValue) missingRequired++;
+
+                return `
+                    <div class="field-row">
+                        <div class="field-label">${field.label}${field.required ? ' *' : ''}</div>
+                        <div class="field-value ${hasValue ? '' : 'missing'}">${hasValue ? value : 'Not provided'}</div>
+                        <div class="field-status ${hasValue ? 'complete' : 'missing'}">
+                            ${hasValue ? '✓' : '!'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('fieldMapping').innerHTML = rows;
+            document.getElementById('missingFieldsAlert').style.display = missingRequired > 0 ? 'block' : 'none';
+        }
+
+        function generatePreview() {
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('step4').style.display = 'block';
+
+            const form = formFields[selectedForm];
+            let previewHtml = `
+                <h2>${form.name}</h2>
+                <p style="text-align: center; color: var(--text-muted); margin-bottom: 32px;">
+                    DRAFT - FOR REVIEW ONLY - NOT FOR FILING
+                </p>
+            `;
+
+            form.fields.forEach(field => {
+                const value = selectedClient[field.key] || '';
+                previewHtml += `
+                    <div class="preview-field">
+                        <label>${field.label}</label>
+                        <div class="value ${value ? 'filled' : 'empty'}">${value || '[To be completed]'}</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('formPreview').innerHTML = previewHtml;
+        }
+
+        function backToStep1() {
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step1').style.display = 'block';
+        }
+
+        function backToStep2() {
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+        }
+
+        function backToStep3() {
+            document.getElementById('step4').style.display = 'none';
+            document.getElementById('step3').style.display = 'block';
+        }
+
+        function exportForm(format) {
+            if (format === 'print') {
+                window.print();
+            } else {
+                alert('PDF export would generate a downloadable PDF. This feature requires additional server-side processing or a PDF library integration.');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('legal-portal-auth');
+            localStorage.removeItem('legal-portal-auth-time');
+            window.location.href = 'index.html';
+        }
+
+        loadClients();
+    </script>
+</body>
+</html>

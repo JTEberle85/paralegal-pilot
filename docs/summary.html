@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Services Portal - Case Summary</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        (function() {
+            var auth = localStorage.getItem('legal-portal-auth');
+            var authTime = localStorage.getItem('legal-portal-auth-time');
+            var maxAge = 24 * 60 * 60 * 1000;
+            if (auth !== 'authenticated' || !authTime || (Date.now() - parseInt(authTime)) > maxAge) {
+                window.location.href = 'index.html';
+            }
+        })();
+    </script>
+    <style>
+        .client-select-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .client-select-card {
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            cursor: pointer;
+            transition: all var(--transition);
+            background: var(--bg-card);
+        }
+        .client-select-card:hover {
+            border-color: var(--primary);
+            background: var(--primary-lighter);
+        }
+        .client-select-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .client-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .client-initials {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .client-name h4 {
+            margin: 0;
+        }
+        .client-name p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .summary-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .summary-section-header {
+            background: var(--bg-subtle);
+            padding: 14px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .summary-section-header h4 {
+            margin: 0;
+            font-size: 15px;
+        }
+        .summary-section-body {
+            padding: 20px;
+        }
+        .summary-row {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+        .summary-label {
+            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .summary-value {
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        .summary-value.warning {
+            color: var(--warning);
+        }
+        .summary-value.danger {
+            color: var(--danger);
+        }
+        .flag-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: var(--danger-light);
+            border-radius: var(--radius-md);
+            margin-bottom: 10px;
+        }
+        .flag-item.warning {
+            background: var(--warning-light);
+        }
+        .flag-icon {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .flag-content h5 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+        }
+        .flag-content p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .timeline {
+            position: relative;
+            padding-left: 24px;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -20px;
+            top: 4px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid var(--bg-card);
+        }
+        .timeline-date {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .timeline-content {
+            font-size: 14px;
+        }
+        .print-summary {
+            display: none;
+        }
+        @media print {
+            .header, .btn, .alert {
+                display: none !important;
+            }
+            .print-summary {
+                display: block;
+            }
+            .summary-section {
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Legal Services Portal</h1>
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="intake.html">Intake</a>
+            <a href="checklist.html">Checklists</a>
+            <a href="deadlines.html">Deadlines</a>
+            <a href="about.html">How It Works</a>
+            <a href="#" onclick="logout(); return false;">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="draft-notice">
+            <strong>DRAFT - PENDING ATTORNEY REVIEW</strong><br>
+            This summary is for attorney preparation only. Verify all information before court or filing.
+        </div>
+
+        <div class="card">
+            <h2>Case Summary Generator</h2>
+            <p>Generate comprehensive case summaries for attorney review, court preparation, or case file documentation.</p>
+        </div>
+
+        <!-- Client Selection -->
+        <div class="card" id="clientSelection">
+            <h3>Select Client</h3>
+            <div class="client-select-grid" id="clientGrid">
+                <p class="text-muted">Loading clients...</p>
+            </div>
+        </div>
+
+        <!-- No Clients -->
+        <div class="card" id="noClients" style="display: none;">
+            <div style="text-align: center; padding: 40px 20px;">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom: 16px;">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                </svg>
+                <h3>No Client Intakes Found</h3>
+                <p>Complete a client intake form first to generate case summaries.</p>
+                <a href="intake.html" class="btn btn-primary" style="margin-top: 16px;">Start Client Intake</a>
+            </div>
+        </div>
+
+        <!-- Generated Summary -->
+        <div id="summaryOutput" style="display: none;">
+            <div class="print-summary">
+                <h1 style="text-align: center;">CASE SUMMARY - ATTORNEY WORK PRODUCT</h1>
+                <p style="text-align: center; color: var(--danger);">DRAFT - PENDING REVIEW</p>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>Summary Generated</strong> for <span id="summaryClientName"></span>
+            </div>
+
+            <!-- Case Overview -->
+            <div class="summary-section">
+                <div class="summary-section-header">
+                    <h4>Case Overview</h4>
+                </div>
+                <div class="summary-section-body" id="caseOverview">
+                </div>
+            </div>
+
+            <!-- Flags & Concerns -->
+            <div class="summary-section" id="flagsSection">
+                <div class="summary-section-header">
+                    <h4>Flags & Concerns</h4>
+                    <span class="badge badge-urgent" id="flagCount">0 items</span>
+                </div>
+                <div class="summary-section-body" id="flagsList">
+                </div>
+            </div>
+
+            <!-- Biographical Summary -->
+            <div class="summary-section">
+                <div class="summary-section-header">
+                    <h4>Biographical Information</h4>
+                </div>
+                <div class="summary-section-body" id="bioSummary">
+                </div>
+            </div>
+
+            <!-- Immigration History -->
+            <div class="summary-section">
+                <div class="summary-section-header">
+                    <h4>Immigration History</h4>
+                </div>
+                <div class="summary-section-body" id="immigrationSummary">
+                </div>
+            </div>
+
+            <!-- Family Information -->
+            <div class="summary-section">
+                <div class="summary-section-header">
+                    <h4>Family Information</h4>
+                </div>
+                <div class="summary-section-body" id="familySummary">
+                </div>
+            </div>
+
+            <!-- Case Timeline -->
+            <div class="summary-section">
+                <div class="summary-section-header">
+                    <h4>Key Dates & Timeline</h4>
+                </div>
+                <div class="summary-section-body">
+                    <div class="timeline" id="caseTimeline">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Document Status -->
+            <div class="summary-section">
+                <div class="summary-section-header">
+                    <h4>Document Status</h4>
+                </div>
+                <div class="summary-section-body" id="documentStatus">
+                    <p class="text-muted">No document checklist found for this client.</p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card">
+                <h3>Export Options</h3>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="window.print()">Print Summary</button>
+                    <button class="btn btn-secondary" onclick="copyToClipboard()">Copy to Clipboard</button>
+                    <button class="btn btn-outline" onclick="selectNewClient()">Select Different Client</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let clients = [];
+        let selectedClient = null;
+
+        function loadClients() {
+            clients = JSON.parse(localStorage.getItem('legal-portal-intakes') || '[]');
+
+            if (clients.length === 0) {
+                document.getElementById('clientSelection').style.display = 'none';
+                document.getElementById('noClients').style.display = 'block';
+                return;
+            }
+
+            const grid = document.getElementById('clientGrid');
+            grid.innerHTML = clients.map((client, index) => `
+                <div class="client-select-card" onclick="selectClient(${index})">
+                    <div class="client-header">
+                        <div class="client-initials">${(client.firstName || 'C')[0]}${(client.lastName || '')[0]}</div>
+                        <div class="client-name">
+                            <h4>${client.firstName || ''} ${client.lastName || 'Client ' + (index + 1)}</h4>
+                            <p>A#: ${client.aNumber || 'Not provided'}</p>
+                        </div>
+                    </div>
+                    <div style="font-size: 13px; color: var(--text-secondary);">
+                        <strong>Case Type:</strong> ${formatCaseType(client.caseType)}<br>
+                        <strong>Intake Date:</strong> ${new Date(client.meta?.intakeDate || Date.now()).toLocaleDateString()}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatCaseType(type) {
+            const types = {
+                'asylum': 'Asylum',
+                'family': 'Family-Based',
+                'naturalization': 'Naturalization',
+                'u_visa': 'U Visa',
+                't_visa': 'T Visa',
+                'vawa': 'VAWA',
+                'tps': 'TPS',
+                'daca': 'DACA',
+                'work_permit': 'Work Permit',
+                'removal_defense': 'Removal Defense'
+            };
+            return types[type] || type || 'Not specified';
+        }
+
+        function selectClient(index) {
+            selectedClient = clients[index];
+            document.getElementById('clientSelection').style.display = 'none';
+            document.getElementById('summaryOutput').style.display = 'block';
+            generateSummary();
+        }
+
+        function selectNewClient() {
+            document.getElementById('summaryOutput').style.display = 'none';
+            document.getElementById('clientSelection').style.display = 'block';
+        }
+
+        function generateSummary() {
+            const c = selectedClient;
+            document.getElementById('summaryClientName').textContent = `${c.firstName} ${c.lastName}`;
+
+            // Case Overview
+            document.getElementById('caseOverview').innerHTML = `
+                <div class="summary-row">
+                    <div class="summary-label">Client Name</div>
+                    <div class="summary-value">${c.firstName || ''} ${c.middleName || ''} ${c.lastName || ''}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Case Type</div>
+                    <div class="summary-value">${formatCaseType(c.caseType)}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">A-Number</div>
+                    <div class="summary-value">${c.aNumber || 'Not assigned'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Intake Date</div>
+                    <div class="summary-value">${new Date(c.meta?.intakeDate || Date.now()).toLocaleDateString()}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Status</div>
+                    <div class="summary-value">${c.meta?.status || 'Draft'}</div>
+                </div>
+            `;
+
+            // Generate Flags
+            const flags = [];
+            if (c.priorDeportation) {
+                flags.push({ type: 'danger', title: 'Prior Deportation', desc: 'Client has prior deportation/removal order. Review for bars to relief.' });
+            }
+            if (c.hasArrests || c.hasConvictions) {
+                flags.push({ type: 'danger', title: 'Criminal History', desc: 'Client disclosed arrests or convictions. Full criminal history analysis required.' });
+            }
+            if (c.hasPendingCharges) {
+                flags.push({ type: 'danger', title: 'Pending Charges', desc: 'Client has pending criminal charges. Consider impact on case strategy.' });
+            }
+            if (c.caseType === 'asylum') {
+                const entryDate = new Date(c.entryDate);
+                const oneYearDeadline = new Date(entryDate);
+                oneYearDeadline.setFullYear(oneYearDeadline.getFullYear() + 1);
+                const daysRemaining = Math.ceil((oneYearDeadline - new Date()) / (1000 * 60 * 60 * 24));
+                if (daysRemaining <= 30 && daysRemaining > 0) {
+                    flags.push({ type: 'danger', title: '1-Year Deadline Approaching', desc: `Asylum deadline is ${oneYearDeadline.toLocaleDateString()} (${daysRemaining} days remaining)` });
+                } else if (daysRemaining <= 0) {
+                    flags.push({ type: 'danger', title: '1-Year Deadline Passed', desc: 'Review for exceptions to 1-year filing deadline.' });
+                }
+            }
+            if (!c.safeToContact) {
+                flags.push({ type: 'warning', title: 'Safety Concern', desc: 'Not safe to contact at provided information. Review contact notes.' });
+            }
+
+            document.getElementById('flagCount').textContent = `${flags.length} items`;
+            if (flags.length === 0) {
+                document.getElementById('flagsList').innerHTML = '<p class="text-muted">No flags identified. Standard processing.</p>';
+            } else {
+                document.getElementById('flagsList').innerHTML = flags.map(f => `
+                    <div class="flag-item ${f.type === 'warning' ? 'warning' : ''}">
+                        <div class="flag-icon">${f.type === 'danger' ? '⚠️' : '⚡'}</div>
+                        <div class="flag-content">
+                            <h5>${f.title}</h5>
+                            <p>${f.desc}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Biographical
+            document.getElementById('bioSummary').innerHTML = `
+                <div class="summary-row">
+                    <div class="summary-label">Full Name</div>
+                    <div class="summary-value">${c.firstName || ''} ${c.middleName || ''} ${c.lastName || ''}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Other Names</div>
+                    <div class="summary-value">${c.otherNames || 'None'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Date of Birth</div>
+                    <div class="summary-value">${c.dateOfBirth || 'Not provided'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Country of Birth</div>
+                    <div class="summary-value">${c.countryOfBirth || 'Not provided'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Country of Citizenship</div>
+                    <div class="summary-value">${c.countryOfCitizenship || 'Not provided'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Gender</div>
+                    <div class="summary-value">${c.gender || 'Not provided'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Marital Status</div>
+                    <div class="summary-value">${c.maritalStatus || 'Not provided'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Current Address</div>
+                    <div class="summary-value">${c.streetAddress || ''}, ${c.city || ''}, ${c.state || ''} ${c.zipCode || ''}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Phone</div>
+                    <div class="summary-value">${c.phone || 'Not provided'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Language</div>
+                    <div class="summary-value">${c.preferredLanguage || 'Not specified'} ${c.needsInterpreter === 'yes' ? '(Interpreter needed)' : ''}</div>
+                </div>
+            `;
+
+            // Immigration History
+            document.getElementById('immigrationSummary').innerHTML = `
+                <div class="summary-row">
+                    <div class="summary-label">Date of Last Entry</div>
+                    <div class="summary-value">${c.entryDate || 'Not provided'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Place of Entry</div>
+                    <div class="summary-value">${c.entryPlace || 'Not provided'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Status at Entry</div>
+                    <div class="summary-value">${c.entryStatus || 'Not provided'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Current Status</div>
+                    <div class="summary-value">${c.currentStatus || 'Not specified'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">I-94 Number</div>
+                    <div class="summary-value">${c.i94Number || 'Not provided'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Passport</div>
+                    <div class="summary-value">${c.passportNumber ? `${c.passportNumber} (${c.passportCountry || 'Unknown'})` : 'Not provided'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Prior Deportation</div>
+                    <div class="summary-value ${c.priorDeportation ? 'danger' : ''}">${c.priorDeportation ? 'YES - SEE DETAILS' : 'No'}</div>
+                </div>
+            `;
+
+            // Family
+            document.getElementById('familySummary').innerHTML = `
+                <div class="summary-row">
+                    <div class="summary-label">Spouse</div>
+                    <div class="summary-value">${c.spouseFirstName ? `${c.spouseFirstName} ${c.spouseLastName || ''}` : 'N/A'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Spouse Status</div>
+                    <div class="summary-value">${c.spouseImmigrationStatus || 'N/A'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Children</div>
+                    <div class="summary-value">${c.hasChildren === 'yes' ? 'Yes - see details' : 'No'}</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Mother</div>
+                    <div class="summary-value">${c.motherName || 'Not provided'} (${c.motherCountry || 'Unknown'})</div>
+                </div>
+                <div class="summary-row">
+                    <div class="summary-label">Father</div>
+                    <div class="summary-value">${c.fatherName || 'Not provided'} (${c.fatherCountry || 'Unknown'})</div>
+                </div>
+            `;
+
+            // Timeline
+            const timeline = [];
+            if (c.dateOfBirth) timeline.push({ date: c.dateOfBirth, event: 'Date of Birth' });
+            if (c.entryDate) timeline.push({ date: c.entryDate, event: 'Last Entry to United States' });
+            if (c.marriageDate) timeline.push({ date: c.marriageDate, event: 'Marriage Date' });
+            if (c.meta?.intakeDate) timeline.push({ date: c.meta.intakeDate.split('T')[0], event: 'Intake Completed' });
+
+            timeline.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            document.getElementById('caseTimeline').innerHTML = timeline.map(t => `
+                <div class="timeline-item">
+                    <div class="timeline-date">${t.date}</div>
+                    <div class="timeline-content">${t.event}</div>
+                </div>
+            `).join('') || '<p class="text-muted">No timeline events recorded.</p>';
+        }
+
+        function copyToClipboard() {
+            const c = selectedClient;
+            const text = `
+CASE SUMMARY - ${c.firstName} ${c.lastName}
+Generated: ${new Date().toLocaleDateString()}
+Status: DRAFT - PENDING ATTORNEY REVIEW
+
+CASE OVERVIEW
+- Case Type: ${formatCaseType(c.caseType)}
+- A-Number: ${c.aNumber || 'Not assigned'}
+
+BIOGRAPHICAL
+- DOB: ${c.dateOfBirth || 'N/A'}
+- Country of Birth: ${c.countryOfBirth || 'N/A'}
+- Citizenship: ${c.countryOfCitizenship || 'N/A'}
+
+IMMIGRATION
+- Last Entry: ${c.entryDate || 'N/A'}
+- Entry Status: ${c.entryStatus || 'N/A'}
+- Current Status: ${c.currentStatus || 'N/A'}
+
+FLAGS
+${c.priorDeportation ? '- PRIOR DEPORTATION\n' : ''}${c.hasArrests || c.hasConvictions ? '- CRIMINAL HISTORY\n' : ''}
+            `.trim();
+
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Summary copied to clipboard!');
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('legal-portal-auth');
+            localStorage.removeItem('legal-portal-auth-time');
+            window.location.href = 'index.html';
+        }
+
+        loadClients();
+    </script>
+</body>
+</html>

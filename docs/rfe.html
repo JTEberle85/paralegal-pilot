@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Services Portal - RFE Response</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        (function() {
+            var auth = localStorage.getItem('legal-portal-auth');
+            var authTime = localStorage.getItem('legal-portal-auth-time');
+            var maxAge = 24 * 60 * 60 * 1000;
+            if (auth !== 'authenticated' || !authTime || (Date.now() - parseInt(authTime)) > maxAge) {
+                window.location.href = 'index.html';
+            }
+        })();
+    </script>
+    <style>
+        .rfe-input-section {
+            background: var(--bg-subtle);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .deadline-banner {
+            background: linear-gradient(135deg, var(--danger-light) 0%, #FEF2F2 100%);
+            border: 2px solid var(--danger);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .deadline-banner.warning {
+            background: linear-gradient(135deg, var(--warning-light) 0%, #FFFBEB 100%);
+            border-color: var(--warning);
+        }
+        .deadline-banner.ok {
+            background: linear-gradient(135deg, var(--success-light) 0%, #ECFDF5 100%);
+            border-color: var(--success);
+        }
+        .deadline-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--danger);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .deadline-banner.warning .deadline-icon {
+            background: var(--warning);
+        }
+        .deadline-banner.ok .deadline-icon {
+            background: var(--success);
+        }
+        .deadline-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+            fill: none;
+        }
+        .deadline-info h3 {
+            margin: 0 0 4px 0;
+            color: var(--danger);
+        }
+        .deadline-banner.warning .deadline-info h3 {
+            color: var(--warning);
+        }
+        .deadline-banner.ok .deadline-info h3 {
+            color: var(--success);
+        }
+        .deadline-info p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        .requirement-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 16px;
+            overflow: hidden;
+            background: var(--bg-card);
+        }
+        .requirement-header {
+            padding: 16px 20px;
+            background: var(--bg-subtle);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .requirement-header:hover {
+            background: var(--bg-hover);
+        }
+        .requirement-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .requirement-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .requirement-title h4 {
+            margin: 0;
+            font-size: 15px;
+        }
+        .requirement-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-subtle);
+        }
+        .status-indicator.complete {
+            background: var(--success);
+        }
+        .status-indicator.partial {
+            background: var(--warning);
+        }
+        .requirement-body {
+            padding: 20px;
+            display: none;
+        }
+        .requirement-body.open {
+            display: block;
+        }
+        .requirement-text {
+            background: var(--bg-subtle);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            border-left: 3px solid var(--primary);
+        }
+        .evidence-list {
+            margin-bottom: 16px;
+        }
+        .evidence-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin-bottom: 8px;
+            background: var(--bg-card);
+        }
+        .evidence-checkbox input {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            accent-color: var(--primary);
+        }
+        .evidence-content h5 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+        }
+        .evidence-content p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .response-notes {
+            margin-top: 16px;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .summary-stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            text-align: center;
+        }
+        .summary-stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .summary-stat-value.warning {
+            color: var(--warning);
+        }
+        .summary-stat-value.success {
+            color: var(--success);
+        }
+        .summary-stat-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        @media (max-width: 600px) {
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Legal Services Portal</h1>
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="intake.html">Intake</a>
+            <a href="checklist.html">Checklists</a>
+            <a href="deadlines.html">Deadlines</a>
+            <a href="about.html">How It Works</a>
+            <a href="#" onclick="logout(); return false;">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="draft-notice">
+            <strong>DRAFT - PENDING ATTORNEY REVIEW</strong><br>
+            RFE response strategy must be reviewed and approved by an attorney before submission.
+        </div>
+
+        <div class="card">
+            <h2>RFE Response Assistant</h2>
+            <p>Analyze Requests for Evidence (RFE), map requirements to available documents, and organize response packets.</p>
+        </div>
+
+        <!-- Step 1: RFE Details -->
+        <div class="card" id="step1">
+            <h3>Step 1: RFE Information</h3>
+            <div class="rfe-input-section">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Client Name</label>
+                        <input type="text" class="form-input" id="rfeClientName" placeholder="Client name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Receipt Number</label>
+                        <input type="text" class="form-input" id="rfeReceiptNumber" placeholder="e.g., IOE0123456789">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Application Type</label>
+                        <select class="form-select" id="rfeAppType">
+                            <option value="">Select application...</option>
+                            <option value="i-485">I-485 - Adjustment of Status</option>
+                            <option value="i-130">I-130 - Petition for Alien Relative</option>
+                            <option value="i-589">I-589 - Asylum</option>
+                            <option value="i-765">I-765 - Employment Authorization</option>
+                            <option value="i-918">I-918 - U Visa</option>
+                            <option value="n-400">N-400 - Naturalization</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">RFE Date (from notice)</label>
+                        <input type="date" class="form-input" id="rfeDate">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Response Days</label>
+                        <select class="form-select" id="rfeDays">
+                            <option value="87">87 days (standard)</option>
+                            <option value="30">30 days</option>
+                            <option value="33">33 days</option>
+                            <option value="84">84 days</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="calculateDeadline()">Calculate Deadline & Continue</button>
+        </div>
+
+        <!-- Deadline Banner -->
+        <div class="deadline-banner" id="deadlineBanner" style="display: none;">
+            <div class="deadline-icon">
+                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+            </div>
+            <div class="deadline-info">
+                <h3 id="deadlineTitle">Response Due</h3>
+                <p id="deadlineText"></p>
+            </div>
+        </div>
+
+        <!-- Step 2: Requirements -->
+        <div class="card" id="step2" style="display: none;">
+            <h3>Step 2: RFE Requirements</h3>
+            <p>Select all requirements listed in the RFE notice. Common requirements are pre-populated based on application type.</p>
+
+            <div id="requirementsList">
+                <!-- Generated by JavaScript -->
+            </div>
+
+            <button class="btn btn-primary" onclick="showResponsePlan()">Generate Response Plan</button>
+        </div>
+
+        <!-- Step 3: Response Plan -->
+        <div id="step3" style="display: none;">
+            <div class="summary-grid">
+                <div class="summary-stat">
+                    <div class="summary-stat-value" id="totalRequirements">0</div>
+                    <div class="summary-stat-label">Total Requirements</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-value success" id="completeCount">0</div>
+                    <div class="summary-stat-label">Evidence Ready</div>
+                </div>
+                <div class="summary-stat">
+                    <div class="summary-stat-value warning" id="pendingCount">0</div>
+                    <div class="summary-stat-label">Still Needed</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Response Checklist</h3>
+                <p>Track evidence gathering for each RFE requirement.</p>
+                <div id="responseChecklist">
+                    <!-- Generated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Next Steps</h3>
+                <div id="nextSteps">
+                    <!-- Generated by JavaScript -->
+                </div>
+                <div style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="window.print()">Print Checklist</button>
+                    <button class="btn btn-secondary" onclick="saveRFE()">Save RFE Response</button>
+                    <button class="btn btn-outline" onclick="addToDeadlines()">Add to Deadline Tracker</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let rfeData = {
+            clientName: '',
+            receiptNumber: '',
+            appType: '',
+            rfeDate: '',
+            responseDays: 87,
+            deadlineDate: null,
+            requirements: []
+        };
+
+        const commonRequirements = {
+            'i-485': [
+                { id: 1, title: 'Proof of Lawful Entry', desc: 'Evidence of inspection and admission or parole', evidence: ['I-94 record', 'Passport stamps', 'Visa copy'] },
+                { id: 2, title: 'Updated Financial Evidence', desc: 'Current Affidavit of Support with supporting documents', evidence: ['I-864 form', 'Tax returns (3 years)', 'Pay stubs (recent)', 'Employment letter'] },
+                { id: 3, title: 'Medical Examination', desc: 'Completed I-693 from civil surgeon', evidence: ['Sealed I-693', 'Vaccination records'] },
+                { id: 4, title: 'Relationship Evidence', desc: 'Additional proof of bona fide relationship', evidence: ['Joint bank statements', 'Joint lease/deed', 'Photos together', 'Affidavits from friends/family'] },
+                { id: 5, title: 'Birth/Identity Documents', desc: 'Certified copies with translations', evidence: ['Birth certificate', 'Passport bio page', 'National ID'] }
+            ],
+            'i-130': [
+                { id: 1, title: 'Proof of Petitioner Status', desc: 'Evidence of US citizenship or LPR status', evidence: ['US passport', 'Naturalization certificate', 'Green card (front/back)'] },
+                { id: 2, title: 'Relationship Evidence', desc: 'Proof of qualifying relationship', evidence: ['Marriage certificate', 'Birth certificates', 'Photos', 'Affidavits'] },
+                { id: 3, title: 'Prior Marriage Termination', desc: 'Proof all prior marriages were legally terminated', evidence: ['Divorce decrees', 'Death certificates', 'Annulment orders'] }
+            ],
+            'i-589': [
+                { id: 1, title: 'Country Conditions Evidence', desc: 'Documentation of conditions in home country', evidence: ['State Dept reports', 'Human rights reports', 'News articles', 'Expert declarations'] },
+                { id: 2, title: 'Personal Declaration', desc: 'Detailed written statement of persecution claim', evidence: ['Signed declaration', 'Supporting documents'] },
+                { id: 3, title: 'Identity Documents', desc: 'Proof of identity and nationality', evidence: ['Passport', 'National ID', 'Birth certificate'] },
+                { id: 4, title: 'Corroborating Evidence', desc: 'Evidence supporting your claim', evidence: ['Medical records', 'Police reports', 'Photographs', 'Witness affidavits'] }
+            ],
+            'i-765': [
+                { id: 1, title: 'Proof of Pending Application', desc: 'Receipt notice for underlying application', evidence: ['I-797 receipt notice', 'Asylum receipt'] },
+                { id: 2, title: 'Identity Documents', desc: 'Government-issued photo ID', evidence: ['Passport', 'National ID', 'Prior EAD'] },
+                { id: 3, title: 'Photos', desc: 'Passport-style photographs', evidence: ['2 photos (2x2)', 'White background'] }
+            ],
+            'i-918': [
+                { id: 1, title: 'Law Enforcement Certification', desc: 'Signed I-918B from certifying agency', evidence: ['I-918B form', 'Supplement B'] },
+                { id: 2, title: 'Evidence of Crime', desc: 'Documentation of qualifying criminal activity', evidence: ['Police reports', 'Court records', 'Protective orders'] },
+                { id: 3, title: 'Personal Statement', desc: 'Description of victimization and helpfulness', evidence: ['Signed declaration', 'Timeline of events'] }
+            ],
+            'n-400': [
+                { id: 1, title: 'Travel History', desc: 'Complete list of trips outside US', evidence: ['Travel itinerary', 'Passport stamps', 'Tickets/receipts'] },
+                { id: 2, title: 'Tax Compliance', desc: 'Evidence of tax filing', evidence: ['Tax transcripts', 'Tax returns', 'Proof of payment'] },
+                { id: 3, title: 'Selective Service', desc: 'Registration or exemption proof', evidence: ['SSS registration', 'Status information letter'] },
+                { id: 4, title: 'Marital History', desc: 'Documentation of all marriages', evidence: ['Marriage certificates', 'Divorce decrees'] }
+            ],
+            'other': [
+                { id: 1, title: 'Custom Requirement 1', desc: 'Add description based on RFE', evidence: ['Document 1', 'Document 2'] },
+                { id: 2, title: 'Custom Requirement 2', desc: 'Add description based on RFE', evidence: ['Document 1', 'Document 2'] }
+            ]
+        };
+
+        function calculateDeadline() {
+            const rfeDate = document.getElementById('rfeDate').value;
+            const days = parseInt(document.getElementById('rfeDays').value);
+
+            if (!rfeDate) {
+                alert('Please enter the RFE date.');
+                return;
+            }
+
+            rfeData.clientName = document.getElementById('rfeClientName').value;
+            rfeData.receiptNumber = document.getElementById('rfeReceiptNumber').value;
+            rfeData.appType = document.getElementById('rfeAppType').value;
+            rfeData.rfeDate = rfeDate;
+            rfeData.responseDays = days;
+
+            const deadline = new Date(rfeDate);
+            deadline.setDate(deadline.getDate() + days);
+            rfeData.deadlineDate = deadline;
+
+            const daysRemaining = Math.ceil((deadline - new Date()) / (1000 * 60 * 60 * 24));
+
+            // Show deadline banner
+            const banner = document.getElementById('deadlineBanner');
+            banner.style.display = 'flex';
+            banner.className = 'deadline-banner ' + (daysRemaining <= 14 ? '' : daysRemaining <= 30 ? 'warning' : 'ok');
+
+            document.getElementById('deadlineTitle').textContent = `Response Due: ${deadline.toLocaleDateString()}`;
+            document.getElementById('deadlineText').textContent = `${daysRemaining} days remaining. ${days}-day response window from ${new Date(rfeDate).toLocaleDateString()}.`;
+
+            // Show requirements
+            document.getElementById('step2').style.display = 'block';
+            loadRequirements();
+        }
+
+        function loadRequirements() {
+            const appType = rfeData.appType || 'other';
+            const requirements = commonRequirements[appType] || commonRequirements['other'];
+            rfeData.requirements = requirements.map(r => ({ ...r, selected: true, evidenceStatus: {} }));
+
+            renderRequirements();
+        }
+
+        function renderRequirements() {
+            const container = document.getElementById('requirementsList');
+            container.innerHTML = rfeData.requirements.map((req, index) => `
+                <div class="requirement-card">
+                    <div class="requirement-header" onclick="toggleRequirement(${index})">
+                        <div class="requirement-title">
+                            <div class="requirement-number">${index + 1}</div>
+                            <h4>${req.title}</h4>
+                        </div>
+                        <div class="requirement-status">
+                            <input type="checkbox" ${req.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelected(${index})">
+                            <span style="font-size: 13px; color: var(--text-muted);">Include</span>
+                        </div>
+                    </div>
+                    <div class="requirement-body" id="req-body-${index}">
+                        <div class="requirement-text">${req.desc}</div>
+                        <h5 style="margin-bottom: 12px;">Suggested Evidence:</h5>
+                        <div class="evidence-list">
+                            ${req.evidence.map((ev, evIndex) => `
+                                <div class="evidence-item">
+                                    <div class="evidence-checkbox">
+                                        <input type="checkbox" id="ev-${index}-${evIndex}" onchange="updateEvidence(${index}, ${evIndex}, this.checked)">
+                                    </div>
+                                    <div class="evidence-content">
+                                        <h5>${ev}</h5>
+                                        <p>Check when obtained/ready to submit</p>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleRequirement(index) {
+            const body = document.getElementById(`req-body-${index}`);
+            body.classList.toggle('open');
+        }
+
+        function toggleSelected(index) {
+            rfeData.requirements[index].selected = !rfeData.requirements[index].selected;
+        }
+
+        function updateEvidence(reqIndex, evIndex, checked) {
+            if (!rfeData.requirements[reqIndex].evidenceStatus) {
+                rfeData.requirements[reqIndex].evidenceStatus = {};
+            }
+            rfeData.requirements[reqIndex].evidenceStatus[evIndex] = checked;
+        }
+
+        function showResponsePlan() {
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step3').style.display = 'block';
+
+            const selected = rfeData.requirements.filter(r => r.selected);
+            let totalEvidence = 0;
+            let completeEvidence = 0;
+
+            selected.forEach(req => {
+                totalEvidence += req.evidence.length;
+                Object.values(req.evidenceStatus || {}).forEach(v => { if (v) completeEvidence++; });
+            });
+
+            document.getElementById('totalRequirements').textContent = selected.length;
+            document.getElementById('completeCount').textContent = completeEvidence;
+            document.getElementById('pendingCount').textContent = totalEvidence - completeEvidence;
+
+            // Generate checklist
+            const checklist = document.getElementById('responseChecklist');
+            checklist.innerHTML = selected.map((req, i) => {
+                const evidenceComplete = Object.values(req.evidenceStatus || {}).filter(v => v).length;
+                const totalEv = req.evidence.length;
+                return `
+                    <div style="padding: 16px; border-bottom: 1px solid var(--border);">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <strong>${req.title}</strong>
+                            <span class="badge ${evidenceComplete === totalEv ? 'badge-complete' : 'badge-pending'}">${evidenceComplete}/${totalEv} ready</span>
+                        </div>
+                        <p style="font-size: 13px; color: var(--text-muted); margin: 8px 0 0;">${req.evidence.join(' | ')}</p>
+                    </div>
+                `;
+            }).join('');
+
+            // Next steps
+            const pendingItems = [];
+            selected.forEach(req => {
+                req.evidence.forEach((ev, i) => {
+                    if (!req.evidenceStatus || !req.evidenceStatus[i]) {
+                        pendingItems.push(`Obtain: ${ev} (for ${req.title})`);
+                    }
+                });
+            });
+
+            document.getElementById('nextSteps').innerHTML = pendingItems.length > 0
+                ? `<ul style="margin-left: 20px;">${pendingItems.slice(0, 10).map(item => `<li style="margin-bottom: 8px;">${item}</li>`).join('')}</ul>${pendingItems.length > 10 ? `<p class="text-muted">...and ${pendingItems.length - 10} more items</p>` : ''}`
+                : '<p style="color: var(--success);">All evidence appears to be ready! Review and compile response packet.</p>';
+        }
+
+        function saveRFE() {
+            const saved = JSON.parse(localStorage.getItem('legal-portal-rfes') || '[]');
+            rfeData.id = Date.now().toString();
+            rfeData.savedDate = new Date().toISOString();
+            saved.push(rfeData);
+            localStorage.setItem('legal-portal-rfes', JSON.stringify(saved));
+            alert('RFE response saved!');
+        }
+
+        function addToDeadlines() {
+            const deadlines = JSON.parse(localStorage.getItem('legal-portal-deadlines') || '[]');
+            deadlines.push({
+                id: Date.now().toString(),
+                type: 'rfe_response',
+                title: `RFE Response - ${rfeData.clientName || rfeData.receiptNumber || 'Client'}`,
+                dueDate: rfeData.deadlineDate.toISOString().split('T')[0],
+                clientName: rfeData.clientName,
+                notes: `Receipt: ${rfeData.receiptNumber}. ${rfeData.responseDays}-day response window.`,
+                calculationMethod: `${rfeData.responseDays} days from RFE date`,
+                priority: 'critical',
+                status: 'pending',
+                createdDate: new Date().toISOString()
+            });
+            localStorage.setItem('legal-portal-deadlines', JSON.stringify(deadlines));
+            alert('Deadline added to tracker!');
+        }
+
+        function logout() {
+            localStorage.removeItem('legal-portal-auth');
+            localStorage.removeItem('legal-portal-auth-time');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

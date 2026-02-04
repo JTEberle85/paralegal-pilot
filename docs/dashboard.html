@@ -16,6 +16,133 @@
             }
         })();
     </script>
+    <style>
+        .tile-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-lg);
+            background: var(--primary-light);
+        }
+        .tile-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--primary);
+            stroke-width: 2;
+            fill: none;
+        }
+        .dashboard-tile.accent .tile-icon {
+            background: var(--accent-light);
+        }
+        .dashboard-tile.accent .tile-icon svg {
+            stroke: var(--accent);
+        }
+        .workflow-section {
+            background: linear-gradient(135deg, var(--primary-lighter) 0%, var(--bg-subtle) 100%);
+            border-radius: var(--radius-xl);
+            padding: 32px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+        .workflow-section h3 {
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+        }
+        .workflow-section > p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+        .workflow-steps {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+        .workflow-step {
+            flex: 1;
+            min-width: 140px;
+            text-align: center;
+            position: relative;
+        }
+        .workflow-step-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            position: relative;
+            z-index: 1;
+        }
+        .workflow-step-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--primary);
+            stroke-width: 2;
+            fill: none;
+        }
+        .workflow-step.complete .workflow-step-icon {
+            background: var(--success);
+            border-color: var(--success);
+        }
+        .workflow-step.complete .workflow-step-icon svg {
+            stroke: white;
+        }
+        .workflow-step-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .workflow-step-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .workflow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 16px;
+            color: var(--border-dark);
+        }
+        .workflow-arrow svg {
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-muted);
+            stroke-width: 2;
+            fill: none;
+        }
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .section-header h3 {
+            margin: 0;
+            color: var(--text-primary);
+        }
+        .section-badge {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+        }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -33,7 +160,7 @@
     <main class="container">
         <div class="card">
             <h2>Welcome to Legal Services Portal</h2>
-            <p>Select a tool below to get started. All outputs require attorney review before use.</p>
+            <p>Streamline immigration case management with guided workflows. Select a tool below to get started.</p>
         </div>
 
         <div class="alert alert-warning">
@@ -42,51 +169,132 @@
             This tool does not provide legal advice.
         </div>
 
-        <div class="dashboard-grid">
+        <!-- Workflow Section -->
+        <div class="workflow-section">
+            <h3>Case Workflow</h3>
+            <p>Follow these steps for a complete case file. Each step builds on the previous.</p>
+            <div class="workflow-steps">
+                <div class="workflow-step" id="step-intake">
+                    <div class="workflow-step-icon">
+                        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <div class="workflow-step-label">1. Intake</div>
+                    <div class="workflow-step-desc">Collect client info</div>
+                </div>
+                <div class="workflow-arrow">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+                <div class="workflow-step" id="step-checklist">
+                    <div class="workflow-step-icon">
+                        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    </div>
+                    <div class="workflow-step-label">2. Documents</div>
+                    <div class="workflow-step-desc">Gather evidence</div>
+                </div>
+                <div class="workflow-arrow">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+                <div class="workflow-step" id="step-forms">
+                    <div class="workflow-step-icon">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                    </div>
+                    <div class="workflow-step-label">3. Forms</div>
+                    <div class="workflow-step-desc">Auto-populate</div>
+                </div>
+                <div class="workflow-arrow">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+                <div class="workflow-step" id="step-summary">
+                    <div class="workflow-step-icon">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
+                    </div>
+                    <div class="workflow-step-label">4. Summary</div>
+                    <div class="workflow-step-desc">Attorney review</div>
+                </div>
+                <div class="workflow-arrow">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </div>
+                <div class="workflow-step" id="step-file">
+                    <div class="workflow-step-icon">
+                        <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                    </div>
+                    <div class="workflow-step-label">5. File</div>
+                    <div class="workflow-step-desc">Submit case</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Core Tools -->
+        <div class="section-header">
+            <h3>Case Management</h3>
+            <span class="section-badge">Core Tools</span>
+        </div>
+        <div class="tool-grid">
             <a href="intake.html" class="dashboard-tile" style="text-decoration: none; color: inherit;">
-                <div class="tile-icon">📋</div>
+                <div class="tile-icon">
+                    <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
                 <h3>Client Intake</h3>
-                <p class="tile-label">Start a new client intake form. Collects biographical, immigration, and case-specific information.</p>
+                <p class="tile-label">Collect biographical, immigration, and case-specific information in a guided form.</p>
                 <span class="btn btn-primary btn-sm" style="margin-top: 12px;">Start Intake</span>
             </a>
 
             <a href="checklist.html" class="dashboard-tile accent" style="text-decoration: none; color: inherit;">
-                <div class="tile-icon">📁</div>
+                <div class="tile-icon">
+                    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                </div>
                 <h3>Document Checklist</h3>
                 <p class="tile-label">Generate case-specific document requirements and track submissions.</p>
                 <span class="btn btn-accent btn-sm" style="margin-top: 12px;">Open Checklists</span>
             </a>
 
-            <div class="dashboard-tile" style="opacity: 0.6; pointer-events: none;">
-                <div class="tile-icon">📝</div>
+            <a href="forms.html" class="dashboard-tile" style="text-decoration: none; color: inherit;">
+                <div class="tile-icon">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+                </div>
                 <h3>Form Assembly</h3>
-                <p class="tile-label">Auto-populate USCIS forms from client intake data.</p>
-                <span class="badge badge-pending">Coming Soon</span>
-            </div>
+                <p class="tile-label">Auto-populate USCIS forms from client intake data. Review and export.</p>
+                <span class="btn btn-primary btn-sm" style="margin-top: 12px;">Build Forms</span>
+            </a>
 
             <a href="deadlines.html" class="dashboard-tile accent" style="text-decoration: none; color: inherit;">
-                <div class="tile-icon">📅</div>
+                <div class="tile-icon">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+                </div>
                 <h3>Deadline Tracker</h3>
-                <p class="tile-label">Monitor filing deadlines and receive automated alerts.</p>
+                <p class="tile-label">Monitor filing deadlines, calculate key dates, and receive alerts.</p>
                 <span class="btn btn-accent btn-sm" style="margin-top: 12px;">Track Deadlines</span>
             </a>
 
-            <div class="dashboard-tile" style="opacity: 0.6; pointer-events: none;">
-                <div class="tile-icon">📊</div>
+            <a href="summary.html" class="dashboard-tile" style="text-decoration: none; color: inherit;">
+                <div class="tile-icon">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
+                </div>
                 <h3>Case Summary</h3>
-                <p class="tile-label">Generate case summaries for attorney review and court prep.</p>
-                <span class="badge badge-pending">Coming Soon</span>
-            </div>
+                <p class="tile-label">Generate comprehensive case summaries for attorney review and court prep.</p>
+                <span class="btn btn-primary btn-sm" style="margin-top: 12px;">Generate Summary</span>
+            </a>
 
-            <div class="dashboard-tile accent" style="opacity: 0.6; pointer-events: none;">
-                <div class="tile-icon">📨</div>
+            <a href="rfe.html" class="dashboard-tile accent" style="text-decoration: none; color: inherit;">
+                <div class="tile-icon">
+                    <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
+                </div>
                 <h3>RFE Response</h3>
-                <p class="tile-label">Analyze RFE notices and organize response packets.</p>
-                <span class="badge badge-pending">Coming Soon</span>
-            </div>
+                <p class="tile-label">Analyze RFE notices, map requirements, and organize response packets.</p>
+                <span class="btn btn-accent btn-sm" style="margin-top: 12px;">Respond to RFE</span>
+            </a>
+        </div>
 
+        <!-- Additional Tools -->
+        <div class="section-header" style="margin-top: 32px;">
+            <h3>Additional Tools</h3>
+            <span class="section-badge">Specialized</span>
+        </div>
+        <div class="tool-grid">
             <a href="redline.html" class="dashboard-tile" style="text-decoration: none; color: inherit;">
-                <div class="tile-icon">📑</div>
+                <div class="tile-icon">
+                    <svg viewBox="0 0 24 24"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/><path d="M10 12l-2 2 2 2"/><path d="M14 12l2 2-2 2"/></svg>
+                </div>
                 <h3>Redline Assistant</h3>
                 <p class="tile-label">Compare contracts and get plain-English summaries of changes with suggested edits.</p>
                 <span class="btn btn-primary btn-sm" style="margin-top: 12px;">Compare Documents</span>
@@ -94,16 +302,16 @@
         </div>
 
         <div class="card" style="margin-top: 30px;">
-            <h3>About This Tool</h3>
-            <p>This portal helps legal services organizations streamline immigration case management through guided workflows and automated document preparation.</p>
-
-            <h4 style="margin-top: 20px;">Important Notices</h4>
+            <h3>Important Notices</h3>
             <ul style="margin-left: 20px; color: var(--text-secondary);">
                 <li>This tool does NOT provide legal advice</li>
                 <li>All outputs require attorney review before filing</li>
                 <li>Client data is stored locally in your browser</li>
                 <li>Always verify form editions are current before filing</li>
             </ul>
+            <p style="margin-top: 16px; margin-bottom: 0;">
+                <a href="about.html">Learn more about how this tool works</a>
+            </p>
         </div>
     </main>
 
@@ -113,6 +321,21 @@
             localStorage.removeItem('legal-portal-auth-time');
             window.location.href = 'index.html';
         }
+
+        // Check workflow progress based on localStorage data
+        function updateWorkflowProgress() {
+            const intakes = JSON.parse(localStorage.getItem('legal-portal-intakes') || '[]');
+            const checklists = JSON.parse(localStorage.getItem('legal-portal-checklists') || '[]');
+
+            if (intakes.length > 0) {
+                document.getElementById('step-intake').classList.add('complete');
+            }
+            if (checklists.length > 0) {
+                document.getElementById('step-checklist').classList.add('complete');
+            }
+        }
+
+        updateWorkflowProgress();
     </script>
 </body>
 </html>
