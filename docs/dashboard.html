@@ -23,6 +23,8 @@
         <nav>
             <a href="dashboard.html">Dashboard</a>
             <a href="intake.html">New Intake</a>
+            <a href="checklist.html">Checklists</a>
+            <a href="deadlines.html">Deadlines</a>
             <a href="#" onclick="logout(); return false;">Logout</a>
         </nav>
     </header>
@@ -47,12 +49,12 @@
                 <span class="btn btn-primary btn-sm" style="margin-top: 12px;">Start Intake</span>
             </a>
 
-            <div class="dashboard-tile accent" style="opacity: 0.6; pointer-events: none;">
+            <a href="checklist.html" class="dashboard-tile accent" style="text-decoration: none; color: inherit;">
                 <div class="tile-icon">📁</div>
                 <h3>Document Checklist</h3>
                 <p class="tile-label">Generate case-specific document requirements and track submissions.</p>
-                <span class="badge badge-pending">Coming Soon</span>
-            </div>
+                <span class="btn btn-accent btn-sm" style="margin-top: 12px;">Open Checklists</span>
+            </a>
 
             <div class="dashboard-tile" style="opacity: 0.6; pointer-events: none;">
                 <div class="tile-icon">📝</div>
@@ -61,12 +63,12 @@
                 <span class="badge badge-pending">Coming Soon</span>
             </div>
 
-            <div class="dashboard-tile accent" style="opacity: 0.6; pointer-events: none;">
+            <a href="deadlines.html" class="dashboard-tile accent" style="text-decoration: none; color: inherit;">
                 <div class="tile-icon">📅</div>
                 <h3>Deadline Tracker</h3>
                 <p class="tile-label">Monitor filing deadlines and receive automated alerts.</p>
-                <span class="badge badge-pending">Coming Soon</span>
-            </div>
+                <span class="btn btn-accent btn-sm" style="margin-top: 12px;">Track Deadlines</span>
+            </a>
 
             <div class="dashboard-tile" style="opacity: 0.6; pointer-events: none;">
                 <div class="tile-icon">📊</div>

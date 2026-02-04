@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Deadline Tracker",
+  "type": "object",
+  "properties": {
+    "meta": {
+      "type": "object",
+      "properties": {
+        "trackerId": { "type": "string" },
+        "clientId": { "type": "string" },
+        "clientName": { "type": "string" },
+        "caseNumber": { "type": "string" },
+        "caseType": { "type": "string" },
+        "createdDate": { "type": "string", "format": "date" },
+        "lastUpdated": { "type": "string", "format": "date-time" }
+      },
+      "required": ["trackerId", "createdDate"]
+    },
+    "keyDates": {
+      "type": "object",
+      "properties": {
+        "lastEntryDate": { "type": "string", "format": "date" },
+        "filingDate": { "type": "string", "format": "date" },
+        "receiptDate": { "type": "string", "format": "date" },
+        "i94ExpirationDate": { "type": "string", "format": "date" },
+        "eadExpirationDate": { "type": "string", "format": "date" },
+        "greenCardExpirationDate": { "type": "string", "format": "date" }
+      }
+    },
+    "deadlines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": [
+              "asylum_1year",
+              "rfe_response",
+              "noid_response",
+              "bia_appeal",
+              "motion_reopen",
+              "motion_reconsider",
+              "court_hearing",
+              "biometrics",
+              "interview",
+              "ead_renewal",
+              "greencard_renewal",
+              "tps_reregistration",
+              "i751_filing",
+              "custom"
+            ]
+          },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "dueDate": { "type": "string", "format": "date" },
+          "calculatedFrom": { "type": "string" },
+          "calculationMethod": { "type": "string" },
+          "confidence": {
+            "type": "string",
+            "enum": ["certain", "calculated", "estimated"],
+            "default": "calculated"
+          },
+          "priority": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low"],
+            "default": "medium"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "in_progress", "complete", "missed"],
+            "default": "pending"
+          },
+          "assignedTo": { "type": "string" },
+          "sourceDocument": { "type": "string" },
+          "notes": { "type": "string" },
+          "alertsSent": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": { "type": "string", "format": "date-time" },
+                "daysRemaining": { "type": "integer" },
+                "alertLevel": { "type": "string" }
+              }
+            }
+          },
+          "completedDate": { "type": "string", "format": "date" }
+        },
+        "required": ["id", "type", "title", "dueDate", "status"]
+      }
+    },
+    "alerts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "deadlineId": { "type": "string" },
+          "alertDate": { "type": "string", "format": "date" },
+          "alertLevel": {
+            "type": "string",
+            "enum": ["informational", "standard", "elevated", "urgent", "critical", "emergency"]
+          },
+          "sent": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "notes": { "type": "string" }
+  },
+  "required": ["meta", "deadlines"]
+}

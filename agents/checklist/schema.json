@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Document Checklist",
+  "type": "object",
+  "properties": {
+    "meta": {
+      "type": "object",
+      "properties": {
+        "checklistId": { "type": "string" },
+        "clientId": { "type": "string" },
+        "clientName": { "type": "string" },
+        "caseType": { "type": "string" },
+        "createdDate": { "type": "string", "format": "date" },
+        "lastUpdated": { "type": "string", "format": "date-time" },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "active", "complete"]
+        }
+      },
+      "required": ["checklistId", "caseType", "createdDate"]
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "category": {
+            "type": "string",
+            "enum": ["identity", "immigration", "relationship", "financial", "medical", "evidence", "court", "other"]
+          },
+          "required": { "type": "boolean", "default": true },
+          "status": {
+            "type": "string",
+            "enum": ["not_started", "requested", "received", "verified", "rejected"],
+            "default": "not_started"
+          },
+          "source": { "type": "string" },
+          "notes": { "type": "string" },
+          "receivedDate": { "type": "string", "format": "date" },
+          "expirationDate": { "type": "string", "format": "date" },
+          "rejectionReason": { "type": "string" },
+          "fileName": { "type": "string" },
+          "remindersSent": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": { "type": "string", "format": "date-time" },
+                "type": { "type": "string", "enum": ["initial", "7day", "14day", "21day"] }
+              }
+            }
+          }
+        },
+        "required": ["id", "name", "category", "status"]
+      }
+    },
+    "completionPercentage": { "type": "number", "minimum": 0, "maximum": 100 },
+    "nextReminder": { "type": "string", "format": "date" },
+    "notes": { "type": "string" }
+  },
+  "required": ["meta", "documents"]
+}

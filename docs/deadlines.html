@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Services Portal - Deadline Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        // Auth check
+        (function() {
+            var auth = localStorage.getItem('legal-portal-auth');
+            var authTime = localStorage.getItem('legal-portal-auth-time');
+            var maxAge = 24 * 60 * 60 * 1000;
+            if (auth !== 'authenticated' || !authTime || (Date.now() - parseInt(authTime)) > maxAge) {
+                window.location.href = 'index.html';
+            }
+        })();
+    </script>
+    <style>
+        .deadline-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: white;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .deadline-card.critical {
+            border-left: 4px solid var(--danger);
+            background: #fff5f5;
+        }
+        .deadline-card.high {
+            border-left: 4px solid var(--accent-orange);
+            background: #fff9f0;
+        }
+        .deadline-card.medium {
+            border-left: 4px solid var(--warning);
+        }
+        .deadline-card.complete {
+            border-left: 4px solid var(--success);
+            background: #f5fff5;
+            opacity: 0.8;
+        }
+        .deadline-card.missed {
+            border-left: 4px solid var(--danger);
+            background: #ffe5e5;
+        }
+        .deadline-date {
+            text-align: center;
+            min-width: 70px;
+        }
+        .deadline-date .day {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-blue);
+            line-height: 1;
+        }
+        .deadline-date .month {
+            font-size: 14px;
+            color: var(--text-light);
+            text-transform: uppercase;
+        }
+        .deadline-content {
+            flex: 1;
+        }
+        .deadline-title {
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .deadline-meta {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+        .deadline-countdown {
+            text-align: right;
+            min-width: 100px;
+        }
+        .countdown-number {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .countdown-number.danger { color: var(--danger); }
+        .countdown-number.warning { color: var(--accent-orange); }
+        .countdown-number.ok { color: var(--success); }
+        .countdown-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+        .deadline-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0 16px 0;
+        }
+        .section-title h3 {
+            margin: 0;
+        }
+        .section-count {
+            background: var(--primary-blue);
+            color: white;
+            border-radius: 12px;
+            padding: 2px 10px;
+            font-size: 13px;
+        }
+        .quick-add {
+            background: var(--secondary-blue);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            margin-top: 12px;
+        }
+        .calendar-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            color: var(--text-light);
+            padding: 8px;
+        }
+        .calendar-day {
+            text-align: center;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            min-height: 40px;
+        }
+        .calendar-day.other-month {
+            color: var(--border);
+        }
+        .calendar-day.today {
+            background: var(--secondary-blue);
+            font-weight: bold;
+        }
+        .calendar-day.has-deadline {
+            background: var(--accent-orange);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .calendar-day.has-deadline.critical {
+            background: var(--danger);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Legal Services Portal</h1>
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="intake.html">New Intake</a>
+            <a href="checklist.html">Checklists</a>
+            <a href="deadlines.html">Deadlines</a>
+            <a href="#" onclick="logout(); return false;">Logout</a>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="draft-notice">
+            <strong>DRAFT - VERIFY ALL DEADLINES WITH ATTORNEY</strong><br>
+            Deadline calculations should be confirmed. Missing deadlines can have serious consequences.
+        </div>
+
+        <div class="card">
+            <h2>Deadline Tracker</h2>
+            <p>Track critical deadlines for immigration cases. Add deadlines manually or calculate from key dates.</p>
+        </div>
+
+        <!-- Quick Add Section -->
+        <div class="quick-add">
+            <h3 style="margin-top: 0;">Add New Deadline</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Deadline Type</label>
+                    <select class="form-select" id="deadlineType" onchange="updateDeadlineForm()">
+                        <option value="custom">Custom Deadline</option>
+                        <option value="asylum_1year">Asylum 1-Year Filing Deadline</option>
+                        <option value="rfe_response">RFE Response</option>
+                        <option value="court_hearing">Court Hearing</option>
+                        <option value="biometrics">Biometrics Appointment</option>
+                        <option value="interview">USCIS Interview</option>
+                        <option value="ead_renewal">EAD Renewal</option>
+                        <option value="greencard_renewal">Green Card Renewal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Client Name</label>
+                    <input type="text" class="form-input" id="clientName" placeholder="For tracking">
+                </div>
+            </div>
+
+            <div id="asylum1YearFields" style="display: none;">
+                <div class="alert alert-warning" style="margin-bottom: 16px;">
+                    <strong>1-Year Asylum Deadline:</strong> This is calculated as exactly 1 year from the date of last entry to the US.
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date of Last Entry to US</label>
+                    <input type="date" class="form-input" id="entryDate">
+                    <div class="form-hint">From I-94 or passport stamp</div>
+                </div>
+            </div>
+
+            <div id="rfeFields" style="display: none;">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">RFE Date (from notice)</label>
+                        <input type="date" class="form-input" id="rfeDate">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Response Days Allowed</label>
+                        <select class="form-select" id="rfeDays">
+                            <option value="87">87 days (standard)</option>
+                            <option value="30">30 days</option>
+                            <option value="33">33 days</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="customFields">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Deadline Title</label>
+                        <input type="text" class="form-input" id="deadlineTitle" placeholder="e.g., Submit additional evidence">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" class="form-input" id="dueDate">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-select" id="priority">
+                        <option value="critical">Critical</option>
+                        <option value="high">High</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Notes</label>
+                <textarea class="form-textarea" id="deadlineNotes" placeholder="Any additional details" style="min-height: 60px;"></textarea>
+            </div>
+
+            <button class="btn btn-primary" onclick="addDeadline()">Add Deadline</button>
+        </div>
+
+        <!-- Critical Deadlines -->
+        <div class="section-title">
+            <h3 style="color: var(--danger);">Critical & Urgent</h3>
+            <span class="section-count" id="criticalCount" style="background: var(--danger);">0</span>
+        </div>
+        <div id="criticalDeadlines">
+            <p class="form-hint">No critical deadlines.</p>
+        </div>
+
+        <!-- Upcoming Deadlines -->
+        <div class="section-title">
+            <h3>Upcoming (Next 30 Days)</h3>
+            <span class="section-count" id="upcomingCount">0</span>
+        </div>
+        <div id="upcomingDeadlines">
+            <p class="form-hint">No upcoming deadlines.</p>
+        </div>
+
+        <!-- Later Deadlines -->
+        <div class="section-title">
+            <h3>Later (30+ Days)</h3>
+            <span class="section-count" id="laterCount">0</span>
+        </div>
+        <div id="laterDeadlines">
+            <p class="form-hint">No deadlines beyond 30 days.</p>
+        </div>
+
+        <!-- Completed/Missed -->
+        <div class="section-title">
+            <h3>Completed & Past</h3>
+            <span class="section-count" id="completedCount">0</span>
+        </div>
+        <div id="completedDeadlines">
+            <p class="form-hint">No completed deadlines.</p>
+        </div>
+
+        <!-- Mini Calendar -->
+        <div class="card" style="margin-top: 30px;">
+            <h3>Calendar View</h3>
+            <div id="calendarNav" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <button class="btn btn-sm btn-outline" onclick="prevMonth()">&lt; Previous</button>
+                <strong id="calendarMonth"></strong>
+                <button class="btn btn-sm btn-outline" onclick="nextMonth()">Next &gt;</button>
+            </div>
+            <div class="calendar-grid">
+                <div class="calendar-header">Sun</div>
+                <div class="calendar-header">Mon</div>
+                <div class="calendar-header">Tue</div>
+                <div class="calendar-header">Wed</div>
+                <div class="calendar-header">Thu</div>
+                <div class="calendar-header">Fri</div>
+                <div class="calendar-header">Sat</div>
+            </div>
+            <div class="calendar-grid" id="calendarDays"></div>
+        </div>
+    </main>
+
+    <script>
+        let deadlines = JSON.parse(localStorage.getItem('legal-portal-deadlines') || '[]');
+        let currentMonth = new Date();
+
+        function updateDeadlineForm() {
+            const type = document.getElementById('deadlineType').value;
+
+            // Hide all special fields
+            document.getElementById('asylum1YearFields').style.display = 'none';
+            document.getElementById('rfeFields').style.display = 'none';
+            document.getElementById('customFields').style.display = 'block';
+
+            if (type === 'asylum_1year') {
+                document.getElementById('asylum1YearFields').style.display = 'block';
+                document.getElementById('customFields').style.display = 'none';
+            } else if (type === 'rfe_response') {
+                document.getElementById('rfeFields').style.display = 'block';
+                document.getElementById('customFields').style.display = 'none';
+            }
+        }
+
+        function addDeadline() {
+            const type = document.getElementById('deadlineType').value;
+            const clientName = document.getElementById('clientName').value;
+            const notes = document.getElementById('deadlineNotes').value;
+
+            let deadline = {
+                id: Date.now().toString(),
+                type: type,
+                clientName: clientName,
+                notes: notes,
+                status: 'pending',
+                createdDate: new Date().toISOString()
+            };
+
+            if (type === 'asylum_1year') {
+                const entryDate = document.getElementById('entryDate').value;
+                if (!entryDate) {
+                    alert('Please enter the date of entry.');
+                    return;
+                }
+                const entry = new Date(entryDate);
+                const dueDate = new Date(entry);
+                dueDate.setFullYear(dueDate.getFullYear() + 1);
+
+                deadline.title = 'Asylum 1-Year Filing Deadline';
+                deadline.dueDate = dueDate.toISOString().split('T')[0];
+                deadline.calculatedFrom = entryDate;
+                deadline.calculationMethod = '1 year from entry date';
+                deadline.priority = 'critical';
+            } else if (type === 'rfe_response') {
+                const rfeDate = document.getElementById('rfeDate').value;
+                const rfeDays = parseInt(document.getElementById('rfeDays').value);
+                if (!rfeDate) {
+                    alert('Please enter the RFE date.');
+                    return;
+                }
+                const rfe = new Date(rfeDate);
+                const dueDate = new Date(rfe);
+                dueDate.setDate(dueDate.getDate() + rfeDays);
+
+                deadline.title = `RFE Response (${rfeDays} days)`;
+                deadline.dueDate = dueDate.toISOString().split('T')[0];
+                deadline.calculatedFrom = rfeDate;
+                deadline.calculationMethod = `${rfeDays} calendar days from RFE date`;
+                deadline.priority = 'critical';
+            } else {
+                const title = document.getElementById('deadlineTitle').value;
+                const dueDate = document.getElementById('dueDate').value;
+                const priority = document.getElementById('priority').value;
+
+                if (!title || !dueDate) {
+                    alert('Please enter a title and due date.');
+                    return;
+                }
+
+                deadline.title = title;
+                deadline.dueDate = dueDate;
+                deadline.priority = priority;
+            }
+
+            deadlines.push(deadline);
+            saveAndRender();
+
+            // Clear form
+            document.getElementById('clientName').value = '';
+            document.getElementById('deadlineNotes').value = '';
+            document.getElementById('deadlineTitle').value = '';
+            document.getElementById('dueDate').value = '';
+            document.getElementById('entryDate').value = '';
+            document.getElementById('rfeDate').value = '';
+        }
+
+        function saveAndRender() {
+            localStorage.setItem('legal-portal-deadlines', JSON.stringify(deadlines));
+            renderDeadlines();
+            renderCalendar();
+        }
+
+        function getDaysRemaining(dueDate) {
+            const due = new Date(dueDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            due.setHours(0, 0, 0, 0);
+            return Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+        }
+
+        function renderDeadlineCard(deadline) {
+            const daysRemaining = getDaysRemaining(deadline.dueDate);
+            const due = new Date(deadline.dueDate);
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+            let cardClass = deadline.priority || 'medium';
+            if (deadline.status === 'complete') cardClass = 'complete';
+            if (deadline.status === 'missed') cardClass = 'missed';
+
+            let countdownClass = 'ok';
+            if (daysRemaining <= 7) countdownClass = 'danger';
+            else if (daysRemaining <= 14) countdownClass = 'warning';
+
+            let countdownText = `${daysRemaining} days`;
+            if (daysRemaining === 0) countdownText = 'TODAY';
+            if (daysRemaining === 1) countdownText = '1 day';
+            if (daysRemaining < 0) countdownText = `${Math.abs(daysRemaining)} days ago`;
+
+            return `
+                <div class="deadline-card ${cardClass}">
+                    <div class="deadline-date">
+                        <div class="day">${due.getDate()}</div>
+                        <div class="month">${months[due.getMonth()]}</div>
+                    </div>
+                    <div class="deadline-content">
+                        <div class="deadline-title">${deadline.title}</div>
+                        <div class="deadline-meta">
+                            ${deadline.clientName ? `<strong>Client:</strong> ${deadline.clientName} | ` : ''}
+                            ${deadline.calculationMethod ? `<em>${deadline.calculationMethod}</em>` : ''}
+                            ${deadline.notes ? `<br>${deadline.notes}` : ''}
+                        </div>
+                    </div>
+                    <div class="deadline-countdown">
+                        <div class="countdown-number ${countdownClass}">${daysRemaining < 0 ? 'PAST' : daysRemaining}</div>
+                        <div class="countdown-label">${daysRemaining < 0 ? 'days overdue' : 'days left'}</div>
+                    </div>
+                    <div class="deadline-actions">
+                        ${deadline.status !== 'complete' ?
+                            `<button class="btn btn-sm btn-outline" onclick="markComplete('${deadline.id}')">Done</button>` :
+                            `<span class="badge badge-complete">Complete</span>`
+                        }
+                        <button class="btn btn-sm btn-outline" onclick="deleteDeadline('${deadline.id}')" style="color: var(--danger); border-color: var(--danger);">X</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderDeadlines() {
+            const critical = [];
+            const upcoming = [];
+            const later = [];
+            const completed = [];
+
+            for (const d of deadlines) {
+                const days = getDaysRemaining(d.dueDate);
+
+                if (d.status === 'complete' || d.status === 'missed' || days < 0) {
+                    completed.push(d);
+                } else if (days <= 7 || d.priority === 'critical') {
+                    critical.push(d);
+                } else if (days <= 30) {
+                    upcoming.push(d);
+                } else {
+                    later.push(d);
+                }
+            }
+
+            // Sort by due date
+            const sortByDate = (a, b) => new Date(a.dueDate) - new Date(b.dueDate);
+            critical.sort(sortByDate);
+            upcoming.sort(sortByDate);
+            later.sort(sortByDate);
+            completed.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
+
+            document.getElementById('criticalCount').textContent = critical.length;
+            document.getElementById('upcomingCount').textContent = upcoming.length;
+            document.getElementById('laterCount').textContent = later.length;
+            document.getElementById('completedCount').textContent = completed.length;
+
+            document.getElementById('criticalDeadlines').innerHTML =
+                critical.length ? critical.map(renderDeadlineCard).join('') : '<p class="form-hint">No critical deadlines.</p>';
+
+            document.getElementById('upcomingDeadlines').innerHTML =
+                upcoming.length ? upcoming.map(renderDeadlineCard).join('') : '<p class="form-hint">No upcoming deadlines.</p>';
+
+            document.getElementById('laterDeadlines').innerHTML =
+                later.length ? later.map(renderDeadlineCard).join('') : '<p class="form-hint">No deadlines beyond 30 days.</p>';
+
+            document.getElementById('completedDeadlines').innerHTML =
+                completed.length ? completed.map(renderDeadlineCard).join('') : '<p class="form-hint">No completed deadlines.</p>';
+        }
+
+        function markComplete(id) {
+            const d = deadlines.find(x => x.id === id);
+            if (d) {
+                d.status = 'complete';
+                d.completedDate = new Date().toISOString();
+                saveAndRender();
+            }
+        }
+
+        function deleteDeadline(id) {
+            if (!confirm('Delete this deadline?')) return;
+            deadlines = deadlines.filter(d => d.id !== id);
+            saveAndRender();
+        }
+
+        function renderCalendar() {
+            const year = currentMonth.getFullYear();
+            const month = currentMonth.getMonth();
+            const months = ['January', 'February', 'March', 'April', 'May', 'June',
+                           'July', 'August', 'September', 'October', 'November', 'December'];
+
+            document.getElementById('calendarMonth').textContent = `${months[month]} ${year}`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+
+            // Get deadlines for this month
+            const monthDeadlines = {};
+            for (const d of deadlines) {
+                if (d.status === 'complete') continue;
+                const due = new Date(d.dueDate);
+                if (due.getFullYear() === year && due.getMonth() === month) {
+                    const day = due.getDate();
+                    if (!monthDeadlines[day]) monthDeadlines[day] = [];
+                    monthDeadlines[day].push(d);
+                }
+            }
+
+            let html = '';
+
+            // Empty cells before first day
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div class="calendar-day other-month"></div>';
+            }
+
+            // Days of month
+            for (let day = 1; day <= daysInMonth; day++) {
+                const isToday = today.getFullYear() === year &&
+                               today.getMonth() === month &&
+                               today.getDate() === day;
+
+                const hasDeadline = monthDeadlines[day];
+                const hasCritical = hasDeadline && hasDeadline.some(d => d.priority === 'critical');
+
+                let classes = 'calendar-day';
+                if (isToday) classes += ' today';
+                if (hasDeadline) classes += ' has-deadline';
+                if (hasCritical) classes += ' critical';
+
+                const title = hasDeadline ? hasDeadline.map(d => d.title).join(', ') : '';
+
+                html += `<div class="${classes}" title="${title}">${day}</div>`;
+            }
+
+            document.getElementById('calendarDays').innerHTML = html;
+        }
+
+        function prevMonth() {
+            currentMonth.setMonth(currentMonth.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentMonth.setMonth(currentMonth.getMonth() + 1);
+            renderCalendar();
+        }
+
+        function logout() {
+            localStorage.removeItem('legal-portal-auth');
+            localStorage.removeItem('legal-portal-auth-time');
+            window.location.href = 'index.html';
+        }
+
+        // Initial render
+        renderDeadlines();
+        renderCalendar();
+    </script>
+</body>
+</html>
