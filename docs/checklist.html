@@ -22,78 +22,101 @@
             align-items: flex-start;
             padding: 16px;
             border: 1px solid var(--border);
-            border-radius: 6px;
+            border-radius: var(--radius-lg);
             margin-bottom: 12px;
-            background: white;
+            background: var(--bg-card);
+            transition: all var(--transition);
+        }
+        .checklist-item:hover {
+            box-shadow: var(--shadow-sm);
         }
         .checklist-item.received {
             border-left: 4px solid var(--success);
-            background: #f8fff8;
+            background: var(--success-light);
         }
         .checklist-item.rejected {
             border-left: 4px solid var(--danger);
-            background: #fff8f8;
+            background: var(--danger-light);
         }
         .checklist-checkbox {
-            margin-right: 16px;
-            margin-top: 4px;
+            margin-right: 14px;
+            margin-top: 2px;
         }
         .checklist-checkbox input {
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
         }
         .checklist-content {
             flex: 1;
         }
         .checklist-title {
-            font-weight: bold;
-            color: var(--text-dark);
+            font-weight: 600;
+            color: var(--text-primary);
             margin-bottom: 4px;
+            font-size: 15px;
         }
         .checklist-description {
             font-size: 14px;
-            color: var(--text-light);
+            color: var(--text-secondary);
             margin-bottom: 8px;
+            line-height: 1.4;
         }
         .checklist-meta {
             font-size: 13px;
-            color: var(--text-light);
+            color: var(--text-muted);
         }
         .checklist-actions {
             margin-left: 16px;
         }
         .status-select {
-            padding: 6px 10px;
+            padding: 8px 12px;
             font-size: 13px;
-            border-radius: 4px;
-            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-dark);
+            background: var(--bg-card);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .status-select:hover {
+            border-color: var(--text-subtle);
+        }
+        .status-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
         }
         .progress-bar {
-            height: 24px;
-            background: var(--light-gray);
-            border-radius: 12px;
+            height: 28px;
+            background: var(--bg-subtle);
+            border-radius: var(--radius-full);
             overflow: hidden;
             margin-bottom: 20px;
+            border: 1px solid var(--border);
         }
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary-blue), var(--success));
-            border-radius: 12px;
-            transition: width 0.3s ease;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--success) 100%);
+            border-radius: var(--radius-full);
+            transition: width 0.4s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: bold;
-            font-size: 13px;
+            font-weight: 600;
+            font-size: 12px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
         .category-header {
-            background: var(--secondary-blue);
+            background: var(--primary-light);
             padding: 10px 16px;
-            border-radius: 6px;
+            border-radius: var(--radius-md);
             margin: 24px 0 12px 0;
-            font-weight: bold;
-            color: var(--primary-blue);
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-size: 14px;
+            border: 1px solid var(--border);
         }
         .category-header:first-of-type {
             margin-top: 0;

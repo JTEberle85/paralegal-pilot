@@ -24,7 +24,7 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: var(--background);
+            background: var(--bg-card);
         }
         .upload-zone:hover {
             border-color: var(--primary);
@@ -66,7 +66,7 @@
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 16px;
-            background: var(--background);
+            background: var(--bg-card);
         }
         .change-item.high {
             border-left: 4px solid #EF4444;
@@ -138,11 +138,11 @@
             font-size: 11px;
             font-weight: 600;
             text-transform: uppercase;
-            color: var(--text-light);
+            color: var(--text-muted);
             margin-bottom: 4px;
         }
         .explanation-box {
-            background: var(--secondary);
+            background: var(--bg-subtle);
             padding: 16px;
             border-radius: 8px;
             margin-top: 16px;
@@ -154,7 +154,7 @@
         }
         .explanation-box p {
             margin: 0;
-            color: var(--text);
+            color: var(--text-secondary);
             font-size: 14px;
         }
         .summary-stats {
@@ -169,7 +169,7 @@
             }
         }
         .stat-box {
-            background: var(--background);
+            background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px;
@@ -185,7 +185,7 @@
         .stat-number.low { color: #22C55E; }
         .stat-label {
             font-size: 13px;
-            color: var(--text-light);
+            color: var(--text-muted);
             margin-top: 4px;
         }
         .concerns-list {
@@ -217,7 +217,7 @@
             padding: 8px 16px;
             border: 1px solid var(--border);
             border-radius: 20px;
-            background: var(--background);
+            background: var(--bg-card);
             cursor: pointer;
             font-size: 14px;
             transition: all 0.2s ease;
@@ -307,7 +307,7 @@
                     <div class="upload-zone" id="baselineZone" onclick="document.getElementById('baselineFile').click()">
                         <div class="icon">📄</div>
                         <p><strong>Click to upload</strong> or drag and drop</p>
-                        <p style="font-size: 13px; color: var(--text-light);">PDF, DOCX, or TXT</p>
+                        <p style="font-size: 13px; color: var(--text-muted);">PDF, DOCX, or TXT</p>
                         <input type="file" id="baselineFile" accept=".pdf,.docx,.txt" onchange="handleFileSelect(this, 'baseline')">
                         <div class="file-name" id="baselineName"></div>
                     </div>
@@ -317,7 +317,7 @@
                     <div class="upload-zone" id="counterpartyZone" onclick="document.getElementById('counterpartyFile').click()">
                         <div class="icon">📄</div>
                         <p><strong>Click to upload</strong> or drag and drop</p>
-                        <p style="font-size: 13px; color: var(--text-light);">PDF, DOCX, or TXT</p>
+                        <p style="font-size: 13px; color: var(--text-muted);">PDF, DOCX, or TXT</p>
                         <input type="file" id="counterpartyFile" accept=".pdf,.docx,.txt" onchange="handleFileSelect(this, 'counterparty')">
                         <div class="file-name" id="counterpartyName"></div>
                     </div>
