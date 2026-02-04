@@ -1,0 +1,331 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Client Intake",
+  "description": "Immigration legal services client intake data structure",
+  "type": "object",
+  "properties": {
+    "meta": {
+      "type": "object",
+      "properties": {
+        "intakeDate": { "type": "string", "format": "date" },
+        "intakeBy": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "pending_review", "approved", "needs_info"],
+          "default": "draft"
+        },
+        "caseType": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "asylum", "withholding", "cat",
+              "family_i130", "adjustment_i485",
+              "naturalization", "daca", "tps",
+              "u_visa", "t_visa", "vawa", "sijs",
+              "removal_defense", "work_permit",
+              "other"
+            ]
+          }
+        }
+      },
+      "required": ["intakeDate", "status"]
+    },
+    "biographical": {
+      "type": "object",
+      "properties": {
+        "lastName": { "type": "string" },
+        "firstName": { "type": "string" },
+        "middleName": { "type": "string" },
+        "otherNames": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "lastName": { "type": "string" },
+              "firstName": { "type": "string" },
+              "middleName": { "type": "string" },
+              "reason": { "type": "string" }
+            }
+          }
+        },
+        "dateOfBirth": { "type": "string", "format": "date" },
+        "countryOfBirth": { "type": "string" },
+        "cityOfBirth": { "type": "string" },
+        "countryOfCitizenship": { "type": "string" },
+        "gender": {
+          "type": "string",
+          "enum": ["male", "female", "other"]
+        },
+        "maritalStatus": {
+          "type": "string",
+          "enum": ["single", "married", "divorced", "widowed", "separated"]
+        },
+        "aNumber": { "type": "string", "pattern": "^[0-9]{8,9}$" },
+        "uscisAccountNumber": { "type": "string" },
+        "ssn": { "type": "string", "pattern": "^[0-9]{9}$" }
+      },
+      "required": ["lastName", "firstName", "dateOfBirth", "countryOfBirth"]
+    },
+    "contact": {
+      "type": "object",
+      "properties": {
+        "currentAddress": { "$ref": "#/definitions/address" },
+        "mailingAddress": { "$ref": "#/definitions/address" },
+        "mailingDifferent": { "type": "boolean", "default": false },
+        "phone": { "type": "string" },
+        "phoneType": { "type": "string", "enum": ["mobile", "home", "work"] },
+        "altPhone": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "safeToContact": { "type": "boolean", "default": true },
+        "contactNotes": { "type": "string" },
+        "preferredLanguage": { "type": "string" },
+        "needsInterpreter": { "type": "boolean" }
+      },
+      "required": ["currentAddress", "phone"]
+    },
+    "immigration": {
+      "type": "object",
+      "properties": {
+        "lastEntryDate": { "type": "string", "format": "date" },
+        "lastEntryPlace": { "type": "string" },
+        "lastEntryStatus": {
+          "type": "string",
+          "enum": [
+            "tourist_b1b2", "student_f1", "worker_h1b", "fiance_k1",
+            "refugee", "asylee", "parolee", "ewi", "other"
+          ]
+        },
+        "lastEntryStatusOther": { "type": "string" },
+        "i94Number": { "type": "string" },
+        "i94ExpirationDate": { "type": "string", "format": "date" },
+        "currentStatus": { "type": "string" },
+        "currentStatusExpiration": { "type": "string", "format": "date" },
+        "passportNumber": { "type": "string" },
+        "passportCountry": { "type": "string" },
+        "passportExpiration": { "type": "string", "format": "date" },
+        "priorApplications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "filingDate": { "type": "string", "format": "date" },
+              "result": { "type": "string", "enum": ["approved", "denied", "pending", "withdrawn"] },
+              "receiptNumber": { "type": "string" }
+            }
+          }
+        },
+        "priorDeportation": { "type": "boolean", "default": false },
+        "deportationDetails": { "type": "string" },
+        "tripsOutsideUS": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "departureDate": { "type": "string", "format": "date" },
+              "returnDate": { "type": "string", "format": "date" },
+              "destination": { "type": "string" },
+              "purpose": { "type": "string" }
+            }
+          }
+        }
+      },
+      "required": ["lastEntryDate"]
+    },
+    "family": {
+      "type": "object",
+      "properties": {
+        "spouse": {
+          "type": "object",
+          "properties": {
+            "lastName": { "type": "string" },
+            "firstName": { "type": "string" },
+            "dateOfBirth": { "type": "string", "format": "date" },
+            "countryOfBirth": { "type": "string" },
+            "citizenship": { "type": "string" },
+            "immigrationStatus": { "type": "string" },
+            "marriageDate": { "type": "string", "format": "date" },
+            "marriagePlace": { "type": "string" },
+            "livingTogether": { "type": "boolean" },
+            "priorMarriages": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "lastName": { "type": "string" },
+              "firstName": { "type": "string" },
+              "dateOfBirth": { "type": "string", "format": "date" },
+              "countryOfBirth": { "type": "string" },
+              "citizenship": { "type": "string" },
+              "immigrationStatus": { "type": "string" },
+              "residence": { "type": "string", "enum": ["with_client", "in_us", "abroad"] },
+              "applyingWithClient": { "type": "boolean" }
+            }
+          }
+        },
+        "mother": { "$ref": "#/definitions/parent" },
+        "father": { "$ref": "#/definitions/parent" }
+      }
+    },
+    "addressHistory": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/addressHistoryEntry" },
+      "minItems": 1
+    },
+    "employmentHistory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "employerName": { "type": "string" },
+          "address": { "$ref": "#/definitions/address" },
+          "jobTitle": { "type": "string" },
+          "startDate": { "type": "string", "format": "date" },
+          "endDate": { "type": "string", "format": "date" },
+          "currentJob": { "type": "boolean" },
+          "supervisorName": { "type": "string" }
+        }
+      }
+    },
+    "criminal": {
+      "type": "object",
+      "properties": {
+        "hasArrests": { "type": "boolean", "default": false },
+        "hasConvictions": { "type": "boolean", "default": false },
+        "hasPendingCharges": { "type": "boolean", "default": false },
+        "hasImmigrationViolations": { "type": "boolean", "default": false },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string", "enum": ["arrest", "conviction", "pending", "immigration"] },
+              "date": { "type": "string", "format": "date" },
+              "location": { "type": "string" },
+              "charge": { "type": "string" },
+              "outcome": { "type": "string" },
+              "sentence": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "asylumSpecific": {
+      "type": "object",
+      "properties": {
+        "countryOfFear": { "type": "string" },
+        "persecutionBasis": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["race", "religion", "nationality", "political_opinion", "social_group"]
+          }
+        },
+        "socialGroupDescription": { "type": "string" },
+        "lastHarmDate": { "type": "string", "format": "date" },
+        "harmSummary": { "type": "string" },
+        "familyHarmed": { "type": "boolean" },
+        "governmentInvolved": { "type": "boolean" },
+        "reportedToAuthorities": { "type": "boolean" },
+        "canRelocate": { "type": "boolean" }
+      }
+    },
+    "uVisaSpecific": {
+      "type": "object",
+      "properties": {
+        "crimeType": { "type": "string" },
+        "crimeDate": { "type": "string", "format": "date" },
+        "crimeLocation": { "type": "string" },
+        "lawEnforcementAgency": { "type": "string" },
+        "detectiveName": { "type": "string" },
+        "caseNumber": { "type": "string" },
+        "certificationStatus": {
+          "type": "string",
+          "enum": ["not_requested", "requested", "received", "denied"]
+        },
+        "helpfulnessDescription": { "type": "string" }
+      }
+    },
+    "vawaSpecific": {
+      "type": "object",
+      "properties": {
+        "abuserRelationship": {
+          "type": "string",
+          "enum": ["spouse", "parent", "child_over_21"]
+        },
+        "abuserStatus": { "type": "string" },
+        "abuserName": { "type": "string" },
+        "abuseSummary": { "type": "string" },
+        "policeReports": { "type": "boolean" },
+        "protectiveOrder": { "type": "boolean" }
+      }
+    },
+    "flags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["criminal", "deadline", "inconsistency", "safety", "complex", "missing_info"]
+          },
+          "description": { "type": "string" },
+          "severity": { "type": "string", "enum": ["low", "medium", "high", "critical"] }
+        }
+      }
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string" },
+          "fileName": { "type": "string" },
+          "uploadDate": { "type": "string", "format": "date" },
+          "status": { "type": "string", "enum": ["uploaded", "verified", "rejected", "expired"] }
+        }
+      }
+    },
+    "notes": { "type": "string" }
+  },
+  "definitions": {
+    "address": {
+      "type": "object",
+      "properties": {
+        "street1": { "type": "string" },
+        "street2": { "type": "string" },
+        "city": { "type": "string" },
+        "state": { "type": "string" },
+        "zipCode": { "type": "string" },
+        "country": { "type": "string", "default": "United States" }
+      },
+      "required": ["street1", "city", "state", "zipCode"]
+    },
+    "addressHistoryEntry": {
+      "type": "object",
+      "properties": {
+        "address": { "$ref": "#/definitions/address" },
+        "fromDate": { "type": "string", "format": "date" },
+        "toDate": { "type": "string", "format": "date" },
+        "current": { "type": "boolean" }
+      }
+    },
+    "parent": {
+      "type": "object",
+      "properties": {
+        "lastName": { "type": "string" },
+        "firstName": { "type": "string" },
+        "dateOfBirth": { "type": "string", "format": "date" },
+        "countryOfBirth": { "type": "string" },
+        "citizenship": { "type": "string" },
+        "inUS": { "type": "boolean" },
+        "deceased": { "type": "boolean" }
+      }
+    }
+  },
+  "required": ["meta", "biographical", "contact", "immigration"]
+}
