@@ -17,54 +17,77 @@
         })();
     </script>
     <style>
+        /* Dashboard-specific styles */
+        .welcome-section {
+            text-align: center;
+            padding: 48px 40px;
+            margin-bottom: 32px;
+        }
+        .welcome-section h2 {
+            font-size: 1.75rem;
+            margin-bottom: 12px;
+            letter-spacing: -0.03em;
+        }
+        .welcome-section p {
+            font-size: 16px;
+            max-width: 480px;
+            margin: 0 auto;
+            color: var(--text-secondary);
+        }
+
         .tile-icon {
-            width: 48px;
-            height: 48px;
-            margin-bottom: 16px;
+            width: 52px;
+            height: 52px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: var(--radius-lg);
-            background: var(--primary-light);
+            background: var(--primary-lighter);
         }
         .tile-icon svg {
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             stroke: var(--primary);
-            stroke-width: 2;
+            stroke-width: 1.75;
             fill: none;
         }
         .dashboard-tile.accent .tile-icon {
             background: var(--accent-light);
         }
         .dashboard-tile.accent .tile-icon svg {
-            stroke: var(--accent);
+            stroke: var(--accent-dark);
         }
+
+        /* Workflow section - horizontal, grounded */
         .workflow-section {
-            background: linear-gradient(135deg, var(--primary-lighter) 0%, var(--bg-subtle) 100%);
+            background: var(--bg-card);
             border-radius: var(--radius-xl);
-            padding: 32px;
-            margin-bottom: 24px;
+            padding: 40px;
+            margin-bottom: 32px;
             border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
         }
         .workflow-section h3 {
-            color: var(--primary-dark);
+            color: var(--text-primary);
             margin-bottom: 8px;
+            font-size: 1.125rem;
         }
         .workflow-section > p {
             color: var(--text-secondary);
-            margin-bottom: 24px;
+            margin-bottom: 32px;
+            font-size: 14px;
         }
         .workflow-steps {
             display: flex;
             align-items: flex-start;
-            gap: 8px;
+            gap: 12px;
             overflow-x: auto;
             padding-bottom: 8px;
         }
         .workflow-step {
             flex: 1;
-            min-width: 140px;
+            min-width: 120px;
             text-align: center;
             position: relative;
         }
@@ -73,20 +96,22 @@
             height: 56px;
             border-radius: 50%;
             background: var(--bg-card);
-            border: 3px solid var(--primary);
+            border: 2px solid var(--border-dark);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 12px;
+            margin: 0 auto 14px;
             position: relative;
             z-index: 1;
+            transition: all var(--transition);
         }
         .workflow-step-icon svg {
             width: 24px;
             height: 24px;
-            stroke: var(--primary);
-            stroke-width: 2;
+            stroke: var(--text-muted);
+            stroke-width: 1.75;
             fill: none;
+            transition: all var(--transition);
         }
         .workflow-step.complete .workflow-step-icon {
             background: var(--success);
@@ -96,10 +121,11 @@
             stroke: white;
         }
         .workflow-step-label {
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--text-primary);
             margin-bottom: 4px;
+            letter-spacing: -0.01em;
         }
         .workflow-step-desc {
             font-size: 11px;
@@ -109,38 +135,70 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding-top: 16px;
+            padding-top: 18px;
             color: var(--border-dark);
+            flex-shrink: 0;
         }
         .workflow-arrow svg {
-            width: 20px;
-            height: 20px;
-            stroke: var(--text-muted);
+            width: 18px;
+            height: 18px;
+            stroke: var(--border-dark);
             stroke-width: 2;
             fill: none;
         }
+
+        /* Tool grid */
         .tool-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
         }
-        .section-header {
+
+        /* Section header with badge */
+        .section-header-row {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 14px;
+            margin-bottom: 24px;
         }
-        .section-header h3 {
+        .section-header-row h3 {
             margin: 0;
             color: var(--text-primary);
+            font-size: 1.125rem;
         }
         .section-badge {
             background: var(--primary-light);
             color: var(--primary-dark);
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
-            padding: 4px 10px;
+            padding: 5px 12px;
             border-radius: var(--radius-full);
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        /* Notices card */
+        .notices-card {
+            margin-top: 40px;
+            background: var(--bg-subtle);
+            border: 1px solid var(--border);
+        }
+        .notices-card h3 {
+            font-size: 1rem;
+            margin-bottom: 16px;
+        }
+        .notices-card ul {
+            margin: 0 0 0 20px;
+            padding: 0;
+        }
+        .notices-card li {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        .notices-card li:last-child {
+            margin-bottom: 0;
         }
     </style>
 </head>
@@ -158,9 +216,9 @@
     </header>
 
     <main class="container">
-        <div class="card">
-            <h2>Welcome to Legal Services Portal</h2>
-            <p>Streamline immigration case management with guided workflows. Select a tool below to get started.</p>
+        <div class="card welcome-section">
+            <h2>Welcome back</h2>
+            <p>Streamline your immigration case management with guided workflows. Select a tool below to get started.</p>
         </div>
 
         <div class="alert alert-warning">
@@ -225,7 +283,7 @@
         </div>
 
         <!-- Core Tools -->
-        <div class="section-header">
+        <div class="section-header-row">
             <h3>Case Management</h3>
             <span class="section-badge">Core Tools</span>
         </div>
@@ -236,7 +294,7 @@
                 </div>
                 <h3>Client Intake</h3>
                 <p class="tile-label">Collect biographical, immigration, and case-specific information in a guided form.</p>
-                <span class="btn btn-primary btn-sm" style="margin-top: 12px;">Start Intake</span>
+                <span class="btn btn-primary btn-sm" style="margin-top: 16px;">Start Intake</span>
             </a>
 
             <a href="checklist.html" class="dashboard-tile accent" style="text-decoration: none; color: inherit;">
@@ -245,7 +303,7 @@
                 </div>
                 <h3>Document Checklist</h3>
                 <p class="tile-label">Generate case-specific document requirements and track submissions.</p>
-                <span class="btn btn-accent btn-sm" style="margin-top: 12px;">Open Checklists</span>
+                <span class="btn btn-accent btn-sm" style="margin-top: 16px;">Open Checklists</span>
             </a>
 
             <a href="forms.html" class="dashboard-tile" style="text-decoration: none; color: inherit;">
@@ -254,7 +312,7 @@
                 </div>
                 <h3>Form Assembly</h3>
                 <p class="tile-label">Auto-populate USCIS forms from client intake data. Review and export.</p>
-                <span class="btn btn-primary btn-sm" style="margin-top: 12px;">Build Forms</span>
+                <span class="btn btn-primary btn-sm" style="margin-top: 16px;">Build Forms</span>
             </a>
 
             <a href="deadlines.html" class="dashboard-tile accent" style="text-decoration: none; color: inherit;">
@@ -263,7 +321,7 @@
                 </div>
                 <h3>Deadline Tracker</h3>
                 <p class="tile-label">Monitor filing deadlines, calculate key dates, and receive alerts.</p>
-                <span class="btn btn-accent btn-sm" style="margin-top: 12px;">Track Deadlines</span>
+                <span class="btn btn-accent btn-sm" style="margin-top: 16px;">Track Deadlines</span>
             </a>
 
             <a href="summary.html" class="dashboard-tile" style="text-decoration: none; color: inherit;">
@@ -272,7 +330,7 @@
                 </div>
                 <h3>Case Summary</h3>
                 <p class="tile-label">Generate comprehensive case summaries for attorney review and court prep.</p>
-                <span class="btn btn-primary btn-sm" style="margin-top: 12px;">Generate Summary</span>
+                <span class="btn btn-primary btn-sm" style="margin-top: 16px;">Generate Summary</span>
             </a>
 
             <a href="rfe.html" class="dashboard-tile accent" style="text-decoration: none; color: inherit;">
@@ -281,12 +339,12 @@
                 </div>
                 <h3>RFE Response</h3>
                 <p class="tile-label">Analyze RFE notices, map requirements, and organize response packets.</p>
-                <span class="btn btn-accent btn-sm" style="margin-top: 12px;">Respond to RFE</span>
+                <span class="btn btn-accent btn-sm" style="margin-top: 16px;">Respond to RFE</span>
             </a>
         </div>
 
         <!-- Additional Tools -->
-        <div class="section-header" style="margin-top: 32px;">
+        <div class="section-header-row" style="margin-top: 40px;">
             <h3>Additional Tools</h3>
             <span class="section-badge">Specialized</span>
         </div>
@@ -297,19 +355,19 @@
                 </div>
                 <h3>Redline Assistant</h3>
                 <p class="tile-label">Compare contracts and get plain-English summaries of changes with suggested edits.</p>
-                <span class="btn btn-primary btn-sm" style="margin-top: 12px;">Compare Documents</span>
+                <span class="btn btn-primary btn-sm" style="margin-top: 16px;">Compare Documents</span>
             </a>
         </div>
 
-        <div class="card" style="margin-top: 30px;">
+        <div class="card notices-card">
             <h3>Important Notices</h3>
-            <ul style="margin-left: 20px; color: var(--text-secondary);">
+            <ul>
                 <li>This tool does NOT provide legal advice</li>
                 <li>All outputs require attorney review before filing</li>
                 <li>Client data is stored locally in your browser</li>
                 <li>Always verify form editions are current before filing</li>
             </ul>
-            <p style="margin-top: 16px; margin-bottom: 0;">
+            <p style="margin-top: 20px; margin-bottom: 0;">
                 <a href="about.html">Learn more about how this tool works</a>
             </p>
         </div>

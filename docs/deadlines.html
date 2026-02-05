@@ -19,13 +19,13 @@
     <style>
         .deadline-card {
             border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 16px;
-            margin-bottom: 12px;
+            border-radius: var(--radius-xl);
+            padding: 20px;
+            margin-bottom: 16px;
             background: var(--bg-card);
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
             transition: all var(--transition);
         }
         .deadline-card:hover {
@@ -54,33 +54,35 @@
         }
         .deadline-date {
             text-align: center;
-            min-width: 70px;
+            min-width: 72px;
         }
         .deadline-date .day {
             font-size: 28px;
-            font-weight: 700;
+            font-weight: 600;
             color: var(--primary);
             line-height: 1;
+            letter-spacing: -0.02em;
         }
         .deadline-date .month {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
             text-transform: uppercase;
             font-weight: 600;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
+            margin-top: 4px;
         }
         .deadline-content {
             flex: 1;
         }
         .deadline-title {
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             color: var(--text-primary);
         }
         .deadline-meta {
             font-size: 13px;
             color: var(--text-muted);
-            line-height: 1.4;
+            line-height: 1.5;
         }
         .deadline-countdown {
             text-align: right;
@@ -88,7 +90,8 @@
         }
         .countdown-number {
             font-size: 24px;
-            font-weight: 700;
+            font-weight: 600;
+            letter-spacing: -0.02em;
         }
         .countdown-number.danger { color: var(--danger); }
         .countdown-number.warning { color: var(--accent); }
@@ -97,60 +100,66 @@
             font-size: 11px;
             color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.04em;
         }
         .deadline-actions {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
         .section-title {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin: 24px 0 16px 0;
+            gap: 14px;
+            margin: 32px 0 20px 0;
+        }
+        .section-title:first-of-type {
+            margin-top: 0;
         }
         .section-title h3 {
             margin: 0;
+            font-size: 1.125rem;
         }
         .section-count {
             background: var(--primary);
             color: white;
             border-radius: var(--radius-full);
-            padding: 2px 10px;
+            padding: 3px 12px;
             font-size: 12px;
             font-weight: 600;
         }
         .quick-add {
-            background: var(--primary-light);
+            background: var(--bg-subtle);
             border-radius: var(--radius-xl);
-            padding: 24px;
-            margin-bottom: 20px;
+            padding: 28px;
+            margin-bottom: 24px;
             border: 1px solid var(--border);
         }
         .quick-add h3 {
-            color: var(--primary-dark);
+            color: var(--text-primary);
+            margin-top: 0;
+            margin-bottom: 20px;
         }
         .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 4px;
-            margin-top: 12px;
+            margin-top: 16px;
         }
         .calendar-header {
             text-align: center;
             font-weight: 600;
             font-size: 11px;
             color: var(--text-muted);
-            padding: 8px;
+            padding: 10px;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
         }
         .calendar-day {
             text-align: center;
-            padding: 8px;
+            padding: 10px;
             border-radius: var(--radius-md);
             font-size: 14px;
-            min-height: 40px;
+            min-height: 44px;
             transition: all var(--transition);
         }
         .calendar-day.other-month {
@@ -168,10 +177,21 @@
             cursor: pointer;
         }
         .calendar-day.has-deadline:hover {
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
         .calendar-day.has-deadline.critical {
             background: var(--danger);
+        }
+        .intro-card {
+            text-align: center;
+            padding: 28px 40px;
+        }
+        .intro-card h2 {
+            margin-bottom: 10px;
+        }
+        .intro-card p {
+            max-width: 500px;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -194,14 +214,14 @@
             Deadline calculations should be confirmed. Missing deadlines can have serious consequences.
         </div>
 
-        <div class="card">
+        <div class="card intro-card">
             <h2>Deadline Tracker</h2>
             <p>Track critical deadlines for immigration cases. Add deadlines manually or calculate from key dates.</p>
         </div>
 
         <!-- Quick Add Section -->
         <div class="quick-add">
-            <h3 style="margin-top: 0;">Add New Deadline</h3>
+            <h3>Add New Deadline</h3>
             <div class="form-row">
                 <div class="form-group">
                     <label class="form-label">Deadline Type</label>
@@ -223,7 +243,7 @@
             </div>
 
             <div id="asylum1YearFields" style="display: none;">
-                <div class="alert alert-warning" style="margin-bottom: 16px;">
+                <div class="alert alert-warning" style="margin-bottom: 20px;">
                     <strong>1-Year Asylum Deadline:</strong> This is calculated as exactly 1 year from the date of last entry to the US.
                 </div>
                 <div class="form-group">
@@ -274,7 +294,7 @@
 
             <div class="form-group">
                 <label class="form-label">Notes</label>
-                <textarea class="form-textarea" id="deadlineNotes" placeholder="Any additional details" style="min-height: 60px;"></textarea>
+                <textarea class="form-textarea" id="deadlineNotes" placeholder="Any additional details" style="min-height: 80px;"></textarea>
             </div>
 
             <button class="btn btn-primary" onclick="addDeadline()">Add Deadline</button>
@@ -317,9 +337,9 @@
         </div>
 
         <!-- Mini Calendar -->
-        <div class="card" style="margin-top: 30px;">
+        <div class="card" style="margin-top: 36px;">
             <h3>Calendar View</h3>
-            <div id="calendarNav" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <div id="calendarNav" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                 <button class="btn btn-sm btn-outline" onclick="prevMonth()">&lt; Previous</button>
                 <strong id="calendarMonth"></strong>
                 <button class="btn btn-sm btn-outline" onclick="nextMonth()">Next &gt;</button>

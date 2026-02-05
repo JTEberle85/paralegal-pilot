@@ -16,6 +16,71 @@
             }
         })();
     </script>
+    <style>
+        /* Intake-specific refinements */
+        .intake-header {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .intake-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+        .intake-header p {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        /* Section subheadings */
+        .form-section h4 {
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-top: 32px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .form-section h4:first-of-type {
+            margin-top: 0;
+        }
+
+        /* Review section styling */
+        .review-sections h4 {
+            font-size: 0.9375rem;
+            margin-top: 28px;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .review-sections h4:first-child {
+            margin-top: 0;
+        }
+        .review-sections .table {
+            margin-bottom: 0;
+        }
+        .review-sections .table td:first-child {
+            width: 180px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        .review-sections .table td:last-child {
+            color: var(--text-primary);
+        }
+
+        /* Case-specific sections */
+        .case-specific-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+        .case-specific-section h4 {
+            margin-top: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -187,7 +252,7 @@
                     </div>
                 </div>
 
-                <div class="form-checkbox" style="margin: 20px 0;">
+                <div class="form-checkbox" style="margin: 24px 0;">
                     <input type="checkbox" id="mailingDifferent" name="mailingDifferent" onchange="toggleMailingAddress()">
                     <label for="mailingDifferent">Mailing address is different from current address</label>
                 </div>
@@ -214,7 +279,7 @@
                     </div>
                 </div>
 
-                <h4 style="margin-top: 24px;">Phone & Email</h4>
+                <h4>Phone & Email</h4>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label form-label-required">Primary Phone</label>
@@ -240,19 +305,19 @@
                     </div>
                 </div>
 
-                <div class="alert alert-info" style="margin-top: 20px;">
+                <div class="alert alert-info" style="margin-top: 28px;">
                     <strong>Safety Question</strong>
                 </div>
                 <div class="form-checkbox">
                     <input type="checkbox" id="safeToContact" name="safeToContact" checked>
                     <label for="safeToContact">It is safe to contact the client at this phone number and address</label>
                 </div>
-                <div class="form-group" style="margin-top: 12px;">
+                <div class="form-group" style="margin-top: 16px;">
                     <label class="form-label">Contact Notes (if safety concerns)</label>
                     <textarea class="form-textarea" name="contactNotes" placeholder="Note any restrictions on when/how to contact"></textarea>
                 </div>
 
-                <div class="form-row" style="margin-top: 20px;">
+                <div class="form-row" style="margin-top: 24px;">
                     <div class="form-group">
                         <label class="form-label">Preferred Language</label>
                         <input type="text" class="form-input" name="preferredLanguage" placeholder="e.g., Spanish, Dari, Pashto">
@@ -331,7 +396,7 @@
                     </div>
                 </div>
 
-                <h4 style="margin-top: 24px;">Passport Information</h4>
+                <h4>Passport Information</h4>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Passport Number</label>
@@ -347,7 +412,7 @@
                     </div>
                 </div>
 
-                <h4 style="margin-top: 24px;">Prior Immigration Applications</h4>
+                <h4>Prior Immigration Applications</h4>
                 <div class="form-group">
                     <label class="form-label">Have you filed any prior immigration applications?</label>
                     <select class="form-select" name="hasPriorApplications" onchange="togglePriorApplications()">
@@ -362,10 +427,10 @@
                     </div>
                 </div>
 
-                <div class="alert alert-warning" style="margin-top: 20px;">
+                <div class="alert alert-warning" style="margin-top: 28px;">
                     <strong>Important Questions</strong>
                 </div>
-                <div class="form-checkbox" style="margin-bottom: 12px;">
+                <div class="form-checkbox" style="margin-bottom: 16px;">
                     <input type="checkbox" id="priorDeportation" name="priorDeportation" onchange="toggleDeportationDetails()">
                     <label for="priorDeportation">Have you ever been deported, removed, or ordered removed from the United States?</label>
                 </div>
@@ -390,7 +455,7 @@
 
                 <div id="spouseSection">
                     <h4>Spouse Information</h4>
-                    <p class="form-hint" style="margin-bottom: 16px;">Complete if currently married</p>
+                    <p class="form-hint" style="margin-bottom: 20px;">Complete if currently married</p>
                     <div class="form-row">
                         <div class="form-group">
                             <label class="form-label">Spouse's Last Name</label>
@@ -425,13 +490,13 @@
                             <input type="text" class="form-input" name="marriagePlace" placeholder="City, State/Country">
                         </div>
                     </div>
-                    <div class="form-checkbox" style="margin-top: 12px;">
+                    <div class="form-checkbox" style="margin-top: 16px;">
                         <input type="checkbox" id="livingTogether" name="livingTogether" checked>
                         <label for="livingTogether">Currently living together with spouse</label>
                     </div>
                 </div>
 
-                <h4 style="margin-top: 30px;">Children</h4>
+                <h4>Children</h4>
                 <div class="form-group">
                     <label class="form-label">Do you have children?</label>
                     <select class="form-select" name="hasChildren" onchange="toggleChildrenSection()">
@@ -454,7 +519,7 @@
                     </div>
                 </div>
 
-                <h4 style="margin-top: 30px;">Parents</h4>
+                <h4>Parents</h4>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Mother's Full Name</label>
@@ -508,7 +573,7 @@
 
                 <!-- Asylum-specific questions -->
                 <div id="asylumQuestions" class="case-specific-section" style="display: none;">
-                    <h4 style="margin-top: 24px;">Asylum Information</h4>
+                    <h4>Asylum Information</h4>
                     <div class="alert alert-warning">
                         <strong>1-Year Deadline:</strong> Asylum must generally be filed within 1 year of your last entry to the US. Attorney will review any deadline concerns.
                     </div>
@@ -543,7 +608,7 @@
 
                 <!-- U Visa specific questions -->
                 <div id="uVisaQuestions" class="case-specific-section" style="display: none;">
-                    <h4 style="margin-top: 24px;">U Visa Information</h4>
+                    <h4>U Visa Information</h4>
                     <div class="form-group">
                         <label class="form-label">Type of crime you were a victim of</label>
                         <input type="text" class="form-input" name="uVisaCrime" placeholder="e.g., domestic violence, assault, robbery">
@@ -575,7 +640,7 @@
 
                 <!-- VAWA specific questions -->
                 <div id="vawaQuestions" class="case-specific-section" style="display: none;">
-                    <h4 style="margin-top: 24px;">VAWA Information</h4>
+                    <h4>VAWA Information</h4>
                     <div class="alert alert-info">
                         <strong>Confidentiality:</strong> VAWA cases have special confidentiality protections under federal law.
                     </div>
@@ -597,7 +662,7 @@
 
                 <!-- Family-based specific -->
                 <div id="familyQuestions" class="case-specific-section" style="display: none;">
-                    <h4 style="margin-top: 24px;">Family Petition Information</h4>
+                    <h4>Family Petition Information</h4>
                     <div class="form-group">
                         <label class="form-label">Who is petitioning for you?</label>
                         <select class="form-select" name="familyPetitioner">
@@ -619,33 +684,33 @@
                 </div>
 
                 <!-- Criminal history (always shown) -->
-                <h4 style="margin-top: 30px;">Important Background Questions</h4>
+                <h4>Important Background Questions</h4>
                 <div class="alert alert-warning">
                     Please answer honestly. This information helps the attorney assess your case. A "yes" answer does not necessarily disqualify you from relief.
                 </div>
-                <div class="form-checkbox" style="margin-bottom: 12px;">
+                <div class="form-checkbox" style="margin-bottom: 16px;">
                     <input type="checkbox" name="hasArrests">
                     <label>Have you ever been arrested? (even if not convicted)</label>
                 </div>
-                <div class="form-checkbox" style="margin-bottom: 12px;">
+                <div class="form-checkbox" style="margin-bottom: 16px;">
                     <input type="checkbox" name="hasConvictions">
                     <label>Have you ever been convicted of a crime?</label>
                 </div>
-                <div class="form-checkbox" style="margin-bottom: 12px;">
+                <div class="form-checkbox" style="margin-bottom: 16px;">
                     <input type="checkbox" name="hasPendingCharges">
                     <label>Do you have any pending criminal charges?</label>
                 </div>
-                <div class="form-checkbox" style="margin-bottom: 12px;">
+                <div class="form-checkbox" style="margin-bottom: 16px;">
                     <input type="checkbox" name="hasImmigrationViolations">
                     <label>Have you ever violated immigration laws? (overstay, unauthorized work, etc.)</label>
                 </div>
 
-                <div class="form-group" style="margin-top: 16px;">
+                <div class="form-group" style="margin-top: 20px;">
                     <label class="form-label">If you checked any boxes above, please provide details</label>
                     <textarea class="form-textarea" name="criminalDetails" placeholder="Include dates, locations, charges, and outcomes"></textarea>
                 </div>
 
-                <div class="form-group" style="margin-top: 20px;">
+                <div class="form-group" style="margin-top: 24px;">
                     <label class="form-label">Additional Notes</label>
                     <textarea class="form-textarea" name="additionalNotes" placeholder="Is there anything else you think is important for the attorney to know?"></textarea>
                 </div>
@@ -662,7 +727,7 @@
                     <h3>Review & Submit</h3>
                 </div>
 
-                <div class="draft-notice">
+                <div class="draft-notice" style="margin-bottom: 32px;">
                     <strong>DRAFT - PENDING ATTORNEY REVIEW</strong><br>
                     Please review the information below. This does not constitute legal advice.
                 </div>
@@ -671,16 +736,16 @@
                     <!-- Populated by JavaScript -->
                 </div>
 
-                <div class="alert alert-info" style="margin-top: 20px;">
+                <div class="alert alert-info" style="margin-top: 28px;">
                     <strong>What happens next?</strong>
-                    <ol style="margin: 10px 0 0 20px;">
-                        <li>An attorney will review this intake</li>
-                        <li>We will contact you to schedule a consultation</li>
+                    <ol style="margin: 12px 0 0 20px; padding: 0;">
+                        <li style="margin-bottom: 6px;">An attorney will review this intake</li>
+                        <li style="margin-bottom: 6px;">We will contact you to schedule a consultation</li>
                         <li>You may be asked to provide additional documents</li>
                     </ol>
                 </div>
 
-                <div class="form-checkbox" style="margin: 20px 0;">
+                <div class="form-checkbox" style="margin: 28px 0;">
                     <input type="checkbox" id="confirmAccurate" name="confirmAccurate" required>
                     <label for="confirmAccurate">I confirm that the information provided is true and accurate to the best of my knowledge</label>
                 </div>
@@ -827,7 +892,7 @@
 
             // Contact
             html += `
-                <h4 style="margin-top: 24px;">Contact Information</h4>
+                <h4 style="margin-top: 28px;">Contact Information</h4>
                 <table class="table">
                     <tr><td><strong>Address</strong></td><td>${formData.get('streetAddress') || ''}, ${formData.get('city') || ''}, ${formData.get('state') || ''} ${formData.get('zipCode') || ''}</td></tr>
                     <tr><td><strong>Phone</strong></td><td>${formData.get('phone') || 'Not provided'}</td></tr>
@@ -838,7 +903,7 @@
 
             // Immigration
             html += `
-                <h4 style="margin-top: 24px;">Immigration History</h4>
+                <h4 style="margin-top: 28px;">Immigration History</h4>
                 <table class="table">
                     <tr><td><strong>Entry Date</strong></td><td>${formData.get('entryDate') || 'Not provided'}</td></tr>
                     <tr><td><strong>Entry Status</strong></td><td>${formData.get('entryStatus') || 'Not provided'}</td></tr>
@@ -849,7 +914,7 @@
 
             // Case Info
             html += `
-                <h4 style="margin-top: 24px;">Case Information</h4>
+                <h4 style="margin-top: 28px;">Case Information</h4>
                 <table class="table">
                     <tr><td><strong>Case Type</strong></td><td>${formData.get('caseType') || 'Not specified'}</td></tr>
                     <tr><td><strong>Criminal History</strong></td><td>${formData.get('hasArrests') || formData.get('hasConvictions') ? 'YES - FLAG FOR REVIEW' : 'None disclosed'}</td></tr>
