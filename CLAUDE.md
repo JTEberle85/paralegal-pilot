@@ -1,45 +1,41 @@
-# Legal Services Portal - Paralegal Agent Pilot
+# Paralegal Pilot - Legal Services Portal
 
 See `~/.claude/josh-profile.md` for Josh's communication preferences.
 
 ## Project Overview
+- **Live URL**: https://jteberle85.github.io/paralegal-pilot/
+- **GitHub**: JTEberle85/paralegal-pilot
+- **Owner**: Josh Eberle (josh.eberle@slalom.com)
+- **Password**: Same as calibration-tools (Or@ngeTr@il2025)
 
-White-label paralegal automation tool for humanitarian legal services organizations. Designed for immigration/refugee legal departments transitioning to fee-based models.
+## Tech Stack
+- Vanilla HTML/CSS/JS (no frameworks)
+- GitHub Pages hosting
+- StatiCrypt for password protection
+- Claude API for AI chat (client-side, users provide own keys)
 
-**Password:** Or@ngeTr@il2025 (StatiCrypt protected)
+## Key Files
+- docs/js/config.js - API configuration
+- docs/js/chat-assistant.js - Reusable chat component
+- docs/dashboard.html - Landing page with practice selector
 
-## Target Users
+## Design System
+- Clean white/blue minimal aesthetic
+- TurboTax-style two-panel layout (sidebar + main content)
+- System fonts (-apple-system, SF Pro)
+- Single accent color: #2563EB
 
-- Paralegals (primary) - Low to medium tech comfort
-- Attorneys (reviewers) - Need quick summaries and approval workflows
-- Administrative staff - Simple status tracking
+## Multi-Practice Workflows
+- Immigration: Intake → Documents → Forms → Summary → File
+- Contracts: Upload → Compare → Review → Export
+- Estate Planning: Placeholder
+- General: Placeholder
 
-## Architecture
-
-```
-paralegal-pilot/
-├── agents/           # Agent prompt files and logic
-│   ├── intake/       # Client Intake Agent
-│   ├── checklist/    # Document Checklist Agent
-│   ├── forms/        # Form Assembly Agent
-│   ├── deadlines/    # Deadline Tracker Agent
-│   ├── summary/      # Case Summary Agent
-│   └── rfe/          # RFE Response Agent
-├── ui/               # Static HTML/CSS/JS interface
-│   ├── index.html    # Login page (StatiCrypt encrypted)
-│   └── *.html        # Feature pages with auth check
-└── docs/             # Documentation and specs
-```
-
-## Brand Kit (Neutral/Demo)
-
-| Color | Hex | Usage |
-|-------|-----|-------|
-| Primary Blue | #1E4D78 | Headers, primary buttons |
-| Secondary Blue | #D5E8F0 | Backgrounds |
-| Accent Orange | #E87722 | CTAs, alerts |
-| Text Dark | #333333 | Body text |
-| Background | #FFFFFF | Main background |
+## AI Chat Integration
+- Appears on: intake.html, redline.html, checklist.html
+- API keys stored in browser localStorage (not in code)
+- Each page has context-specific system prompts
+- All prompts include "never give legal advice" guardrail
 
 ## Compliance Guardrails (CRITICAL)
 
@@ -53,10 +49,12 @@ paralegal-pilot/
 - Escalate to human for criminal history, credibility issues, complex cases
 - Maintain strict confidentiality (especially VAWA/T/U cases)
 
-## Deployment
+## Demo Targets
+- LSSNCA: Immigration legal services workflow
+- TNC: Contract redlining tool
 
-Static HTML hosted on GitHub Pages with StatiCrypt password protection.
-
-## Reference
-
-Full specs in `/Users/josh.eberle/claude-workspace/lssnca-paralegal-agent-project.md`
+## Future Ideas
+- Eligibility screener
+- Document OCR + auto-extract
+- RFE response drafter
+- Multi-language intake
