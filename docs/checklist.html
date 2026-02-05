@@ -211,5 +211,12 @@
         function logout() { localStorage.removeItem('legal-portal-auth'); localStorage.removeItem('legal-portal-auth-time'); window.location.href = 'index.html'; }
         loadSaved();
     </script>
+
+    <!-- Chat Assistant -->
+    <div data-chat-assistant
+         data-page-context="checklist"
+         data-system-prompt="You are a helpful assistant for immigration document checklists. Your role is to help users understand what documents are required and why. Explain what each document type is (e.g., what is an I-94, what is a civil surgeon exam). Help users understand where to obtain documents. IMPORTANT: Never give legal advice or tell users which documents they specifically need for their case - that's for the attorney to decide. Keep responses concise and practical."></div>
+    <script src="js/config.js"></script>
+    <script src="js/chat-assistant.js"></script>
 </body>
 </html>
