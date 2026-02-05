@@ -8,6 +8,7 @@ class ChatAssistant {
         this.messages = [];
         this.isOpen = false;
         this.isLoading = false;
+        this.storageKey = 'claude_api_key';
 
         this.init();
     }
@@ -16,6 +17,23 @@ class ChatAssistant {
         this.injectStyles();
         this.createUI();
         this.attachEventListeners();
+
+        // Check for API key on first open
+        this.apiKey = this.getStoredApiKey();
+    }
+
+    getStoredApiKey() {
+        return localStorage.getItem(this.storageKey) || '';
+    }
+
+    saveApiKey(key) {
+        localStorage.setItem(this.storageKey, key);
+        this.apiKey = key;
+    }
+
+    clearApiKey() {
+        localStorage.removeItem(this.storageKey);
+        this.apiKey = '';
     }
 
     injectStyles() {
@@ -259,6 +277,122 @@ class ChatAssistant {
                     right: 16px;
                 }
             }
+
+            /* Settings button and modal */
+            .chat-settings-btn {
+                background: none;
+                border: none;
+                color: white;
+                cursor: pointer;
+                padding: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 4px;
+                transition: background 0.15s ease;
+                margin-right: 8px;
+            }
+            .chat-settings-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+            .chat-settings-btn svg {
+                width: 18px;
+                height: 18px;
+            }
+            .chat-header-actions {
+                display: flex;
+                align-items: center;
+            }
+
+            .chat-settings-modal {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.2s ease;
+                border-radius: 12px;
+            }
+            .chat-settings-modal.open {
+                opacity: 1;
+                pointer-events: auto;
+            }
+            .chat-settings-content {
+                background: white;
+                padding: 24px;
+                border-radius: 12px;
+                width: 90%;
+                max-width: 320px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            }
+            .chat-settings-content h4 {
+                margin: 0 0 8px 0;
+                font-size: 16px;
+                color: #1F2937;
+            }
+            .chat-settings-content p {
+                margin: 0 0 16px 0;
+                font-size: 12px;
+                color: #6B7280;
+                line-height: 1.4;
+            }
+            .chat-settings-content label {
+                display: block;
+                font-size: 12px;
+                font-weight: 500;
+                color: #374151;
+                margin-bottom: 6px;
+            }
+            .chat-settings-content input {
+                width: 100%;
+                padding: 10px 12px;
+                border: 1px solid #E5E7EB;
+                border-radius: 6px;
+                font-size: 13px;
+                font-family: monospace;
+                box-sizing: border-box;
+            }
+            .chat-settings-content input:focus {
+                outline: none;
+                border-color: var(--accent, #2563EB);
+            }
+            .chat-settings-actions {
+                display: flex;
+                gap: 8px;
+                margin-top: 16px;
+            }
+            .chat-settings-actions button {
+                flex: 1;
+                padding: 10px 16px;
+                border-radius: 6px;
+                font-size: 13px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: background 0.15s ease;
+            }
+            .chat-settings-save {
+                background: var(--accent, #2563EB);
+                color: white;
+                border: none;
+            }
+            .chat-settings-save:hover {
+                background: #1D4ED8;
+            }
+            .chat-settings-cancel {
+                background: white;
+                color: #374151;
+                border: 1px solid #E5E7EB;
+            }
+            .chat-settings-cancel:hover {
+                background: #F9FAFB;
+            }
         `;
         document.head.appendChild(styles);
     }
@@ -283,11 +417,19 @@ class ChatAssistant {
                     <h3>AI Assistant</h3>
                     <div class="chat-header-subtitle">${this.getContextLabel()}</div>
                 </div>
-                <button class="chat-close" title="Close">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6L6 18M6 6l12 12"/>
-                    </svg>
-                </button>
+                <div class="chat-header-actions">
+                    <button class="chat-settings-btn" title="Settings">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v4m0 14v4m-9-9h4m14 0h4m-3.5-6.5l-2.8 2.8m-9.4 9.4l-2.8 2.8m0-15l2.8 2.8m9.4 9.4l2.8 2.8"/>
+                        </svg>
+                    </button>
+                    <button class="chat-close" title="Close">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 6L6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
             <div class="chat-messages" id="chatMessages">
                 <div class="chat-message welcome">
@@ -305,6 +447,18 @@ class ChatAssistant {
             <div class="chat-footer">
                 Powered by <a href="https://anthropic.com" target="_blank">Claude</a> · Demo only
             </div>
+            <div class="chat-settings-modal" id="chatSettingsModal">
+                <div class="chat-settings-content">
+                    <h4>API Settings</h4>
+                    <p>Enter your Claude API key. It will be saved in your browser's local storage.</p>
+                    <label for="chatApiKeyInput">API Key</label>
+                    <input type="password" id="chatApiKeyInput" placeholder="sk-ant-api03-..." />
+                    <div class="chat-settings-actions">
+                        <button class="chat-settings-cancel" id="chatSettingsCancel">Cancel</button>
+                        <button class="chat-settings-save" id="chatSettingsSave">Save</button>
+                    </div>
+                </div>
+            </div>
         `;
 
         document.body.appendChild(this.bubble);
@@ -315,6 +469,11 @@ class ChatAssistant {
         this.input = this.panel.querySelector('#chatInput');
         this.sendButton = this.panel.querySelector('#chatSend');
         this.closeButton = this.panel.querySelector('.chat-close');
+        this.settingsButton = this.panel.querySelector('.chat-settings-btn');
+        this.settingsModal = this.panel.querySelector('#chatSettingsModal');
+        this.apiKeyInput = this.panel.querySelector('#chatApiKeyInput');
+        this.settingsSaveBtn = this.panel.querySelector('#chatSettingsSave');
+        this.settingsCancelBtn = this.panel.querySelector('#chatSettingsCancel');
     }
 
     getContextLabel() {
@@ -348,16 +507,68 @@ class ChatAssistant {
         // Close on escape
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.isOpen) {
-                this.close();
+                if (this.settingsModal.classList.contains('open')) {
+                    this.closeSettings();
+                } else {
+                    this.close();
+                }
             }
         });
+
+        // Settings modal events
+        this.settingsButton.addEventListener('click', () => this.openSettings());
+        this.settingsCancelBtn.addEventListener('click', () => this.closeSettings());
+        this.settingsSaveBtn.addEventListener('click', () => this.saveSettings());
+
+        // Close settings on backdrop click
+        this.settingsModal.addEventListener('click', (e) => {
+            if (e.target === this.settingsModal) {
+                this.closeSettings();
+            }
+        });
+
+        // Save on Enter in API key input
+        this.apiKeyInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.saveSettings();
+            }
+        });
+    }
+
+    openSettings() {
+        this.apiKeyInput.value = this.apiKey;
+        this.settingsModal.classList.add('open');
+        setTimeout(() => this.apiKeyInput.focus(), 100);
+    }
+
+    closeSettings() {
+        this.settingsModal.classList.remove('open');
+    }
+
+    saveSettings() {
+        const key = this.apiKeyInput.value.trim();
+        if (key) {
+            this.saveApiKey(key);
+            this.addMessage('API key saved successfully.', 'welcome');
+        } else {
+            this.clearApiKey();
+            this.addMessage('API key cleared.', 'welcome');
+        }
+        this.closeSettings();
     }
 
     open() {
         this.isOpen = true;
         this.bubble.classList.add('hidden');
         this.panel.classList.add('open');
-        setTimeout(() => this.input.focus(), 200);
+
+        // Show settings modal if no API key is set
+        if (!this.apiKey) {
+            setTimeout(() => this.openSettings(), 200);
+        } else {
+            setTimeout(() => this.input.focus(), 200);
+        }
     }
 
     close() {
@@ -422,8 +633,9 @@ class ChatAssistant {
     }
 
     async callClaudeAPI(userMessage) {
-        // Check for API key
-        if (typeof CLAUDE_CONFIG === 'undefined' || !CLAUDE_CONFIG.apiKey || CLAUDE_CONFIG.apiKey === 'YOUR_API_KEY_HERE') {
+        // Check for API key (prioritize localStorage over config)
+        const apiKey = this.apiKey || (typeof CLAUDE_CONFIG !== 'undefined' ? CLAUDE_CONFIG.apiKey : '');
+        if (!apiKey) {
             throw new Error('API_KEY_NOT_SET');
         }
 
@@ -433,17 +645,18 @@ class ChatAssistant {
             content: m.content
         }));
 
+        const config = typeof CLAUDE_CONFIG !== 'undefined' ? CLAUDE_CONFIG : {};
         const response = await fetch('https://api.anthropic.com/v1/messages', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'x-api-key': CLAUDE_CONFIG.apiKey,
+                'x-api-key': apiKey,
                 'anthropic-version': '2023-06-01',
                 'anthropic-dangerous-direct-browser-access': 'true'
             },
             body: JSON.stringify({
-                model: CLAUDE_CONFIG.model || 'claude-sonnet-4-20250514',
-                max_tokens: CLAUDE_CONFIG.maxTokens || 1024,
+                model: config.model || 'claude-sonnet-4-20250514',
+                max_tokens: config.maxTokens || 1024,
                 system: this.systemPrompt,
                 messages: apiMessages
             })
@@ -460,10 +673,10 @@ class ChatAssistant {
 
     getErrorMessage(error) {
         if (error.message === 'API_KEY_NOT_SET') {
-            return 'API key not configured. Add your key to js/config.js';
+            return 'API key not configured. Click the gear icon to add your key.';
         }
         if (error.message.includes('401')) {
-            return 'Invalid API key. Check your config.js file.';
+            return 'Invalid API key. Click the gear icon to update it.';
         }
         if (error.message.includes('429')) {
             return 'Rate limited. Please wait a moment and try again.';
