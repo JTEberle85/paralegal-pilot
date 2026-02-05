@@ -6,7 +6,6 @@
     <title>Legal Services Portal - Deadline Tracker</title>
     <link rel="stylesheet" href="style.css">
     <script>
-        // Auth check
         (function() {
             var auth = localStorage.getItem('legal-portal-auth');
             var authTime = localStorage.getItem('legal-portal-auth-time');
@@ -19,630 +18,222 @@
     <style>
         .deadline-card {
             border: 1px solid var(--border);
-            border-radius: var(--radius-xl);
-            padding: 20px;
-            margin-bottom: 16px;
-            background: var(--bg-card);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 12px;
+            background: var(--bg-white);
             display: flex;
             align-items: center;
-            gap: 20px;
-            transition: all var(--transition);
+            gap: 16px;
         }
-        .deadline-card:hover {
-            box-shadow: var(--shadow-sm);
-        }
-        .deadline-card.critical {
-            border-left: 4px solid var(--danger);
-            background: var(--danger-light);
-        }
-        .deadline-card.high {
-            border-left: 4px solid var(--accent);
-            background: var(--accent-light);
-        }
-        .deadline-card.medium {
-            border-left: 4px solid var(--warning);
-            background: var(--warning-light);
-        }
-        .deadline-card.complete {
-            border-left: 4px solid var(--success);
-            background: var(--success-light);
-            opacity: 0.85;
-        }
-        .deadline-card.missed {
-            border-left: 4px solid var(--danger);
-            background: var(--danger-light);
-        }
-        .deadline-date {
-            text-align: center;
-            min-width: 72px;
-        }
-        .deadline-date .day {
-            font-size: 28px;
-            font-weight: 600;
-            color: var(--primary);
-            line-height: 1;
-            letter-spacing: -0.02em;
-        }
-        .deadline-date .month {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 600;
-            letter-spacing: 0.06em;
-            margin-top: 4px;
-        }
-        .deadline-content {
-            flex: 1;
-        }
-        .deadline-title {
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--text-primary);
-        }
-        .deadline-meta {
-            font-size: 13px;
-            color: var(--text-muted);
-            line-height: 1.5;
-        }
-        .deadline-countdown {
-            text-align: right;
-            min-width: 90px;
-        }
-        .countdown-number {
-            font-size: 24px;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-        }
+        .deadline-card.critical { border-left: 3px solid var(--danger); background: #FEF2F2; }
+        .deadline-card.high { border-left: 3px solid var(--warning); background: #FFFBEB; }
+        .deadline-card.complete { border-left: 3px solid var(--success); background: #ECFDF5; opacity: 0.8; }
+        .deadline-date { text-align: center; min-width: 60px; }
+        .deadline-date .day { font-size: 24px; font-weight: 600; color: var(--accent); }
+        .deadline-date .month { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+        .deadline-content { flex: 1; }
+        .deadline-title { font-weight: 500; margin-bottom: 4px; }
+        .deadline-meta { font-size: 13px; color: var(--text-muted); }
+        .deadline-countdown { text-align: right; min-width: 70px; }
+        .countdown-number { font-size: 20px; font-weight: 600; }
         .countdown-number.danger { color: var(--danger); }
-        .countdown-number.warning { color: var(--accent); }
+        .countdown-number.warning { color: var(--warning); }
         .countdown-number.ok { color: var(--success); }
-        .countdown-label {
-            font-size: 11px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-        .deadline-actions {
-            display: flex;
-            gap: 10px;
-        }
-        .section-title {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin: 32px 0 20px 0;
-        }
-        .section-title:first-of-type {
-            margin-top: 0;
-        }
-        .section-title h3 {
-            margin: 0;
-            font-size: 1.125rem;
-        }
-        .section-count {
-            background: var(--primary);
-            color: white;
-            border-radius: var(--radius-full);
-            padding: 3px 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .quick-add {
-            background: var(--bg-subtle);
-            border-radius: var(--radius-xl);
-            padding: 28px;
-            margin-bottom: 24px;
-            border: 1px solid var(--border);
-        }
-        .quick-add h3 {
-            color: var(--text-primary);
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            margin-top: 16px;
-        }
-        .calendar-header {
-            text-align: center;
-            font-weight: 600;
-            font-size: 11px;
-            color: var(--text-muted);
-            padding: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-        }
-        .calendar-day {
-            text-align: center;
-            padding: 10px;
-            border-radius: var(--radius-md);
-            font-size: 14px;
-            min-height: 44px;
-            transition: all var(--transition);
-        }
-        .calendar-day.other-month {
-            color: var(--border-dark);
-        }
-        .calendar-day.today {
-            background: var(--primary-light);
-            font-weight: 600;
-            color: var(--primary-dark);
-        }
-        .calendar-day.has-deadline {
-            background: var(--accent);
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .calendar-day.has-deadline:hover {
-            transform: scale(1.08);
-        }
-        .calendar-day.has-deadline.critical {
-            background: var(--danger);
-        }
-        .intro-card {
-            text-align: center;
-            padding: 28px 40px;
-        }
-        .intro-card h2 {
-            margin-bottom: 10px;
-        }
-        .intro-card p {
-            max-width: 500px;
-            margin: 0 auto;
-        }
+        .countdown-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; }
+        .section-title { display: flex; align-items: center; gap: 10px; margin: 28px 0 16px 0; }
+        .section-title:first-of-type { margin-top: 0; }
+        .section-title h3 { margin: 0; font-size: 16px; }
+        .section-count { background: var(--accent); color: white; border-radius: 10px; padding: 2px 10px; font-size: 11px; font-weight: 500; }
+        .quick-add { background: var(--bg-gray); border-radius: 6px; padding: 20px; margin-bottom: 24px; }
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1>Legal Services Portal</h1>
-        <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="intake.html">Intake</a>
-            <a href="checklist.html">Checklists</a>
-            <a href="deadlines.html">Deadlines</a>
-            <a href="about.html">How It Works</a>
-            <a href="#" onclick="logout(); return false;">Logout</a>
-        </nav>
-    </header>
-
-    <main class="container">
-        <div class="draft-notice">
-            <strong>DRAFT - VERIFY ALL DEADLINES WITH ATTORNEY</strong><br>
-            Deadline calculations should be confirmed. Missing deadlines can have serious consequences.
-        </div>
-
-        <div class="card intro-card">
-            <h2>Deadline Tracker</h2>
-            <p>Track critical deadlines for immigration cases. Add deadlines manually or calculate from key dates.</p>
-        </div>
-
-        <!-- Quick Add Section -->
-        <div class="quick-add">
-            <h3>Add New Deadline</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Deadline Type</label>
-                    <select class="form-select" id="deadlineType" onchange="updateDeadlineForm()">
-                        <option value="custom">Custom Deadline</option>
-                        <option value="asylum_1year">Asylum 1-Year Filing Deadline</option>
-                        <option value="rfe_response">RFE Response</option>
-                        <option value="court_hearing">Court Hearing</option>
-                        <option value="biometrics">Biometrics Appointment</option>
-                        <option value="interview">USCIS Interview</option>
-                        <option value="ead_renewal">EAD Renewal</option>
-                        <option value="greencard_renewal">Green Card Renewal</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Client Name</label>
-                    <input type="text" class="form-input" id="clientName" placeholder="For tracking">
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+                    Legal Portal
                 </div>
             </div>
-
-            <div id="asylum1YearFields" style="display: none;">
-                <div class="alert alert-warning" style="margin-bottom: 20px;">
-                    <strong>1-Year Asylum Deadline:</strong> This is calculated as exactly 1 year from the date of last entry to the US.
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Date of Last Entry to US</label>
-                    <input type="date" class="form-input" id="entryDate">
-                    <div class="form-hint">From I-94 or passport stamp</div>
-                </div>
+            <div class="practice-selector">
+                <label>Practice Area</label>
+                <select class="practice-select" id="practiceSelect" onchange="switchPractice(this.value)">
+                    <option value="immigration" selected>Immigration</option>
+                    <option value="contracts">Contracts</option>
+                    <option value="estate">Estate Planning</option>
+                    <option value="general">General</option>
+                </select>
             </div>
+            <nav class="workflow-nav">
+                <div class="workflow-label">Workflow</div>
+                <ul class="workflow-steps">
+                    <li class="workflow-step" onclick="window.location.href='intake.html'"><span class="step-indicator"><span class="step-number">1</span></span><span>Intake</span></li>
+                    <li class="workflow-step" onclick="window.location.href='checklist.html'"><span class="step-indicator"><span class="step-number">2</span></span><span>Documents</span></li>
+                    <li class="workflow-step" onclick="window.location.href='forms.html'"><span class="step-indicator"><span class="step-number">3</span></span><span>Forms</span></li>
+                    <li class="workflow-step" onclick="window.location.href='summary.html'"><span class="step-indicator"><span class="step-number">4</span></span><span>Summary</span></li>
+                    <li class="workflow-step active" onclick="window.location.href='deadlines.html'"><span class="step-indicator"><span class="step-number">5</span></span><span>File</span></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="about.html">How It Works</a>
+                <a href="#" onclick="logout(); return false;">Sign Out</a>
+            </div>
+        </aside>
 
-            <div id="rfeFields" style="display: none;">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">RFE Date (from notice)</label>
-                        <input type="date" class="form-input" id="rfeDate">
+        <main class="main-content">
+            <header class="top-bar">
+                <span class="top-bar-title">Immigration — Deadlines</span>
+                <div class="top-bar-actions"><a href="dashboard.html">Dashboard</a></div>
+            </header>
+
+            <div class="content-container wide">
+                <div class="draft-notice"><strong>VERIFY ALL DEADLINES WITH ATTORNEY</strong></div>
+
+                <div class="quick-add">
+                    <h3 style="margin: 0 0 16px 0;">Add Deadline</h3>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">Type</label><select class="form-select" id="deadlineType" onchange="updateDeadlineForm()"><option value="custom">Custom</option><option value="asylum_1year">Asylum 1-Year</option><option value="rfe_response">RFE Response</option><option value="court_hearing">Court Hearing</option></select></div>
+                        <div class="form-group"><label class="form-label">Client</label><input type="text" class="form-input" id="clientName"></div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Response Days Allowed</label>
-                        <select class="form-select" id="rfeDays">
-                            <option value="87">87 days (standard)</option>
-                            <option value="30">30 days</option>
-                            <option value="33">33 days</option>
-                        </select>
+                    <div id="asylum1YearFields" style="display: none;">
+                        <div class="alert alert-warning" style="margin-bottom: 16px;">1 year from last entry date</div>
+                        <div class="form-group"><label class="form-label">Entry Date</label><input type="date" class="form-input" id="entryDate"></div>
                     </div>
-                </div>
-            </div>
-
-            <div id="customFields">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Deadline Title</label>
-                        <input type="text" class="form-input" id="deadlineTitle" placeholder="e.g., Submit additional evidence">
+                    <div id="rfeFields" style="display: none;">
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">RFE Date</label><input type="date" class="form-input" id="rfeDate"></div>
+                            <div class="form-group"><label class="form-label">Days</label><select class="form-select" id="rfeDays"><option value="87">87</option><option value="30">30</option></select></div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Due Date</label>
-                        <input type="date" class="form-input" id="dueDate">
+                    <div id="customFields">
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Title</label><input type="text" class="form-input" id="deadlineTitle"></div>
+                            <div class="form-group"><label class="form-label">Due Date</label><input type="date" class="form-input" id="dueDate"></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Priority</label><select class="form-select" id="priority"><option value="critical">Critical</option><option value="high">High</option><option value="medium" selected>Medium</option></select></div>
                     </div>
+                    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="deadlineNotes" style="min-height: 60px;"></textarea></div>
+                    <button class="btn btn-primary" onclick="addDeadline()">Add Deadline</button>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Priority</label>
-                    <select class="form-select" id="priority">
-                        <option value="critical">Critical</option>
-                        <option value="high">High</option>
-                        <option value="medium" selected>Medium</option>
-                        <option value="low">Low</option>
-                    </select>
-                </div>
+
+                <div class="section-title"><h3 style="color: var(--danger);">Critical</h3><span class="section-count" id="criticalCount" style="background: var(--danger);">0</span></div>
+                <div id="criticalDeadlines"><p class="text-muted">No critical deadlines.</p></div>
+
+                <div class="section-title"><h3>Upcoming (30 days)</h3><span class="section-count" id="upcomingCount">0</span></div>
+                <div id="upcomingDeadlines"><p class="text-muted">No upcoming deadlines.</p></div>
+
+                <div class="section-title"><h3>Later</h3><span class="section-count" id="laterCount">0</span></div>
+                <div id="laterDeadlines"><p class="text-muted">No later deadlines.</p></div>
+
+                <div class="section-title"><h3>Completed</h3><span class="section-count" id="completedCount">0</span></div>
+                <div id="completedDeadlines"><p class="text-muted">No completed deadlines.</p></div>
             </div>
-
-            <div class="form-group">
-                <label class="form-label">Notes</label>
-                <textarea class="form-textarea" id="deadlineNotes" placeholder="Any additional details" style="min-height: 80px;"></textarea>
-            </div>
-
-            <button class="btn btn-primary" onclick="addDeadline()">Add Deadline</button>
-        </div>
-
-        <!-- Critical Deadlines -->
-        <div class="section-title">
-            <h3 style="color: var(--danger);">Critical & Urgent</h3>
-            <span class="section-count" id="criticalCount" style="background: var(--danger);">0</span>
-        </div>
-        <div id="criticalDeadlines">
-            <p class="form-hint">No critical deadlines.</p>
-        </div>
-
-        <!-- Upcoming Deadlines -->
-        <div class="section-title">
-            <h3>Upcoming (Next 30 Days)</h3>
-            <span class="section-count" id="upcomingCount">0</span>
-        </div>
-        <div id="upcomingDeadlines">
-            <p class="form-hint">No upcoming deadlines.</p>
-        </div>
-
-        <!-- Later Deadlines -->
-        <div class="section-title">
-            <h3>Later (30+ Days)</h3>
-            <span class="section-count" id="laterCount">0</span>
-        </div>
-        <div id="laterDeadlines">
-            <p class="form-hint">No deadlines beyond 30 days.</p>
-        </div>
-
-        <!-- Completed/Missed -->
-        <div class="section-title">
-            <h3>Completed & Past</h3>
-            <span class="section-count" id="completedCount">0</span>
-        </div>
-        <div id="completedDeadlines">
-            <p class="form-hint">No completed deadlines.</p>
-        </div>
-
-        <!-- Mini Calendar -->
-        <div class="card" style="margin-top: 36px;">
-            <h3>Calendar View</h3>
-            <div id="calendarNav" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <button class="btn btn-sm btn-outline" onclick="prevMonth()">&lt; Previous</button>
-                <strong id="calendarMonth"></strong>
-                <button class="btn btn-sm btn-outline" onclick="nextMonth()">Next &gt;</button>
-            </div>
-            <div class="calendar-grid">
-                <div class="calendar-header">Sun</div>
-                <div class="calendar-header">Mon</div>
-                <div class="calendar-header">Tue</div>
-                <div class="calendar-header">Wed</div>
-                <div class="calendar-header">Thu</div>
-                <div class="calendar-header">Fri</div>
-                <div class="calendar-header">Sat</div>
-            </div>
-            <div class="calendar-grid" id="calendarDays"></div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script>
         let deadlines = JSON.parse(localStorage.getItem('legal-portal-deadlines') || '[]');
-        let currentMonth = new Date();
 
         function updateDeadlineForm() {
             const type = document.getElementById('deadlineType').value;
-
-            // Hide all special fields
-            document.getElementById('asylum1YearFields').style.display = 'none';
-            document.getElementById('rfeFields').style.display = 'none';
-            document.getElementById('customFields').style.display = 'block';
-
-            if (type === 'asylum_1year') {
-                document.getElementById('asylum1YearFields').style.display = 'block';
-                document.getElementById('customFields').style.display = 'none';
-            } else if (type === 'rfe_response') {
-                document.getElementById('rfeFields').style.display = 'block';
-                document.getElementById('customFields').style.display = 'none';
-            }
+            document.getElementById('asylum1YearFields').style.display = type === 'asylum_1year' ? 'block' : 'none';
+            document.getElementById('rfeFields').style.display = type === 'rfe_response' ? 'block' : 'none';
+            document.getElementById('customFields').style.display = (type === 'custom' || type === 'court_hearing') ? 'block' : 'none';
         }
 
         function addDeadline() {
             const type = document.getElementById('deadlineType').value;
             const clientName = document.getElementById('clientName').value;
             const notes = document.getElementById('deadlineNotes').value;
-
-            let deadline = {
-                id: Date.now().toString(),
-                type: type,
-                clientName: clientName,
-                notes: notes,
-                status: 'pending',
-                createdDate: new Date().toISOString()
-            };
+            let deadline = { id: Date.now().toString(), type, clientName, notes, status: 'pending', createdDate: new Date().toISOString() };
 
             if (type === 'asylum_1year') {
-                const entryDate = document.getElementById('entryDate').value;
-                if (!entryDate) {
-                    alert('Please enter the date of entry.');
-                    return;
-                }
-                const entry = new Date(entryDate);
-                const dueDate = new Date(entry);
-                dueDate.setFullYear(dueDate.getFullYear() + 1);
-
-                deadline.title = 'Asylum 1-Year Filing Deadline';
-                deadline.dueDate = dueDate.toISOString().split('T')[0];
-                deadline.calculatedFrom = entryDate;
-                deadline.calculationMethod = '1 year from entry date';
+                const entry = document.getElementById('entryDate').value;
+                if (!entry) { alert('Enter entry date.'); return; }
+                const due = new Date(entry); due.setFullYear(due.getFullYear() + 1);
+                deadline.title = 'Asylum 1-Year Deadline';
+                deadline.dueDate = due.toISOString().split('T')[0];
                 deadline.priority = 'critical';
             } else if (type === 'rfe_response') {
-                const rfeDate = document.getElementById('rfeDate').value;
-                const rfeDays = parseInt(document.getElementById('rfeDays').value);
-                if (!rfeDate) {
-                    alert('Please enter the RFE date.');
-                    return;
-                }
-                const rfe = new Date(rfeDate);
-                const dueDate = new Date(rfe);
-                dueDate.setDate(dueDate.getDate() + rfeDays);
-
-                deadline.title = `RFE Response (${rfeDays} days)`;
-                deadline.dueDate = dueDate.toISOString().split('T')[0];
-                deadline.calculatedFrom = rfeDate;
-                deadline.calculationMethod = `${rfeDays} calendar days from RFE date`;
+                const rfe = document.getElementById('rfeDate').value;
+                const days = parseInt(document.getElementById('rfeDays').value);
+                if (!rfe) { alert('Enter RFE date.'); return; }
+                const due = new Date(rfe); due.setDate(due.getDate() + days);
+                deadline.title = `RFE Response (${days} days)`;
+                deadline.dueDate = due.toISOString().split('T')[0];
                 deadline.priority = 'critical';
             } else {
                 const title = document.getElementById('deadlineTitle').value;
                 const dueDate = document.getElementById('dueDate').value;
-                const priority = document.getElementById('priority').value;
-
-                if (!title || !dueDate) {
-                    alert('Please enter a title and due date.');
-                    return;
-                }
-
+                if (!title || !dueDate) { alert('Enter title and date.'); return; }
                 deadline.title = title;
                 deadline.dueDate = dueDate;
-                deadline.priority = priority;
+                deadline.priority = document.getElementById('priority').value;
             }
 
             deadlines.push(deadline);
             saveAndRender();
-
-            // Clear form
             document.getElementById('clientName').value = '';
             document.getElementById('deadlineNotes').value = '';
             document.getElementById('deadlineTitle').value = '';
             document.getElementById('dueDate').value = '';
-            document.getElementById('entryDate').value = '';
-            document.getElementById('rfeDate').value = '';
         }
 
         function saveAndRender() {
             localStorage.setItem('legal-portal-deadlines', JSON.stringify(deadlines));
             renderDeadlines();
-            renderCalendar();
         }
 
-        function getDaysRemaining(dueDate) {
-            const due = new Date(dueDate);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            due.setHours(0, 0, 0, 0);
-            return Math.ceil((due - today) / (1000 * 60 * 60 * 24));
+        function getDaysRemaining(date) {
+            const due = new Date(date); due.setHours(0,0,0,0);
+            const today = new Date(); today.setHours(0,0,0,0);
+            return Math.ceil((due - today) / (1000*60*60*24));
         }
 
-        function renderDeadlineCard(deadline) {
-            const daysRemaining = getDaysRemaining(deadline.dueDate);
-            const due = new Date(deadline.dueDate);
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-            let cardClass = deadline.priority || 'medium';
-            if (deadline.status === 'complete') cardClass = 'complete';
-            if (deadline.status === 'missed') cardClass = 'missed';
-
-            let countdownClass = 'ok';
-            if (daysRemaining <= 7) countdownClass = 'danger';
-            else if (daysRemaining <= 14) countdownClass = 'warning';
-
-            let countdownText = `${daysRemaining} days`;
-            if (daysRemaining === 0) countdownText = 'TODAY';
-            if (daysRemaining === 1) countdownText = '1 day';
-            if (daysRemaining < 0) countdownText = `${Math.abs(daysRemaining)} days ago`;
-
-            return `
-                <div class="deadline-card ${cardClass}">
-                    <div class="deadline-date">
-                        <div class="day">${due.getDate()}</div>
-                        <div class="month">${months[due.getMonth()]}</div>
-                    </div>
-                    <div class="deadline-content">
-                        <div class="deadline-title">${deadline.title}</div>
-                        <div class="deadline-meta">
-                            ${deadline.clientName ? `<strong>Client:</strong> ${deadline.clientName} | ` : ''}
-                            ${deadline.calculationMethod ? `<em>${deadline.calculationMethod}</em>` : ''}
-                            ${deadline.notes ? `<br>${deadline.notes}` : ''}
-                        </div>
-                    </div>
-                    <div class="deadline-countdown">
-                        <div class="countdown-number ${countdownClass}">${daysRemaining < 0 ? 'PAST' : daysRemaining}</div>
-                        <div class="countdown-label">${daysRemaining < 0 ? 'days overdue' : 'days left'}</div>
-                    </div>
-                    <div class="deadline-actions">
-                        ${deadline.status !== 'complete' ?
-                            `<button class="btn btn-sm btn-outline" onclick="markComplete('${deadline.id}')">Done</button>` :
-                            `<span class="badge badge-complete">Complete</span>`
-                        }
-                        <button class="btn btn-sm btn-outline" onclick="deleteDeadline('${deadline.id}')" style="color: var(--danger); border-color: var(--danger);">X</button>
-                    </div>
-                </div>
-            `;
+        function renderCard(d) {
+            const days = getDaysRemaining(d.dueDate);
+            const due = new Date(d.dueDate);
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            let cardClass = d.priority || 'medium';
+            if (d.status === 'complete') cardClass = 'complete';
+            let countdownClass = days <= 7 ? 'danger' : days <= 14 ? 'warning' : 'ok';
+            return `<div class="deadline-card ${cardClass}">
+                <div class="deadline-date"><div class="day">${due.getDate()}</div><div class="month">${months[due.getMonth()]}</div></div>
+                <div class="deadline-content"><div class="deadline-title">${d.title}</div><div class="deadline-meta">${d.clientName || ''} ${d.notes || ''}</div></div>
+                <div class="deadline-countdown"><div class="countdown-number ${countdownClass}">${days < 0 ? 'PAST' : days}</div><div class="countdown-label">${days < 0 ? 'overdue' : 'days'}</div></div>
+                <div>${d.status !== 'complete' ? `<button class="btn btn-sm btn-secondary" onclick="markComplete('${d.id}')">Done</button>` : '<span class="badge badge-complete">Done</span>'}</div>
+            </div>`;
         }
 
         function renderDeadlines() {
-            const critical = [];
-            const upcoming = [];
-            const later = [];
-            const completed = [];
-
-            for (const d of deadlines) {
+            const critical = [], upcoming = [], later = [], completed = [];
+            deadlines.forEach(d => {
                 const days = getDaysRemaining(d.dueDate);
-
-                if (d.status === 'complete' || d.status === 'missed' || days < 0) {
-                    completed.push(d);
-                } else if (days <= 7 || d.priority === 'critical') {
-                    critical.push(d);
-                } else if (days <= 30) {
-                    upcoming.push(d);
-                } else {
-                    later.push(d);
-                }
-            }
-
-            // Sort by due date
-            const sortByDate = (a, b) => new Date(a.dueDate) - new Date(b.dueDate);
-            critical.sort(sortByDate);
-            upcoming.sort(sortByDate);
-            later.sort(sortByDate);
-            completed.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
+                if (d.status === 'complete' || days < 0) completed.push(d);
+                else if (days <= 7 || d.priority === 'critical') critical.push(d);
+                else if (days <= 30) upcoming.push(d);
+                else later.push(d);
+            });
+            const sort = (a,b) => new Date(a.dueDate) - new Date(b.dueDate);
+            critical.sort(sort); upcoming.sort(sort); later.sort(sort);
 
             document.getElementById('criticalCount').textContent = critical.length;
             document.getElementById('upcomingCount').textContent = upcoming.length;
             document.getElementById('laterCount').textContent = later.length;
             document.getElementById('completedCount').textContent = completed.length;
 
-            document.getElementById('criticalDeadlines').innerHTML =
-                critical.length ? critical.map(renderDeadlineCard).join('') : '<p class="form-hint">No critical deadlines.</p>';
-
-            document.getElementById('upcomingDeadlines').innerHTML =
-                upcoming.length ? upcoming.map(renderDeadlineCard).join('') : '<p class="form-hint">No upcoming deadlines.</p>';
-
-            document.getElementById('laterDeadlines').innerHTML =
-                later.length ? later.map(renderDeadlineCard).join('') : '<p class="form-hint">No deadlines beyond 30 days.</p>';
-
-            document.getElementById('completedDeadlines').innerHTML =
-                completed.length ? completed.map(renderDeadlineCard).join('') : '<p class="form-hint">No completed deadlines.</p>';
+            document.getElementById('criticalDeadlines').innerHTML = critical.length ? critical.map(renderCard).join('') : '<p class="text-muted">No critical deadlines.</p>';
+            document.getElementById('upcomingDeadlines').innerHTML = upcoming.length ? upcoming.map(renderCard).join('') : '<p class="text-muted">No upcoming deadlines.</p>';
+            document.getElementById('laterDeadlines').innerHTML = later.length ? later.map(renderCard).join('') : '<p class="text-muted">No later deadlines.</p>';
+            document.getElementById('completedDeadlines').innerHTML = completed.length ? completed.map(renderCard).join('') : '<p class="text-muted">No completed deadlines.</p>';
         }
 
-        function markComplete(id) {
-            const d = deadlines.find(x => x.id === id);
-            if (d) {
-                d.status = 'complete';
-                d.completedDate = new Date().toISOString();
-                saveAndRender();
-            }
-        }
-
-        function deleteDeadline(id) {
-            if (!confirm('Delete this deadline?')) return;
-            deadlines = deadlines.filter(d => d.id !== id);
-            saveAndRender();
-        }
-
-        function renderCalendar() {
-            const year = currentMonth.getFullYear();
-            const month = currentMonth.getMonth();
-            const months = ['January', 'February', 'March', 'April', 'May', 'June',
-                           'July', 'August', 'September', 'October', 'November', 'December'];
-
-            document.getElementById('calendarMonth').textContent = `${months[month]} ${year}`;
-
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const today = new Date();
-
-            // Get deadlines for this month
-            const monthDeadlines = {};
-            for (const d of deadlines) {
-                if (d.status === 'complete') continue;
-                const due = new Date(d.dueDate);
-                if (due.getFullYear() === year && due.getMonth() === month) {
-                    const day = due.getDate();
-                    if (!monthDeadlines[day]) monthDeadlines[day] = [];
-                    monthDeadlines[day].push(d);
-                }
-            }
-
-            let html = '';
-
-            // Empty cells before first day
-            for (let i = 0; i < firstDay; i++) {
-                html += '<div class="calendar-day other-month"></div>';
-            }
-
-            // Days of month
-            for (let day = 1; day <= daysInMonth; day++) {
-                const isToday = today.getFullYear() === year &&
-                               today.getMonth() === month &&
-                               today.getDate() === day;
-
-                const hasDeadline = monthDeadlines[day];
-                const hasCritical = hasDeadline && hasDeadline.some(d => d.priority === 'critical');
-
-                let classes = 'calendar-day';
-                if (isToday) classes += ' today';
-                if (hasDeadline) classes += ' has-deadline';
-                if (hasCritical) classes += ' critical';
-
-                const title = hasDeadline ? hasDeadline.map(d => d.title).join(', ') : '';
-
-                html += `<div class="${classes}" title="${title}">${day}</div>`;
-            }
-
-            document.getElementById('calendarDays').innerHTML = html;
-        }
-
-        function prevMonth() {
-            currentMonth.setMonth(currentMonth.getMonth() - 1);
-            renderCalendar();
-        }
-
-        function nextMonth() {
-            currentMonth.setMonth(currentMonth.getMonth() + 1);
-            renderCalendar();
-        }
-
-        function logout() {
-            localStorage.removeItem('legal-portal-auth');
-            localStorage.removeItem('legal-portal-auth-time');
-            window.location.href = 'index.html';
-        }
-
-        // Initial render
+        function markComplete(id) { const d = deadlines.find(x => x.id === id); if (d) { d.status = 'complete'; saveAndRender(); } }
+        function switchPractice(p) { localStorage.setItem('legal-portal-practice', p); window.location.href = 'dashboard.html'; }
+        function logout() { localStorage.removeItem('legal-portal-auth'); localStorage.removeItem('legal-portal-auth-time'); window.location.href = 'index.html'; }
         renderDeadlines();
-        renderCalendar();
     </script>
 </body>
 </html>

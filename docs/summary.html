@@ -18,62 +18,62 @@
     <style>
         .client-select-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 16px;
-            margin: 20px 0;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
         }
         .client-select-card {
-            border: 2px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
             cursor: pointer;
-            transition: all var(--transition);
-            background: var(--bg-card);
+            transition: all 0.15s ease;
+            background: var(--bg-white);
         }
         .client-select-card:hover {
-            border-color: var(--primary);
-            background: var(--primary-lighter);
+            border-color: var(--accent);
         }
         .client-select-card.selected {
-            border-color: var(--primary);
-            background: var(--primary-light);
+            border-color: var(--accent);
+            background: #F0F7FF;
         }
         .client-header {
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
         .client-initials {
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: var(--primary);
+            background: var(--accent);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            font-size: 16px;
+            font-size: 14px;
         }
         .client-name h4 {
             margin: 0;
+            font-size: 14px;
         }
         .client-name p {
             margin: 0;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
         }
         .summary-section {
-            background: var(--bg-card);
+            background: var(--bg-white);
             border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            margin-bottom: 20px;
+            border-radius: 6px;
+            margin-bottom: 16px;
             overflow: hidden;
         }
         .summary-section-header {
-            background: var(--bg-subtle);
-            padding: 14px 20px;
+            background: var(--bg-gray);
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
@@ -81,17 +81,20 @@
         }
         .summary-section-header h4 {
             margin: 0;
-            font-size: 15px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
         }
         .summary-section-body {
-            padding: 20px;
+            padding: 16px;
         }
         .summary-row {
             display: grid;
-            grid-template-columns: 180px 1fr;
+            grid-template-columns: 160px 1fr;
             gap: 12px;
-            padding: 10px 0;
-            border-bottom: 1px solid var(--border-light);
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
         }
         .summary-row:last-child {
             border-bottom: none;
@@ -99,10 +102,10 @@
         .summary-label {
             font-weight: 500;
             color: var(--text-muted);
-            font-size: 14px;
+            font-size: 13px;
         }
         .summary-value {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-primary);
         }
         .summary-value.warning {
@@ -114,40 +117,34 @@
         .flag-item {
             display: flex;
             align-items: flex-start;
-            gap: 12px;
+            gap: 10px;
             padding: 12px;
-            background: var(--danger-light);
-            border-radius: var(--radius-md);
-            margin-bottom: 10px;
+            background: #FEF2F2;
+            border-left: 3px solid var(--danger);
+            border-radius: 4px;
+            margin-bottom: 8px;
         }
         .flag-item.warning {
-            background: var(--warning-light);
-        }
-        .flag-icon {
-            flex-shrink: 0;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #FFFBEB;
+            border-left-color: var(--warning);
         }
         .flag-content h5 {
             margin: 0 0 4px 0;
-            font-size: 14px;
+            font-size: 13px;
         }
         .flag-content p {
             margin: 0;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-secondary);
         }
         .timeline {
             position: relative;
-            padding-left: 24px;
+            padding-left: 20px;
         }
         .timeline::before {
             content: '';
             position: absolute;
-            left: 8px;
+            left: 6px;
             top: 0;
             bottom: 0;
             width: 2px;
@@ -155,7 +152,7 @@
         }
         .timeline-item {
             position: relative;
-            padding-bottom: 20px;
+            padding-bottom: 16px;
         }
         .timeline-item:last-child {
             padding-bottom: 0;
@@ -163,27 +160,27 @@
         .timeline-item::before {
             content: '';
             position: absolute;
-            left: -20px;
+            left: -17px;
             top: 4px;
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: var(--primary);
-            border: 2px solid var(--bg-card);
+            background: var(--accent);
+            border: 2px solid var(--bg-white);
         }
         .timeline-date {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         .timeline-content {
-            font-size: 14px;
+            font-size: 13px;
         }
         .print-summary {
             display: none;
         }
         @media print {
-            .header, .btn, .alert {
+            .sidebar, .top-bar, .btn, .alert {
                 display: none !important;
             }
             .print-summary {
@@ -196,139 +193,147 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1>Legal Services Portal</h1>
-        <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="intake.html">Intake</a>
-            <a href="checklist.html">Checklists</a>
-            <a href="deadlines.html">Deadlines</a>
-            <a href="about.html">How It Works</a>
-            <a href="#" onclick="logout(); return false;">Logout</a>
-        </nav>
-    </header>
-
-    <main class="container">
-        <div class="draft-notice">
-            <strong>DRAFT - PENDING ATTORNEY REVIEW</strong><br>
-            This summary is for attorney preparation only. Verify all information before court or filing.
-        </div>
-
-        <div class="card">
-            <h2>Case Summary Generator</h2>
-            <p>Generate comprehensive case summaries for attorney review, court preparation, or case file documentation.</p>
-        </div>
-
-        <!-- Client Selection -->
-        <div class="card" id="clientSelection">
-            <h3>Select Client</h3>
-            <div class="client-select-grid" id="clientGrid">
-                <p class="text-muted">Loading clients...</p>
-            </div>
-        </div>
-
-        <!-- No Clients -->
-        <div class="card" id="noClients" style="display: none;">
-            <div style="text-align: center; padding: 40px 20px;">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom: 16px;">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                </svg>
-                <h3>No Client Intakes Found</h3>
-                <p>Complete a client intake form first to generate case summaries.</p>
-                <a href="intake.html" class="btn btn-primary" style="margin-top: 16px;">Start Client Intake</a>
-            </div>
-        </div>
-
-        <!-- Generated Summary -->
-        <div id="summaryOutput" style="display: none;">
-            <div class="print-summary">
-                <h1 style="text-align: center;">CASE SUMMARY - ATTORNEY WORK PRODUCT</h1>
-                <p style="text-align: center; color: var(--danger);">DRAFT - PENDING REVIEW</p>
-            </div>
-
-            <div class="alert alert-info">
-                <strong>Summary Generated</strong> for <span id="summaryClientName"></span>
-            </div>
-
-            <!-- Case Overview -->
-            <div class="summary-section">
-                <div class="summary-section-header">
-                    <h4>Case Overview</h4>
-                </div>
-                <div class="summary-section-body" id="caseOverview">
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+                    Legal Portal
                 </div>
             </div>
-
-            <!-- Flags & Concerns -->
-            <div class="summary-section" id="flagsSection">
-                <div class="summary-section-header">
-                    <h4>Flags & Concerns</h4>
-                    <span class="badge badge-urgent" id="flagCount">0 items</span>
-                </div>
-                <div class="summary-section-body" id="flagsList">
-                </div>
+            <div class="practice-selector">
+                <label>Practice Area</label>
+                <select class="practice-select" id="practiceSelect" onchange="switchPractice(this.value)">
+                    <option value="immigration" selected>Immigration</option>
+                    <option value="contracts">Contracts</option>
+                    <option value="estate">Estate Planning</option>
+                    <option value="general">General</option>
+                </select>
             </div>
-
-            <!-- Biographical Summary -->
-            <div class="summary-section">
-                <div class="summary-section-header">
-                    <h4>Biographical Information</h4>
-                </div>
-                <div class="summary-section-body" id="bioSummary">
-                </div>
+            <nav class="workflow-nav">
+                <div class="workflow-label">Workflow</div>
+                <ul class="workflow-steps">
+                    <li class="workflow-step" onclick="window.location.href='intake.html'"><span class="step-indicator"><span class="step-number">1</span></span><span>Intake</span></li>
+                    <li class="workflow-step" onclick="window.location.href='checklist.html'"><span class="step-indicator"><span class="step-number">2</span></span><span>Documents</span></li>
+                    <li class="workflow-step" onclick="window.location.href='forms.html'"><span class="step-indicator"><span class="step-number">3</span></span><span>Forms</span></li>
+                    <li class="workflow-step active" onclick="window.location.href='summary.html'"><span class="step-indicator"><span class="step-number">4</span></span><span>Summary</span></li>
+                    <li class="workflow-step" onclick="window.location.href='deadlines.html'"><span class="step-indicator"><span class="step-number">5</span></span><span>File</span></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="about.html">How It Works</a>
+                <a href="#" onclick="logout(); return false;">Sign Out</a>
             </div>
+        </aside>
 
-            <!-- Immigration History -->
-            <div class="summary-section">
-                <div class="summary-section-header">
-                    <h4>Immigration History</h4>
-                </div>
-                <div class="summary-section-body" id="immigrationSummary">
-                </div>
-            </div>
+        <main class="main-content">
+            <header class="top-bar">
+                <span class="top-bar-title">Immigration — Summary</span>
+                <div class="top-bar-actions"><a href="dashboard.html">Dashboard</a></div>
+            </header>
 
-            <!-- Family Information -->
-            <div class="summary-section">
-                <div class="summary-section-header">
-                    <h4>Family Information</h4>
-                </div>
-                <div class="summary-section-body" id="familySummary">
-                </div>
-            </div>
+            <div class="content-container wide">
+                <div class="draft-notice"><strong>DRAFT - PENDING ATTORNEY REVIEW</strong><br>This summary is for attorney preparation only. Verify all information before court or filing.</div>
 
-            <!-- Case Timeline -->
-            <div class="summary-section">
-                <div class="summary-section-header">
-                    <h4>Key Dates & Timeline</h4>
+                <div class="card">
+                    <h2 style="margin-bottom: 8px;">Case Summary Generator</h2>
+                    <p style="color: var(--text-secondary);">Generate comprehensive case summaries for attorney review, court preparation, or case file documentation.</p>
                 </div>
-                <div class="summary-section-body">
-                    <div class="timeline" id="caseTimeline">
+
+                <!-- Client Selection -->
+                <div class="card" id="clientSelection">
+                    <h3>Select Client</h3>
+                    <div class="client-select-grid" id="clientGrid">
+                        <p class="text-muted">Loading clients...</p>
+                    </div>
+                </div>
+
+                <!-- No Clients -->
+                <div class="card" id="noClients" style="display: none;">
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom: 16px;">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                        </svg>
+                        <h3>No Client Intakes Found</h3>
+                        <p class="text-muted">Complete a client intake form first to generate case summaries.</p>
+                        <a href="intake.html" class="btn btn-primary" style="margin-top: 16px;">Start Client Intake</a>
+                    </div>
+                </div>
+
+                <!-- Generated Summary -->
+                <div id="summaryOutput" style="display: none;">
+                    <div class="print-summary">
+                        <h1 style="text-align: center;">CASE SUMMARY - ATTORNEY WORK PRODUCT</h1>
+                        <p style="text-align: center; color: var(--danger);">DRAFT - PENDING REVIEW</p>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <strong>Summary Generated</strong> for <span id="summaryClientName"></span>
+                    </div>
+
+                    <!-- Case Overview -->
+                    <div class="summary-section">
+                        <div class="summary-section-header"><h4>Case Overview</h4></div>
+                        <div class="summary-section-body" id="caseOverview"></div>
+                    </div>
+
+                    <!-- Flags & Concerns -->
+                    <div class="summary-section" id="flagsSection">
+                        <div class="summary-section-header">
+                            <h4>Flags & Concerns</h4>
+                            <span class="badge badge-urgent" id="flagCount">0 items</span>
+                        </div>
+                        <div class="summary-section-body" id="flagsList"></div>
+                    </div>
+
+                    <!-- Biographical Summary -->
+                    <div class="summary-section">
+                        <div class="summary-section-header"><h4>Biographical Information</h4></div>
+                        <div class="summary-section-body" id="bioSummary"></div>
+                    </div>
+
+                    <!-- Immigration History -->
+                    <div class="summary-section">
+                        <div class="summary-section-header"><h4>Immigration History</h4></div>
+                        <div class="summary-section-body" id="immigrationSummary"></div>
+                    </div>
+
+                    <!-- Family Information -->
+                    <div class="summary-section">
+                        <div class="summary-section-header"><h4>Family Information</h4></div>
+                        <div class="summary-section-body" id="familySummary"></div>
+                    </div>
+
+                    <!-- Case Timeline -->
+                    <div class="summary-section">
+                        <div class="summary-section-header"><h4>Key Dates & Timeline</h4></div>
+                        <div class="summary-section-body">
+                            <div class="timeline" id="caseTimeline"></div>
+                        </div>
+                    </div>
+
+                    <!-- Document Status -->
+                    <div class="summary-section">
+                        <div class="summary-section-header"><h4>Document Status</h4></div>
+                        <div class="summary-section-body" id="documentStatus">
+                            <p class="text-muted">No document checklist found for this client.</p>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="card">
+                        <h3>Export Options</h3>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button class="btn btn-primary" onclick="window.print()">Print Summary</button>
+                            <button class="btn btn-secondary" onclick="copyToClipboard()">Copy to Clipboard</button>
+                            <button class="btn btn-secondary" onclick="selectNewClient()">Select Different Client</button>
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Document Status -->
-            <div class="summary-section">
-                <div class="summary-section-header">
-                    <h4>Document Status</h4>
-                </div>
-                <div class="summary-section-body" id="documentStatus">
-                    <p class="text-muted">No document checklist found for this client.</p>
-                </div>
-            </div>
-
-            <!-- Actions -->
-            <div class="card">
-                <h3>Export Options</h3>
-                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                    <button class="btn btn-primary" onclick="window.print()">Print Summary</button>
-                    <button class="btn btn-secondary" onclick="copyToClipboard()">Copy to Clipboard</button>
-                    <button class="btn btn-outline" onclick="selectNewClient()">Select Different Client</button>
-                </div>
-            </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script>
         let clients = [];
@@ -353,7 +358,7 @@
                             <p>A#: ${client.aNumber || 'Not provided'}</p>
                         </div>
                     </div>
-                    <div style="font-size: 13px; color: var(--text-secondary);">
+                    <div style="font-size: 12px; color: var(--text-secondary);">
                         <strong>Case Type:</strong> ${formatCaseType(client.caseType)}<br>
                         <strong>Intake Date:</strong> ${new Date(client.meta?.intakeDate || Date.now()).toLocaleDateString()}
                     </div>
@@ -449,7 +454,6 @@
             } else {
                 document.getElementById('flagsList').innerHTML = flags.map(f => `
                     <div class="flag-item ${f.type === 'warning' ? 'warning' : ''}">
-                        <div class="flag-icon">${f.type === 'danger' ? '⚠️' : '⚡'}</div>
                         <div class="flag-content">
                             <h5>${f.title}</h5>
                             <p>${f.desc}</p>
@@ -605,6 +609,7 @@ ${c.priorDeportation ? '- PRIOR DEPORTATION\n' : ''}${c.hasArrests || c.hasConvi
             });
         }
 
+        function switchPractice(p) { localStorage.setItem('legal-portal-practice', p); window.location.href = 'dashboard.html'; }
         function logout() {
             localStorage.removeItem('legal-portal-auth');
             localStorage.removeItem('legal-portal-auth-time');

@@ -17,132 +17,126 @@
     </script>
     <style>
         .hero-section {
-            background: var(--bg-subtle);
-            padding: 64px 48px;
-            border-radius: var(--radius-xl);
-            margin-bottom: 36px;
+            background: var(--bg-gray);
+            padding: 48px 32px;
+            border-radius: 6px;
+            margin-bottom: 24px;
             text-align: center;
             border: 1px solid var(--border);
         }
         .hero-section h1 {
             color: var(--text-primary);
-            font-size: 2rem;
-            margin-bottom: 16px;
+            font-size: 1.75rem;
+            margin-bottom: 12px;
             font-weight: 600;
-            letter-spacing: -0.03em;
         }
         .hero-section p {
-            font-size: 1.0625rem;
-            max-width: 580px;
+            font-size: 15px;
+            max-width: 540px;
             margin: 0 auto;
             color: var(--text-secondary);
-            line-height: 1.7;
+            line-height: 1.6;
         }
         .feature-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin: 28px 0;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
         }
         .feature-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            padding: 28px;
-            box-shadow: var(--shadow-sm);
+            background: var(--bg-white);
+            border-radius: 6px;
+            padding: 20px;
             border: 1px solid var(--border);
-            transition: all var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-        .feature-card::before {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--primary);
-            transform: scaleX(0);
-            transition: transform var(--transition);
+            transition: all 0.15s ease;
         }
         .feature-card:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
-        .feature-card:hover::before {
-            transform: scaleX(1);
-        }
-        .feature-card.accent::before {
-            background: var(--accent);
+            border-color: var(--accent);
         }
         .feature-icon {
-            width: 52px;
-            height: 52px;
-            margin-bottom: 16px;
+            width: 44px;
+            height: 44px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--radius-lg);
-            background: var(--primary-lighter);
+            border-radius: 6px;
+            background: #F0F7FF;
         }
         .feature-icon svg {
-            width: 26px;
-            height: 26px;
-            stroke: var(--primary);
+            width: 22px;
+            height: 22px;
+            stroke: var(--accent);
             stroke-width: 1.75;
             fill: none;
         }
-        .feature-card.accent .feature-icon {
-            background: var(--accent-light);
-        }
-        .feature-card.accent .feature-icon svg {
-            stroke: var(--accent-dark);
-        }
         .feature-card h3 {
-            margin-bottom: 10px;
-            font-size: 1.125rem;
+            margin-bottom: 8px;
+            font-size: 15px;
         }
         .feature-card p {
-            font-size: 14px;
-            line-height: 1.6;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-secondary);
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 10px;
+        }
+        .status-badge.live {
+            background: #ECFDF5;
+            color: #065F46;
+        }
+        .status-badge.ready {
+            background: #FFFBEB;
+            color: #92400E;
+        }
+        .status-badge.planned {
+            background: #F0F7FF;
+            color: var(--accent);
         }
         .agent-diagram {
-            background: var(--bg-subtle);
-            border-radius: var(--radius-xl);
-            padding: 36px;
-            margin: 28px 0;
+            background: var(--bg-gray);
+            border-radius: 6px;
+            padding: 24px;
+            margin: 20px 0;
             border: 1px solid var(--border);
         }
         .diagram-flow {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
+            gap: 16px;
             flex-wrap: wrap;
         }
         .diagram-step {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: 20px 28px;
+            background: var(--bg-white);
+            border-radius: 6px;
+            padding: 16px 20px;
             text-align: center;
-            box-shadow: var(--shadow-sm);
             border: 1px solid var(--border);
-            min-width: 140px;
+            min-width: 120px;
         }
         .diagram-step h4 {
-            margin-bottom: 6px;
-            font-size: 14px;
+            margin-bottom: 4px;
+            font-size: 13px;
             color: var(--text-primary);
         }
         .diagram-step p {
             margin: 0;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
         }
         .diagram-step.highlight {
-            background: var(--primary);
+            background: var(--accent);
             color: white;
-            border-color: var(--primary);
+            border-color: var(--accent);
         }
         .diagram-step.highlight h4 {
             color: white;
@@ -150,356 +144,321 @@
         .diagram-step.highlight p {
             color: rgba(255,255,255,0.85);
         }
-        .diagram-step.highlight-accent {
-            background: var(--accent);
-            color: white;
-            border-color: var(--accent);
-        }
-        .diagram-step.highlight-accent h4 {
-            color: white;
-        }
-        .diagram-step.highlight-accent p {
-            color: rgba(255,255,255,0.85);
-        }
         .diagram-arrow {
-            font-size: 24px;
-            color: var(--border-dark);
+            font-size: 20px;
+            color: var(--border);
             font-weight: bold;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: var(--radius-full);
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            margin-bottom: 12px;
-        }
-        .status-badge.live {
-            background: var(--success-light);
-            color: #3D5A3D;
-        }
-        .status-badge.ready {
-            background: var(--warning-light);
-            color: #6B5A2A;
-        }
-        .status-badge.planned {
-            background: var(--primary-light);
-            color: var(--primary-dark);
         }
         .comparison-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 24px 0;
-            font-size: 14px;
+            margin: 20px 0;
+            font-size: 13px;
         }
         .comparison-table th, .comparison-table td {
-            padding: 16px 20px;
+            padding: 12px 16px;
             text-align: left;
             border-bottom: 1px solid var(--border);
         }
         .comparison-table th {
-            background: var(--primary);
+            background: var(--accent);
             color: white;
             font-weight: 600;
-            font-size: 12px;
+            font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
         .comparison-table tr:nth-child(even) {
-            background: var(--bg-subtle);
-        }
-        .comparison-table tbody tr {
-            transition: background var(--transition);
-        }
-        .comparison-table tbody tr:hover {
-            background: var(--bg-hover);
+            background: var(--bg-gray);
         }
         .cta-section {
-            background: var(--primary-lighter);
-            border-radius: var(--radius-xl);
-            padding: 48px;
+            background: #F0F7FF;
+            border-radius: 6px;
+            padding: 32px;
             text-align: center;
-            margin: 40px 0;
-            border: 1px solid var(--primary-light);
+            margin: 28px 0;
+            border: 1px solid #BFDBFE;
         }
         .cta-section h2 {
-            color: var(--primary-dark);
-            margin-bottom: 12px;
+            color: var(--accent);
+            margin-bottom: 8px;
+            font-size: 1.25rem;
         }
         .cta-section p {
             color: var(--text-secondary);
-            max-width: 480px;
-            margin: 0 auto 28px auto;
+            max-width: 420px;
+            margin: 0 auto 20px auto;
+            font-size: 14px;
         }
         .cta-buttons {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             justify-content: center;
             flex-wrap: wrap;
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1>Legal Services Portal</h1>
-        <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="intake.html">Intake</a>
-            <a href="checklist.html">Checklists</a>
-            <a href="deadlines.html">Deadlines</a>
-            <a href="about.html">How It Works</a>
-            <a href="#" onclick="logout(); return false;">Logout</a>
-        </nav>
-    </header>
-
-    <main class="container">
-        <div class="hero-section">
-            <h1>How the Legal Services Portal Works</h1>
-            <p>Streamline immigration case management with AI-ready workflow automation. Built for legal services organizations transitioning to sustainable, fee-based models.</p>
-        </div>
-
-        <!-- What This Tool Does -->
-        <div class="card">
-            <h2>What This Tool Does</h2>
-            <p>The Legal Services Portal is a suite of specialized assistants designed to help paralegals and attorneys work more efficiently. Each "agent" handles a specific part of the case workflow.</p>
-
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-                    <h3>Client Intake Agent</h3>
-                    <span class="status-badge live">Live</span>
-                    <p>Guides clients through a comprehensive intake questionnaire. Collects biographical, immigration, family, and case-specific information in a structured format.</p>
-                    <p><strong>Output:</strong> Organized intake summary ready for attorney review.</p>
-                </div>
-
-                <div class="feature-card accent">
-                    <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
-                    <h3>Document Checklist Agent</h3>
-                    <span class="status-badge live">Live</span>
-                    <p>Generates case-specific document requirements based on case type. Tracks submission status and sends reminders for missing items.</p>
-                    <p><strong>Output:</strong> Customized checklist with progress tracking.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg></div>
-                    <h3>Deadline Tracker Agent</h3>
-                    <span class="status-badge live">Live</span>
-                    <p>Calculates and monitors critical deadlines. Auto-calculates asylum 1-year deadlines, RFE response windows, and court dates.</p>
-                    <p><strong>Output:</strong> Deadline calendar with countdown alerts.</p>
-                </div>
-
-                <div class="feature-card accent">
-                    <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
-                    <h3>Form Assembly Agent</h3>
-                    <span class="status-badge planned">Planned</span>
-                    <p>Auto-populates USCIS forms from intake data. Validates entries and flags inconsistencies before filing.</p>
-                    <p><strong>Output:</strong> Completed PDF forms ready for review.</p>
-                </div>
-
-                <div class="feature-card">
-                    <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg></div>
-                    <h3>Case Summary Agent</h3>
-                    <span class="status-badge planned">Planned</span>
-                    <p>Generates comprehensive case summaries from all collected documents and data. Identifies strengths, gaps, and areas needing attention.</p>
-                    <p><strong>Output:</strong> Attorney-ready case brief.</p>
-                </div>
-
-                <div class="feature-card accent">
-                    <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg></div>
-                    <h3>RFE Response Agent</h3>
-                    <span class="status-badge planned">Planned</span>
-                    <p>Analyzes Requests for Evidence, maps requirements to available documentation, and helps organize response packets.</p>
-                    <p><strong>Output:</strong> Structured RFE response framework.</p>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+                    Legal Portal
                 </div>
             </div>
-        </div>
-
-        <!-- How Agents Work -->
-        <div class="card">
-            <h2>How the Agents Work</h2>
-
-            <div class="agent-diagram">
-                <h3 style="text-align: center; margin-bottom: 32px;">Current Architecture: Guided Workflows</h3>
-                <div class="diagram-flow">
-                    <div class="diagram-step">
-                        <h4>User Input</h4>
-                        <p>Forms & Data</p>
-                    </div>
-                    <div class="diagram-arrow">→</div>
-                    <div class="diagram-step highlight">
-                        <h4>Agent Logic</h4>
-                        <p>Rules & Validation</p>
-                    </div>
-                    <div class="diagram-arrow">→</div>
-                    <div class="diagram-step">
-                        <h4>Output</h4>
-                        <p>Checklists & Alerts</p>
-                    </div>
-                </div>
-                <p style="text-align: center; margin-top: 24px; color: var(--text-muted); font-size: 14px;">
-                    Currently, agents use pre-defined rules and validation logic to process inputs.
-                </p>
+            <div class="practice-selector">
+                <label>Practice Area</label>
+                <select class="practice-select" id="practiceSelect" onchange="switchPractice(this.value)">
+                    <option value="immigration">Immigration</option>
+                    <option value="contracts">Contracts</option>
+                    <option value="estate">Estate Planning</option>
+                    <option value="general">General</option>
+                </select>
             </div>
-
-            <div class="agent-diagram" style="background: var(--accent-light);">
-                <h3 style="text-align: center; margin-bottom: 32px;">Future Architecture: AI-Powered Agents</h3>
-                <div class="diagram-flow">
-                    <div class="diagram-step">
-                        <h4>User Input</h4>
-                        <p>Documents & Data</p>
-                    </div>
-                    <div class="diagram-arrow">→</div>
-                    <div class="diagram-step highlight-accent">
-                        <h4>Claude AI</h4>
-                        <p>Analysis & Generation</p>
-                    </div>
-                    <div class="diagram-arrow">→</div>
-                    <div class="diagram-step">
-                        <h4>Smart Output</h4>
-                        <p>Summaries & Insights</p>
-                    </div>
-                </div>
-                <p style="text-align: center; margin-top: 24px; color: var(--text-muted); font-size: 14px;">
-                    With API integration, agents can analyze documents, generate summaries, and provide intelligent recommendations.
-                </p>
-            </div>
-
-            <table class="comparison-table">
-                <thead>
-                    <tr>
-                        <th>Capability</th>
-                        <th>Current (Workflow)</th>
-                        <th>With AI (Claude API)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Data Collection</td>
-                        <td>Guided forms with validation</td>
-                        <td>Conversational intake, smart follow-ups</td>
-                    </tr>
-                    <tr>
-                        <td>Document Analysis</td>
-                        <td>Manual upload and tracking</td>
-                        <td>Auto-extract info from uploaded docs</td>
-                    </tr>
-                    <tr>
-                        <td>Deadline Calculation</td>
-                        <td>Rule-based formulas</td>
-                        <td>Context-aware with exception handling</td>
-                    </tr>
-                    <tr>
-                        <td>Case Summary</td>
-                        <td>Template-based output</td>
-                        <td>AI-generated narrative summaries</td>
-                    </tr>
-                    <tr>
-                        <td>Contract Review</td>
-                        <td>Not available</td>
-                        <td>Compare docs, explain changes, suggest edits</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- API Integration Opportunity -->
-        <div class="card">
-            <h2>API Integration Opportunity</h2>
-            <p>This portal is designed to be <strong>API-ready</strong>. The agent prompts and schemas are built to integrate with Claude API for enhanced capabilities.</p>
-
-            <div class="alert alert-info" style="margin: 24px 0;">
-                <strong>What's Needed for AI Integration:</strong>
-                <ul style="margin: 14px 0 0 20px;">
-                    <li style="margin-bottom: 8px;">Claude API access (enterprise agreement)</li>
-                    <li style="margin-bottom: 8px;">Secure backend for API calls (or client-side with key management)</li>
-                    <li>Document processing pipeline for uploads</li>
+            <nav class="workflow-nav">
+                <div class="workflow-label">Workflow</div>
+                <ul class="workflow-steps">
+                    <li class="workflow-step" onclick="window.location.href='intake.html'"><span class="step-indicator"><span class="step-number">1</span></span><span>Intake</span></li>
+                    <li class="workflow-step" onclick="window.location.href='checklist.html'"><span class="step-indicator"><span class="step-number">2</span></span><span>Documents</span></li>
+                    <li class="workflow-step" onclick="window.location.href='forms.html'"><span class="step-indicator"><span class="step-number">3</span></span><span>Forms</span></li>
+                    <li class="workflow-step" onclick="window.location.href='summary.html'"><span class="step-indicator"><span class="step-number">4</span></span><span>Summary</span></li>
+                    <li class="workflow-step" onclick="window.location.href='deadlines.html'"><span class="step-indicator"><span class="step-number">5</span></span><span>File</span></li>
                 </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="about.html" style="font-weight: 600;">How It Works</a>
+                <a href="#" onclick="logout(); return false;">Sign Out</a>
             </div>
+        </aside>
 
-            <h3>Agent Prompts Are Ready</h3>
-            <p>Each agent has a detailed system prompt that defines:</p>
-            <ul style="margin-left: 20px; margin-bottom: 20px;">
-                <li style="margin-bottom: 8px;"><strong>Role:</strong> What the agent does and its boundaries</li>
-                <li style="margin-bottom: 8px;"><strong>Rules:</strong> Logic for calculations, validations, and flags</li>
-                <li style="margin-bottom: 8px;"><strong>Output Format:</strong> Structured responses for consistency</li>
-                <li><strong>Guardrails:</strong> What the agent must NOT do (no legal advice)</li>
-            </ul>
+        <main class="main-content">
+            <header class="top-bar">
+                <span class="top-bar-title">How It Works</span>
+                <div class="top-bar-actions"><a href="dashboard.html">Dashboard</a></div>
+            </header>
 
-            <p>These prompts can be used directly with Claude API to transform the guided workflows into intelligent assistants.</p>
-        </div>
-
-        <!-- Compliance & Ethics -->
-        <div class="card">
-            <h2>Built-In Safeguards</h2>
-
-            <div class="feature-grid">
-                <div class="feature-card">
-                    <h3>No Legal Advice</h3>
-                    <p>Agents are explicitly designed to collect information and organize workflows. They never provide legal advice, case strategy, or eligibility determinations.</p>
+            <div class="content-container wide">
+                <div class="hero-section">
+                    <h1>How the Legal Services Portal Works</h1>
+                    <p>Streamline immigration case management with AI-ready workflow automation. Built for legal services organizations transitioning to sustainable, fee-based models.</p>
                 </div>
-                <div class="feature-card accent">
-                    <h3>Attorney Review Required</h3>
-                    <p>All outputs are marked as "DRAFT - PENDING ATTORNEY REVIEW." Nothing is filed or acted upon without human oversight.</p>
+
+                <!-- What This Tool Does -->
+                <div class="card">
+                    <h2>What This Tool Does</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;">The Legal Services Portal is a suite of specialized assistants designed to help paralegals and attorneys work more efficiently. Each "agent" handles a specific part of the case workflow.</p>
+
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                            <h3>Client Intake Agent</h3>
+                            <span class="status-badge live">Live</span>
+                            <p>Guides clients through a comprehensive intake questionnaire. Collects biographical, immigration, family, and case-specific information in a structured format.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+                            <h3>Document Checklist Agent</h3>
+                            <span class="status-badge live">Live</span>
+                            <p>Generates case-specific document requirements based on case type. Tracks submission status and sends reminders for missing items.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg></div>
+                            <h3>Deadline Tracker Agent</h3>
+                            <span class="status-badge live">Live</span>
+                            <p>Calculates and monitors critical deadlines. Auto-calculates asylum 1-year deadlines, RFE response windows, and court dates.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></div>
+                            <h3>Form Assembly Agent</h3>
+                            <span class="status-badge live">Live</span>
+                            <p>Auto-populates USCIS forms from intake data. Validates entries and flags inconsistencies before filing.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg></div>
+                            <h3>Case Summary Agent</h3>
+                            <span class="status-badge live">Live</span>
+                            <p>Generates comprehensive case summaries from all collected documents and data. Identifies strengths, gaps, and areas needing attention.</p>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="feature-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg></div>
+                            <h3>RFE Response Agent</h3>
+                            <span class="status-badge live">Live</span>
+                            <p>Analyzes Requests for Evidence, maps requirements to available documentation, and helps organize response packets.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="feature-card">
-                    <h3>Confidentiality</h3>
-                    <p>VAWA, T-visa, and U-visa cases have special confidentiality protections built into the system. Sensitive data is flagged for careful handling.</p>
+
+                <!-- How Agents Work -->
+                <div class="card">
+                    <h2>How the Agents Work</h2>
+
+                    <div class="agent-diagram">
+                        <h3 style="text-align: center; margin-bottom: 24px; font-size: 15px;">Current Architecture: Guided Workflows</h3>
+                        <div class="diagram-flow">
+                            <div class="diagram-step">
+                                <h4>User Input</h4>
+                                <p>Forms & Data</p>
+                            </div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-step highlight">
+                                <h4>Agent Logic</h4>
+                                <p>Rules & Validation</p>
+                            </div>
+                            <div class="diagram-arrow">→</div>
+                            <div class="diagram-step">
+                                <h4>Output</h4>
+                                <p>Checklists & Alerts</p>
+                            </div>
+                        </div>
+                        <p style="text-align: center; margin-top: 20px; color: var(--text-muted); font-size: 13px;">
+                            Currently, agents use pre-defined rules and validation logic to process inputs.
+                        </p>
+                    </div>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Capability</th>
+                                <th>Current (Workflow)</th>
+                                <th>With AI (Claude API)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Data Collection</td>
+                                <td>Guided forms with validation</td>
+                                <td>Conversational intake, smart follow-ups</td>
+                            </tr>
+                            <tr>
+                                <td>Document Analysis</td>
+                                <td>Manual upload and tracking</td>
+                                <td>Auto-extract info from uploaded docs</td>
+                            </tr>
+                            <tr>
+                                <td>Deadline Calculation</td>
+                                <td>Rule-based formulas</td>
+                                <td>Context-aware with exception handling</td>
+                            </tr>
+                            <tr>
+                                <td>Case Summary</td>
+                                <td>Template-based output</td>
+                                <td>AI-generated narrative summaries</td>
+                            </tr>
+                            <tr>
+                                <td>Contract Review</td>
+                                <td>Not available</td>
+                                <td>Compare docs, explain changes, suggest edits</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="feature-card accent">
-                    <h3>Human Handoff</h3>
-                    <p>Agents identify situations requiring human judgment (criminal history, credibility concerns, complex family situations) and escalate appropriately.</p>
+
+                <!-- API Integration Opportunity -->
+                <div class="card">
+                    <h2>API Integration Opportunity</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 16px;">This portal is designed to be <strong>API-ready</strong>. The agent prompts and schemas are built to integrate with Claude API for enhanced capabilities.</p>
+
+                    <div class="alert alert-info" style="margin: 20px 0;">
+                        <strong>What's Needed for AI Integration:</strong>
+                        <ul style="margin: 12px 0 0 20px;">
+                            <li style="margin-bottom: 6px;">Claude API access (enterprise agreement)</li>
+                            <li style="margin-bottom: 6px;">Secure backend for API calls (or client-side with key management)</li>
+                            <li>Document processing pipeline for uploads</li>
+                        </ul>
+                    </div>
+
+                    <h3>Agent Prompts Are Ready</h3>
+                    <p style="color: var(--text-secondary);">Each agent has a detailed system prompt that defines:</p>
+                    <ul style="margin-left: 20px; margin-bottom: 16px; font-size: 14px;">
+                        <li style="margin-bottom: 6px;"><strong>Role:</strong> What the agent does and its boundaries</li>
+                        <li style="margin-bottom: 6px;"><strong>Rules:</strong> Logic for calculations, validations, and flags</li>
+                        <li style="margin-bottom: 6px;"><strong>Output Format:</strong> Structured responses for consistency</li>
+                        <li><strong>Guardrails:</strong> What the agent must NOT do (no legal advice)</li>
+                    </ul>
+                </div>
+
+                <!-- Compliance & Ethics -->
+                <div class="card">
+                    <h2>Built-In Safeguards</h2>
+
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <h3>No Legal Advice</h3>
+                            <p>Agents are explicitly designed to collect information and organize workflows. They never provide legal advice, case strategy, or eligibility determinations.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Attorney Review Required</h3>
+                            <p>All outputs are marked as "DRAFT - PENDING ATTORNEY REVIEW." Nothing is filed or acted upon without human oversight.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Confidentiality</h3>
+                            <p>VAWA, T-visa, and U-visa cases have special confidentiality protections built into the system. Sensitive data is flagged for careful handling.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Human Handoff</h3>
+                            <p>Agents identify situations requiring human judgment (criminal history, credibility concerns, complex family situations) and escalate appropriately.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CTA -->
+                <div class="cta-section">
+                    <h2>Ready to Get Started?</h2>
+                    <p>Explore the current tools or contact us about API integration for your organization.</p>
+                    <div class="cta-buttons">
+                        <a href="dashboard.html" class="btn btn-primary">Go to Dashboard</a>
+                        <a href="intake.html" class="btn btn-secondary">Start an Intake</a>
+                    </div>
+                </div>
+
+                <!-- Technical Details -->
+                <div class="card">
+                    <h2>Technical Details</h2>
+                    <table class="comparison-table">
+                        <tbody>
+                            <tr>
+                                <td><strong>Hosting</strong></td>
+                                <td>GitHub Pages (static site)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Authentication</strong></td>
+                                <td>StatiCrypt password protection (client-side encryption)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Data Storage</strong></td>
+                                <td>Browser localStorage (no server-side storage in pilot)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Frameworks</strong></td>
+                                <td>Vanilla HTML/CSS/JavaScript (no dependencies)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>AI Ready</strong></td>
+                                <td>Agent prompts and schemas designed for Claude API integration</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-        </div>
-
-        <!-- CTA -->
-        <div class="cta-section">
-            <h2>Ready to Get Started?</h2>
-            <p>Explore the current tools or contact us about API integration for your organization.</p>
-            <div class="cta-buttons">
-                <a href="dashboard.html" class="btn btn-primary btn-lg">Go to Dashboard</a>
-                <a href="intake.html" class="btn btn-accent btn-lg">Start an Intake</a>
-            </div>
-        </div>
-
-        <!-- Technical Details -->
-        <div class="card">
-            <h2>Technical Details</h2>
-            <table class="comparison-table">
-                <tbody>
-                    <tr>
-                        <td><strong>Hosting</strong></td>
-                        <td>GitHub Pages (static site)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Authentication</strong></td>
-                        <td>StatiCrypt password protection (client-side encryption)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Data Storage</strong></td>
-                        <td>Browser localStorage (no server-side storage in pilot)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Frameworks</strong></td>
-                        <td>Vanilla HTML/CSS/JavaScript (no dependencies)</td>
-                    </tr>
-                    <tr>
-                        <td><strong>AI Ready</strong></td>
-                        <td>Agent prompts and schemas designed for Claude API integration</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script>
+        function switchPractice(p) { localStorage.setItem('legal-portal-practice', p); window.location.href = 'dashboard.html'; }
         function logout() {
             localStorage.removeItem('legal-portal-auth');
             localStorage.removeItem('legal-portal-auth-time');
             window.location.href = 'index.html';
         }
+        // Set practice selector to current practice
+        const practice = localStorage.getItem('legal-portal-practice') || 'immigration';
+        document.getElementById('practiceSelect').value = practice;
     </script>
 </body>
 </html>

@@ -6,7 +6,6 @@
     <title>Legal Services Portal - Document Checklist</title>
     <link rel="stylesheet" href="style.css">
     <script>
-        // Auth check
         (function() {
             var auth = localStorage.getItem('legal-portal-auth');
             var authTime = localStorage.getItem('legal-portal-auth-time');
@@ -20,604 +19,192 @@
         .checklist-item {
             display: flex;
             align-items: flex-start;
-            padding: 20px;
+            padding: 16px;
             border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            margin-bottom: 14px;
-            background: var(--bg-card);
-            transition: all var(--transition);
-        }
-        .checklist-item:hover {
-            box-shadow: var(--shadow-sm);
-        }
-        .checklist-item.received {
-            border-left: 4px solid var(--success);
-            background: var(--success-light);
-        }
-        .checklist-item.rejected {
-            border-left: 4px solid var(--danger);
-            background: var(--danger-light);
-        }
-        .checklist-checkbox {
-            margin-right: 16px;
-            margin-top: 2px;
-        }
-        .checklist-checkbox input {
-            width: 20px;
-            height: 20px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-        .checklist-content {
-            flex: 1;
-        }
-        .checklist-title {
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 6px;
-            font-size: 15px;
-        }
-        .checklist-description {
-            font-size: 14px;
-            color: var(--text-secondary);
+            border-radius: 6px;
             margin-bottom: 10px;
-            line-height: 1.5;
+            background: var(--bg-white);
         }
-        .checklist-meta {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-        .checklist-actions {
-            margin-left: 20px;
-        }
-        .status-select {
-            padding: 10px 14px;
-            font-size: 13px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-dark);
-            background: var(--bg-card);
-            cursor: pointer;
-            transition: all var(--transition);
-        }
-        .status-select:hover {
-            border-color: var(--text-subtle);
-        }
-        .status-select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-        .progress-bar {
-            height: 32px;
-            background: var(--bg-subtle);
-            border-radius: var(--radius-full);
-            overflow: hidden;
-            margin-bottom: 24px;
-            border: 1px solid var(--border);
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary) 0%, var(--success) 100%);
-            border-radius: var(--radius-full);
-            transition: width 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 12px;
-            letter-spacing: 0.03em;
-        }
+        .checklist-item.received { border-left: 3px solid var(--success); background: #ECFDF5; }
+        .checklist-item.rejected { border-left: 3px solid var(--danger); background: #FEF2F2; }
+        .checklist-checkbox { margin-right: 12px; margin-top: 2px; }
+        .checklist-checkbox input { width: 18px; height: 18px; accent-color: var(--accent); }
+        .checklist-content { flex: 1; }
+        .checklist-title { font-weight: 500; margin-bottom: 4px; font-size: 14px; }
+        .checklist-description { font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; }
+        .checklist-meta { font-size: 12px; color: var(--text-muted); }
+        .checklist-actions { margin-left: 16px; }
+        .status-select { padding: 6px 10px; font-size: 12px; border-radius: 4px; border: 1px solid var(--border); }
         .category-header {
-            background: var(--primary-lighter);
-            padding: 12px 18px;
-            border-radius: var(--radius-lg);
-            margin: 28px 0 16px 0;
-            font-weight: 600;
-            color: var(--primary-dark);
-            font-size: 13px;
+            background: var(--bg-gray);
+            padding: 10px 14px;
+            border-radius: 4px;
+            margin: 24px 0 12px 0;
+            font-weight: 500;
+            font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border: 1px solid var(--primary-light);
+            letter-spacing: 0.03em;
+            color: var(--text-secondary);
         }
-        .category-header:first-of-type {
-            margin-top: 0;
-        }
-        .generator-intro {
-            text-align: center;
-            padding: 20px 0 10px 0;
-        }
-        .generator-intro h2 {
-            margin-bottom: 10px;
-        }
-        .generator-intro p {
-            max-width: 500px;
-            margin: 0 auto;
-        }
+        .category-header:first-of-type { margin-top: 0; }
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1>Legal Services Portal</h1>
-        <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="intake.html">Intake</a>
-            <a href="checklist.html">Checklists</a>
-            <a href="deadlines.html">Deadlines</a>
-            <a href="about.html">How It Works</a>
-            <a href="#" onclick="logout(); return false;">Logout</a>
-        </nav>
-    </header>
-
-    <main class="container">
-        <div class="draft-notice">
-            <strong>DRAFT - PENDING ATTORNEY REVIEW</strong><br>
-            Document requirements may vary. Attorney will confirm final requirements.
-        </div>
-
-        <!-- Checklist Generator -->
-        <div class="card" id="generatorSection">
-            <div class="generator-intro">
-                <h2>Document Checklist Generator</h2>
-                <p>Select a case type to generate a customized document checklist.</p>
-            </div>
-
-            <div class="form-row" style="margin-top: 28px;">
-                <div class="form-group">
-                    <label class="form-label">Case Type</label>
-                    <select class="form-select" id="caseTypeSelect">
-                        <option value="">Select case type...</option>
-                        <option value="family_adjustment">Family-Based Adjustment (I-130/I-485)</option>
-                        <option value="asylum">Asylum (I-589)</option>
-                        <option value="u_visa">U Visa (I-918)</option>
-                        <option value="vawa">VAWA (I-360)</option>
-                        <option value="naturalization">Naturalization (N-400)</option>
-                        <option value="tps">TPS</option>
-                        <option value="daca">DACA</option>
-                        <option value="work_permit">Work Permit (I-765)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Client Name (optional)</label>
-                    <input type="text" class="form-input" id="clientName" placeholder="For tracking purposes">
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+                    Legal Portal
                 </div>
             </div>
+            <div class="practice-selector">
+                <label>Practice Area</label>
+                <select class="practice-select" id="practiceSelect" onchange="switchPractice(this.value)">
+                    <option value="immigration" selected>Immigration</option>
+                    <option value="contracts">Contracts</option>
+                    <option value="estate">Estate Planning</option>
+                    <option value="general">General</option>
+                </select>
+            </div>
+            <nav class="workflow-nav">
+                <div class="workflow-label">Workflow</div>
+                <ul class="workflow-steps">
+                    <li class="workflow-step" onclick="window.location.href='intake.html'"><span class="step-indicator"><span class="step-number">1</span></span><span>Intake</span></li>
+                    <li class="workflow-step active" onclick="window.location.href='checklist.html'"><span class="step-indicator"><span class="step-number">2</span></span><span>Documents</span></li>
+                    <li class="workflow-step" onclick="window.location.href='forms.html'"><span class="step-indicator"><span class="step-number">3</span></span><span>Forms</span></li>
+                    <li class="workflow-step" onclick="window.location.href='summary.html'"><span class="step-indicator"><span class="step-number">4</span></span><span>Summary</span></li>
+                    <li class="workflow-step" onclick="window.location.href='deadlines.html'"><span class="step-indicator"><span class="step-number">5</span></span><span>File</span></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="about.html">How It Works</a>
+                <a href="#" onclick="logout(); return false;">Sign Out</a>
+            </div>
+        </aside>
 
-            <button class="btn btn-primary" onclick="generateChecklist()">Generate Checklist</button>
-        </div>
+        <main class="main-content">
+            <header class="top-bar">
+                <span class="top-bar-title">Immigration — Documents</span>
+                <div class="top-bar-actions"><a href="dashboard.html">Dashboard</a></div>
+            </header>
 
-        <!-- Active Checklist -->
-        <div class="card" id="checklistSection" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-                <div>
-                    <h2 id="checklistTitle" style="margin-bottom: 6px;">Document Checklist</h2>
-                    <p class="form-hint" id="checklistSubtitle" style="margin: 0;"></p>
+            <div class="content-container wide">
+                <div class="draft-notice"><strong>DRAFT - PENDING ATTORNEY REVIEW</strong><br>Document requirements may vary.</div>
+
+                <div class="card" id="generatorSection">
+                    <h2 style="margin-bottom: 8px;">Document Checklist</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 24px;">Select a case type to generate a customized document checklist.</p>
+                    <div class="form-row">
+                        <div class="form-group"><label class="form-label">Case Type</label><select class="form-select" id="caseTypeSelect"><option value="">Select...</option><option value="family_adjustment">Family-Based Adjustment</option><option value="asylum">Asylum</option><option value="u_visa">U Visa</option><option value="naturalization">Naturalization</option><option value="tps">TPS</option><option value="work_permit">Work Permit</option></select></div>
+                        <div class="form-group"><label class="form-label">Client Name</label><input type="text" class="form-input" id="clientName" placeholder="For tracking"></div>
+                    </div>
+                    <button class="btn btn-primary" onclick="generateChecklist()">Generate Checklist</button>
                 </div>
-                <button class="btn btn-outline btn-sm" onclick="showGenerator()">New Checklist</button>
-            </div>
 
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill" style="width: 0%;">
-                    <span id="progressText">0%</span>
+                <div class="card" id="checklistSection" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <div><h2 id="checklistTitle" style="margin-bottom: 4px;">Checklist</h2><p class="text-sm text-muted" id="checklistSubtitle"></p></div>
+                        <button class="btn btn-secondary btn-sm" onclick="showGenerator()">New Checklist</button>
+                    </div>
+                    <div class="progress-bar" style="margin-bottom: 20px;"><div class="progress-bar-fill" id="progressFill" style="width: 0%;"></div></div>
+                    <div id="checklistItems"></div>
+                    <div style="margin-top: 24px; display: flex; gap: 12px;">
+                        <button class="btn btn-primary" onclick="saveChecklist()">Save</button>
+                        <button class="btn btn-secondary" onclick="window.print()">Print</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Saved Checklists</h3>
+                    <div id="savedChecklists"><p class="text-muted">No saved checklists.</p></div>
                 </div>
             </div>
-
-            <div class="alert alert-info">
-                <strong>Instructions:</strong> Check off documents as you receive them. Change status to track progress.
-            </div>
-
-            <div id="checklistItems">
-                <!-- Generated checklist items appear here -->
-            </div>
-
-            <div style="margin-top: 36px; display: flex; gap: 16px;">
-                <button class="btn btn-primary" onclick="saveChecklist()">Save Checklist</button>
-                <button class="btn btn-outline" onclick="printChecklist()">Print Checklist</button>
-            </div>
-        </div>
-
-        <!-- Saved Checklists -->
-        <div class="card">
-            <h3>Saved Checklists</h3>
-            <div id="savedChecklists">
-                <p class="form-hint">No saved checklists yet.</p>
-            </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script>
-        // Document requirements database
         const documentRequirements = {
-            family_adjustment: {
-                title: "Family-Based Adjustment of Status",
-                categories: {
-                    identity: [
-                        { name: "Petitioner's Proof of Status", description: "U.S. passport, naturalization certificate, or green card", source: "USCIS or Department of State", required: true },
-                        { name: "Beneficiary's Passport", description: "Biographical page showing photo, name, DOB", source: "Home country government", required: true },
-                        { name: "Beneficiary's Birth Certificate", description: "Original with certified English translation", source: "Home country civil registry", required: true },
-                        { name: "Passport-Style Photos", description: "2 photos, 2x2 inches, white background, taken within 30 days", source: "Photo service (CVS, Walgreens, etc.)", required: true }
-                    ],
-                    immigration: [
-                        { name: "I-94 Arrival Record", description: "Electronic or paper I-94 showing most recent entry", source: "i94.cbp.dhs.gov", required: true },
-                        { name: "Prior Visa/Immigration Documents", description: "All visas, I-20s, approval notices", source: "Personal records", required: false }
-                    ],
-                    relationship: [
-                        { name: "Marriage Certificate", description: "Government-issued, with translation if needed", source: "County clerk or equivalent", required: true },
-                        { name: "Divorce Decrees (All Prior Marriages)", description: "For both petitioner and beneficiary", source: "Court records", required: true },
-                        { name: "Joint Financial Evidence", description: "Bank accounts, insurance, property in both names", source: "Banks, insurance companies", required: false },
-                        { name: "Photos Together", description: "Various occasions, dated, with family/friends", source: "Personal collection", required: false },
-                        { name: "Relationship Affidavits", description: "Sworn statements from friends/family", source: "Friends and family members", required: false }
-                    ],
-                    financial: [
-                        { name: "Tax Returns (3 Years)", description: "Federal returns with all schedules and W-2s", source: "IRS transcripts or personal records", required: true },
-                        { name: "Recent Pay Stubs", description: "Last 3 months of pay stubs", source: "Employer", required: true },
-                        { name: "Employment Letter", description: "Confirming position, salary, employment duration", source: "Employer HR department", required: true },
-                        { name: "Bank Statements", description: "Last 3 months, all accounts", source: "Banks", required: false }
-                    ],
-                    medical: [
-                        { name: "I-693 Medical Examination", description: "Sealed envelope from USCIS-designated civil surgeon", source: "Civil surgeon (find at uscis.gov)", required: true }
-                    ]
-                }
-            },
-            asylum: {
-                title: "Asylum Application",
-                categories: {
-                    identity: [
-                        { name: "Passport (All Pages)", description: "Including blank pages, showing all stamps and visas", source: "Personal records", required: true },
-                        { name: "National ID Card", description: "If available from home country", source: "Personal records", required: false },
-                        { name: "Birth Certificate", description: "With certified English translation", source: "Home country records", required: true },
-                        { name: "Passport-Style Photos", description: "2 photos per applicant", source: "Photo service", required: true }
-                    ],
-                    immigration: [
-                        { name: "I-94 Record", description: "Evidence of entry date (critical for 1-year deadline)", source: "i94.cbp.dhs.gov", required: true },
-                        { name: "Entry Visa", description: "Visa used to enter the US, if applicable", source: "Personal records", required: false }
-                    ],
-                    evidence: [
-                        { name: "Personal Declaration", description: "Detailed written statement of persecution claim", source: "Client (with attorney guidance)", required: true },
-                        { name: "Country Conditions Evidence", description: "State Dept reports, UNHCR, news articles, human rights reports", source: "Online research, human rights organizations", required: true },
-                        { name: "Medical/Psychological Evaluation", description: "If claiming physical or mental harm", source: "Licensed medical/mental health professional", required: false },
-                        { name: "Police Reports", description: "From incidents in home country", source: "Home country police (if safe to obtain)", required: false },
-                        { name: "Threatening Messages", description: "Letters, texts, emails showing threats", source: "Personal records", required: false },
-                        { name: "Photos of Injuries/Incidents", description: "Any photographic evidence", source: "Personal records", required: false },
-                        { name: "Witness Affidavits", description: "Sworn statements from people with knowledge", source: "Witnesses", required: false }
-                    ]
-                }
-            },
-            u_visa: {
-                title: "U Visa (Crime Victim)",
-                categories: {
-                    identity: [
-                        { name: "Passport or National ID", description: "Government-issued identification", source: "Personal records", required: true },
-                        { name: "Birth Certificate", description: "With translation if needed", source: "Home country records", required: true },
-                        { name: "Passport-Style Photos", description: "2 photos", source: "Photo service", required: true }
-                    ],
-                    court: [
-                        { name: "I-918B Law Enforcement Certification", description: "CRITICAL - Must be signed by certifying official", source: "Police, prosecutor, judge, or other qualifying agency", required: true },
-                        { name: "Police Reports", description: "All reports related to the crime", source: "Law enforcement agency", required: true },
-                        { name: "Court Records", description: "Any criminal or civil proceedings", source: "Court clerk", required: false },
-                        { name: "Protective Orders", description: "Restraining orders, orders of protection", source: "Court", required: false }
-                    ],
-                    evidence: [
-                        { name: "Personal Statement", description: "Description of crime and helpfulness to law enforcement", source: "Client", required: true },
-                        { name: "Medical Records", description: "Related to injuries from the crime", source: "Healthcare providers", required: false },
-                        { name: "Photos of Injuries", description: "Documenting physical harm", source: "Personal records", required: false },
-                        { name: "Victim Advocate Letter", description: "Letter from victim services organization", source: "Victim advocacy organization", required: false }
-                    ]
-                }
-            },
-            vawa: {
-                title: "VAWA Self-Petition",
-                categories: {
-                    identity: [
-                        { name: "Passport or ID", description: "Government-issued identification", source: "Personal records", required: true },
-                        { name: "Birth Certificate", description: "With translation", source: "Home country records", required: true },
-                        { name: "Passport-Style Photos", description: "2 photos", source: "Photo service", required: true }
-                    ],
-                    relationship: [
-                        { name: "Marriage Certificate", description: "If petitioning as spouse", source: "County clerk or equivalent", required: true },
-                        { name: "Proof of Abuser's Status", description: "Evidence abuser is USC or LPR", source: "Personal knowledge or public records", required: true },
-                        { name: "Shared Residence Evidence", description: "Leases, bills, mail showing cohabitation", source: "Personal records", required: false }
-                    ],
-                    evidence: [
-                        { name: "Personal Statement", description: "Detailed account of abuse", source: "Client", required: true },
-                        { name: "Police Reports", description: "Any reports filed about abuse", source: "Law enforcement", required: false },
-                        { name: "Protective Orders", description: "Restraining orders obtained", source: "Court", required: false },
-                        { name: "Medical Records", description: "Documenting injuries from abuse", source: "Healthcare providers", required: false },
-                        { name: "Photos of Injuries", description: "Photographic evidence of abuse", source: "Personal records", required: false },
-                        { name: "Communications Showing Abuse", description: "Texts, emails, voicemails", source: "Personal records", required: false },
-                        { name: "Witness Affidavits", description: "Statements from people who witnessed abuse or its effects", source: "Friends, family, counselors", required: false }
-                    ]
-                }
-            },
-            naturalization: {
-                title: "Naturalization / Citizenship",
-                categories: {
-                    identity: [
-                        { name: "Green Card (Front & Back)", description: "Current permanent resident card", source: "Personal records", required: true },
-                        { name: "Passport", description: "All passports held during LPR period", source: "Personal records", required: true },
-                        { name: "Passport-Style Photos", description: "2 photos", source: "Photo service", required: true }
-                    ],
-                    immigration: [
-                        { name: "Travel History", description: "List of all trips outside US with dates and destinations", source: "Personal records, passport stamps", required: true },
-                        { name: "Tax Returns (5 Years)", description: "Federal tax returns for entire LPR period", source: "IRS or personal records", required: true },
-                        { name: "Selective Service Registration", description: "For males who were 18-26 while in the US", source: "sss.gov", required: false }
-                    ],
-                    relationship: [
-                        { name: "Marriage Certificate(s)", description: "All marriages", source: "County clerk", required: false },
-                        { name: "Divorce Decrees", description: "All divorces", source: "Court records", required: false },
-                        { name: "Children's Birth Certificates", description: "For all children", source: "Vital records office", required: false }
-                    ]
-                }
-            },
-            tps: {
-                title: "Temporary Protected Status",
-                categories: {
-                    identity: [
-                        { name: "Passport", description: "Or other evidence of nationality", source: "Personal records", required: true },
-                        { name: "Birth Certificate", description: "Showing country of birth", source: "Home country records", required: true },
-                        { name: "Passport-Style Photos", description: "2 photos", source: "Photo service", required: true }
-                    ],
-                    immigration: [
-                        { name: "I-94 Record", description: "Evidence of presence in US on required date", source: "i94.cbp.dhs.gov", required: true },
-                        { name: "Evidence of Continuous Residence", description: "Utility bills, leases, pay stubs, bank statements", source: "Various", required: true }
-                    ]
-                }
-            },
-            daca: {
-                title: "DACA",
-                categories: {
-                    identity: [
-                        { name: "Passport or National ID", description: "Proof of identity", source: "Personal records", required: true },
-                        { name: "Birth Certificate", description: "With translation", source: "Home country records", required: true },
-                        { name: "Passport-Style Photos", description: "2 photos", source: "Photo service", required: true }
-                    ],
-                    immigration: [
-                        { name: "Evidence of Entry Before Age 16", description: "I-94, passport stamps, school records", source: "Various", required: true },
-                        { name: "Evidence of Continuous Presence", description: "School records, medical records, employment records, bank statements", source: "Various", required: true }
-                    ]
-                }
-            },
-            work_permit: {
-                title: "Employment Authorization (I-765)",
-                categories: {
-                    identity: [
-                        { name: "Passport", description: "Biographical page", source: "Personal records", required: true },
-                        { name: "Passport-Style Photos", description: "2 photos", source: "Photo service", required: true },
-                        { name: "I-94 Record", description: "Current arrival record", source: "i94.cbp.dhs.gov", required: true }
-                    ],
-                    immigration: [
-                        { name: "Prior EAD Cards", description: "If this is a renewal", source: "Personal records", required: false },
-                        { name: "Pending Application Receipt", description: "If based on pending I-485 or asylum", source: "USCIS receipt notice", required: true }
-                    ]
-                }
-            }
+            family_adjustment: { title: "Family-Based Adjustment", categories: { identity: [{ name: "Petitioner's Proof of Status", description: "Passport, naturalization cert, or green card", source: "USCIS", required: true },{ name: "Beneficiary's Passport", description: "Bio page with photo", source: "Personal", required: true },{ name: "Birth Certificate", description: "With translation", source: "Home country", required: true },{ name: "Photos", description: "2x2 passport style", source: "Photo service", required: true }], relationship: [{ name: "Marriage Certificate", description: "Government-issued", source: "County clerk", required: true },{ name: "Joint Financial Evidence", description: "Bank accounts, insurance", source: "Banks", required: false }], financial: [{ name: "Tax Returns (3 Years)", description: "With W-2s", source: "IRS", required: true },{ name: "Employment Letter", description: "Position and salary", source: "Employer", required: true }], medical: [{ name: "I-693 Medical Exam", description: "Sealed from civil surgeon", source: "Civil surgeon", required: true }] }},
+            asylum: { title: "Asylum Application", categories: { identity: [{ name: "Passport", description: "All pages", source: "Personal", required: true },{ name: "Birth Certificate", description: "With translation", source: "Home country", required: true },{ name: "Photos", description: "2 passport-style", source: "Photo service", required: true }], evidence: [{ name: "Personal Declaration", description: "Detailed statement", source: "Client", required: true },{ name: "Country Conditions", description: "Reports and articles", source: "Research", required: true },{ name: "Medical Records", description: "If claiming harm", source: "Doctors", required: false }] }},
+            u_visa: { title: "U Visa", categories: { identity: [{ name: "ID Documents", description: "Passport or national ID", source: "Personal", required: true },{ name: "Birth Certificate", description: "With translation", source: "Home country", required: true }], court: [{ name: "I-918B Certification", description: "From law enforcement", source: "Police/prosecutor", required: true },{ name: "Police Reports", description: "Related to crime", source: "Law enforcement", required: true }], evidence: [{ name: "Personal Statement", description: "Description of crime", source: "Client", required: true }] }},
+            naturalization: { title: "Naturalization", categories: { identity: [{ name: "Green Card", description: "Front and back", source: "Personal", required: true },{ name: "Passport", description: "All during LPR period", source: "Personal", required: true },{ name: "Photos", description: "2 passport-style", source: "Photo service", required: true }], immigration: [{ name: "Travel History", description: "All trips outside US", source: "Personal", required: true },{ name: "Tax Returns (5 Years)", description: "Federal returns", source: "IRS", required: true }] }},
+            tps: { title: "TPS", categories: { identity: [{ name: "Passport", description: "Proof of nationality", source: "Personal", required: true },{ name: "Birth Certificate", description: "Country of birth", source: "Home country", required: true }], immigration: [{ name: "I-94", description: "Presence evidence", source: "CBP", required: true },{ name: "Residence Evidence", description: "Bills, leases, etc.", source: "Various", required: true }] }},
+            work_permit: { title: "Work Permit", categories: { identity: [{ name: "Passport", description: "Bio page", source: "Personal", required: true },{ name: "Photos", description: "2 passport-style", source: "Photo service", required: true },{ name: "I-94", description: "Arrival record", source: "CBP", required: true }], immigration: [{ name: "Pending Application Receipt", description: "I-797 notice", source: "USCIS", required: true }] }}
         };
-
         let currentChecklist = null;
 
         function generateChecklist() {
-            const caseType = document.getElementById('caseTypeSelect').value;
-            const clientName = document.getElementById('clientName').value;
-
-            if (!caseType) {
-                alert('Please select a case type.');
-                return;
-            }
-
-            const requirements = documentRequirements[caseType];
-            if (!requirements) {
-                alert('Document requirements not available for this case type.');
-                return;
-            }
-
-            currentChecklist = {
-                id: Date.now().toString(),
-                caseType: caseType,
-                title: requirements.title,
-                clientName: clientName,
-                createdDate: new Date().toISOString(),
-                documents: []
-            };
-
-            // Flatten documents with categories
+            const type = document.getElementById('caseTypeSelect').value;
+            if (!type) { alert('Select a case type.'); return; }
+            const reqs = documentRequirements[type];
+            currentChecklist = { id: Date.now().toString(), caseType: type, title: reqs.title, clientName: document.getElementById('clientName').value, createdDate: new Date().toISOString(), documents: [] };
             let docId = 0;
-            for (const [category, docs] of Object.entries(requirements.categories)) {
+            for (const [cat, docs] of Object.entries(reqs.categories)) {
                 for (const doc of docs) {
-                    currentChecklist.documents.push({
-                        id: (++docId).toString(),
-                        category: category,
-                        name: doc.name,
-                        description: doc.description,
-                        source: doc.source,
-                        required: doc.required,
-                        status: 'not_started'
-                    });
+                    currentChecklist.documents.push({ id: (++docId).toString(), category: cat, ...doc, status: 'not_started' });
                 }
             }
-
             renderChecklist();
         }
 
         function renderChecklist() {
             document.getElementById('generatorSection').style.display = 'none';
             document.getElementById('checklistSection').style.display = 'block';
-
             document.getElementById('checklistTitle').textContent = currentChecklist.title;
-            document.getElementById('checklistSubtitle').textContent =
-                (currentChecklist.clientName ? `Client: ${currentChecklist.clientName} | ` : '') +
-                `Created: ${new Date(currentChecklist.createdDate).toLocaleDateString()}`;
+            document.getElementById('checklistSubtitle').textContent = (currentChecklist.clientName ? `Client: ${currentChecklist.clientName} | ` : '') + `Created: ${new Date(currentChecklist.createdDate).toLocaleDateString()}`;
 
-            // Group by category
             const byCategory = {};
-            for (const doc of currentChecklist.documents) {
-                if (!byCategory[doc.category]) {
-                    byCategory[doc.category] = [];
-                }
-                byCategory[doc.category].push(doc);
-            }
-
-            const categoryNames = {
-                identity: 'Identity Documents',
-                immigration: 'Immigration Documents',
-                relationship: 'Relationship Evidence',
-                financial: 'Financial Documents',
-                medical: 'Medical Documents',
-                evidence: 'Supporting Evidence',
-                court: 'Court & Law Enforcement Documents',
-                other: 'Other Documents'
-            };
+            currentChecklist.documents.forEach(d => { if (!byCategory[d.category]) byCategory[d.category] = []; byCategory[d.category].push(d); });
+            const catNames = { identity: 'Identity', immigration: 'Immigration', relationship: 'Relationship', financial: 'Financial', medical: 'Medical', evidence: 'Evidence', court: 'Court Documents' };
 
             let html = '';
-            for (const [category, docs] of Object.entries(byCategory)) {
-                html += `<div class="category-header">${categoryNames[category] || category}</div>`;
+            for (const [cat, docs] of Object.entries(byCategory)) {
+                html += `<div class="category-header">${catNames[cat] || cat}</div>`;
                 for (const doc of docs) {
                     const isReceived = doc.status === 'received' || doc.status === 'verified';
-                    const isRejected = doc.status === 'rejected';
-                    html += `
-                        <div class="checklist-item ${isReceived ? 'received' : ''} ${isRejected ? 'rejected' : ''}">
-                            <div class="checklist-checkbox">
-                                <input type="checkbox" ${isReceived ? 'checked' : ''} onchange="toggleDocument('${doc.id}', this.checked)">
-                            </div>
-                            <div class="checklist-content">
-                                <div class="checklist-title">
-                                    ${doc.name}
-                                    ${doc.required ? '<span style="color: var(--danger);">*</span>' : ''}
-                                </div>
-                                <div class="checklist-description">${doc.description}</div>
-                                <div class="checklist-meta">
-                                    <strong>Where to get it:</strong> ${doc.source}
-                                </div>
-                            </div>
-                            <div class="checklist-actions">
-                                <select class="status-select" onchange="updateStatus('${doc.id}', this.value)">
-                                    <option value="not_started" ${doc.status === 'not_started' ? 'selected' : ''}>Not Started</option>
-                                    <option value="requested" ${doc.status === 'requested' ? 'selected' : ''}>Requested</option>
-                                    <option value="received" ${doc.status === 'received' ? 'selected' : ''}>Received</option>
-                                    <option value="verified" ${doc.status === 'verified' ? 'selected' : ''}>Verified</option>
-                                    <option value="rejected" ${doc.status === 'rejected' ? 'selected' : ''}>Rejected</option>
-                                </select>
-                            </div>
-                        </div>
-                    `;
+                    html += `<div class="checklist-item ${isReceived ? 'received' : ''} ${doc.status === 'rejected' ? 'rejected' : ''}">
+                        <div class="checklist-checkbox"><input type="checkbox" ${isReceived ? 'checked' : ''} onchange="toggleDoc('${doc.id}', this.checked)"></div>
+                        <div class="checklist-content"><div class="checklist-title">${doc.name}${doc.required ? ' *' : ''}</div><div class="checklist-description">${doc.description}</div><div class="checklist-meta">Source: ${doc.source}</div></div>
+                        <div class="checklist-actions"><select class="status-select" onchange="updateStatus('${doc.id}', this.value)"><option value="not_started" ${doc.status==='not_started'?'selected':''}>Not Started</option><option value="requested" ${doc.status==='requested'?'selected':''}>Requested</option><option value="received" ${doc.status==='received'?'selected':''}>Received</option><option value="verified" ${doc.status==='verified'?'selected':''}>Verified</option><option value="rejected" ${doc.status==='rejected'?'selected':''}>Rejected</option></select></div>
+                    </div>`;
                 }
             }
-
             document.getElementById('checklistItems').innerHTML = html;
             updateProgress();
         }
 
-        function toggleDocument(docId, checked) {
-            const doc = currentChecklist.documents.find(d => d.id === docId);
-            if (doc) {
-                doc.status = checked ? 'received' : 'not_started';
-                renderChecklist();
-            }
-        }
-
-        function updateStatus(docId, status) {
-            const doc = currentChecklist.documents.find(d => d.id === docId);
-            if (doc) {
-                doc.status = status;
-                renderChecklist();
-            }
-        }
-
+        function toggleDoc(id, checked) { const d = currentChecklist.documents.find(x => x.id === id); if (d) { d.status = checked ? 'received' : 'not_started'; renderChecklist(); } }
+        function updateStatus(id, status) { const d = currentChecklist.documents.find(x => x.id === id); if (d) { d.status = status; renderChecklist(); } }
         function updateProgress() {
             const total = currentChecklist.documents.filter(d => d.required).length;
-            const complete = currentChecklist.documents.filter(d =>
-                d.required && (d.status === 'received' || d.status === 'verified')
-            ).length;
-            const percentage = total > 0 ? Math.round((complete / total) * 100) : 0;
-
-            document.getElementById('progressFill').style.width = percentage + '%';
-            document.getElementById('progressText').textContent = `${percentage}% (${complete}/${total} required)`;
+            const done = currentChecklist.documents.filter(d => d.required && (d.status === 'received' || d.status === 'verified')).length;
+            document.getElementById('progressFill').style.width = (total ? Math.round(done/total*100) : 0) + '%';
         }
-
-        function showGenerator() {
-            document.getElementById('generatorSection').style.display = 'block';
-            document.getElementById('checklistSection').style.display = 'none';
-        }
-
+        function showGenerator() { document.getElementById('generatorSection').style.display = 'block'; document.getElementById('checklistSection').style.display = 'none'; }
         function saveChecklist() {
-            if (!currentChecklist) return;
-
             const saved = JSON.parse(localStorage.getItem('legal-portal-checklists') || '[]');
-            const existingIndex = saved.findIndex(c => c.id === currentChecklist.id);
-
-            if (existingIndex >= 0) {
-                saved[existingIndex] = currentChecklist;
-            } else {
-                saved.push(currentChecklist);
-            }
-
+            const idx = saved.findIndex(c => c.id === currentChecklist.id);
+            if (idx >= 0) saved[idx] = currentChecklist; else saved.push(currentChecklist);
             localStorage.setItem('legal-portal-checklists', JSON.stringify(saved));
-            loadSavedChecklists();
-            alert('Checklist saved!');
+            loadSaved(); alert('Saved!');
         }
-
-        function loadSavedChecklists() {
+        function loadSaved() {
             const saved = JSON.parse(localStorage.getItem('legal-portal-checklists') || '[]');
-            const container = document.getElementById('savedChecklists');
-
-            if (saved.length === 0) {
-                container.innerHTML = '<p class="form-hint">No saved checklists yet.</p>';
-                return;
-            }
-
-            let html = '<table class="table"><thead><tr><th>Case Type</th><th>Client</th><th>Created</th><th>Progress</th><th>Action</th></tr></thead><tbody>';
-            for (const checklist of saved) {
-                const total = checklist.documents.filter(d => d.required).length;
-                const complete = checklist.documents.filter(d =>
-                    d.required && (d.status === 'received' || d.status === 'verified')
-                ).length;
-                const percentage = total > 0 ? Math.round((complete / total) * 100) : 0;
-
-                html += `
-                    <tr>
-                        <td>${checklist.title}</td>
-                        <td>${checklist.clientName || '-'}</td>
-                        <td>${new Date(checklist.createdDate).toLocaleDateString()}</td>
-                        <td><span class="badge ${percentage === 100 ? 'badge-complete' : 'badge-pending'}">${percentage}%</span></td>
-                        <td>
-                            <button class="btn btn-sm btn-outline" onclick="loadChecklist('${checklist.id}')">Open</button>
-                            <button class="btn btn-sm btn-outline" onclick="deleteChecklist('${checklist.id}')" style="margin-left: 8px; color: var(--danger); border-color: var(--danger);">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            }
+            if (!saved.length) { document.getElementById('savedChecklists').innerHTML = '<p class="text-muted">No saved checklists.</p>'; return; }
+            let html = '<table class="table"><thead><tr><th>Type</th><th>Client</th><th>Progress</th><th></th></tr></thead><tbody>';
+            saved.forEach(c => {
+                const total = c.documents.filter(d => d.required).length;
+                const done = c.documents.filter(d => d.required && (d.status === 'received' || d.status === 'verified')).length;
+                html += `<tr><td>${c.title}</td><td>${c.clientName||'-'}</td><td><span class="badge ${done===total?'badge-complete':'badge-pending'}">${total?Math.round(done/total*100):0}%</span></td><td><button class="btn btn-sm btn-secondary" onclick="loadChecklist('${c.id}')">Open</button></td></tr>`;
+            });
             html += '</tbody></table>';
-            container.innerHTML = html;
+            document.getElementById('savedChecklists').innerHTML = html;
         }
-
-        function loadChecklist(id) {
-            const saved = JSON.parse(localStorage.getItem('legal-portal-checklists') || '[]');
-            currentChecklist = saved.find(c => c.id === id);
-            if (currentChecklist) {
-                renderChecklist();
-            }
-        }
-
-        function deleteChecklist(id) {
-            if (!confirm('Delete this checklist?')) return;
-
-            let saved = JSON.parse(localStorage.getItem('legal-portal-checklists') || '[]');
-            saved = saved.filter(c => c.id !== id);
-            localStorage.setItem('legal-portal-checklists', JSON.stringify(saved));
-            loadSavedChecklists();
-        }
-
-        function printChecklist() {
-            window.print();
-        }
-
-        function logout() {
-            localStorage.removeItem('legal-portal-auth');
-            localStorage.removeItem('legal-portal-auth-time');
-            window.location.href = 'index.html';
-        }
-
-        // Load saved checklists on page load
-        loadSavedChecklists();
+        function loadChecklist(id) { currentChecklist = JSON.parse(localStorage.getItem('legal-portal-checklists') || '[]').find(c => c.id === id); if (currentChecklist) renderChecklist(); }
+        function switchPractice(p) { localStorage.setItem('legal-portal-practice', p); window.location.href = 'dashboard.html'; }
+        function logout() { localStorage.removeItem('legal-portal-auth'); localStorage.removeItem('legal-portal-auth-time'); window.location.href = 'index.html'; }
+        loadSaved();
     </script>
 </body>
 </html>

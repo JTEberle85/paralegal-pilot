@@ -17,32 +17,32 @@
     </script>
     <style>
         .rfe-input-section {
-            background: var(--bg-subtle);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            margin-bottom: 24px;
+            background: var(--bg-gray);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
         }
         .deadline-banner {
-            background: linear-gradient(135deg, var(--danger-light) 0%, #FEF2F2 100%);
+            background: #FEF2F2;
             border: 2px solid var(--danger);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            margin-bottom: 24px;
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 16px;
         }
         .deadline-banner.warning {
-            background: linear-gradient(135deg, var(--warning-light) 0%, #FFFBEB 100%);
+            background: #FFFBEB;
             border-color: var(--warning);
         }
         .deadline-banner.ok {
-            background: linear-gradient(135deg, var(--success-light) 0%, #ECFDF5 100%);
+            background: #ECFDF5;
             border-color: var(--success);
         }
         .deadline-icon {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             background: var(--danger);
             display: flex;
@@ -57,17 +57,18 @@
             background: var(--success);
         }
         .deadline-icon svg {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             stroke: white;
             fill: none;
         }
         .deadline-info h3 {
             margin: 0 0 4px 0;
+            font-size: 15px;
             color: var(--danger);
         }
         .deadline-banner.warning .deadline-info h3 {
-            color: var(--warning);
+            color: #92400E;
         }
         .deadline-banner.ok .deadline-info h3 {
             color: var(--success);
@@ -75,18 +76,18 @@
         .deadline-info p {
             margin: 0;
             color: var(--text-secondary);
-            font-size: 14px;
+            font-size: 13px;
         }
         .requirement-card {
             border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            margin-bottom: 16px;
+            border-radius: 6px;
+            margin-bottom: 12px;
             overflow: hidden;
-            background: var(--bg-card);
+            background: var(--bg-white);
         }
         .requirement-header {
-            padding: 16px 20px;
-            background: var(--bg-subtle);
+            padding: 14px 16px;
+            background: var(--bg-gray);
             border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
@@ -94,110 +95,98 @@
             cursor: pointer;
         }
         .requirement-header:hover {
-            background: var(--bg-hover);
+            background: #F0F7FF;
         }
         .requirement-title {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
         .requirement-number {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            background: var(--primary);
+            background: var(--accent);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
         }
         .requirement-title h4 {
             margin: 0;
-            font-size: 15px;
+            font-size: 14px;
         }
         .requirement-status {
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        .status-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--text-subtle);
-        }
-        .status-indicator.complete {
-            background: var(--success);
-        }
-        .status-indicator.partial {
-            background: var(--warning);
-        }
         .requirement-body {
-            padding: 20px;
+            padding: 16px;
             display: none;
         }
         .requirement-body.open {
             display: block;
         }
         .requirement-text {
-            background: var(--bg-subtle);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            font-size: 14px;
+            background: var(--bg-gray);
+            border-radius: 4px;
+            padding: 12px;
+            font-size: 13px;
             color: var(--text-secondary);
-            margin-bottom: 16px;
-            border-left: 3px solid var(--primary);
+            margin-bottom: 12px;
+            border-left: 3px solid var(--accent);
         }
         .evidence-list {
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         .evidence-item {
             display: flex;
             align-items: flex-start;
-            gap: 12px;
-            padding: 12px;
+            gap: 10px;
+            padding: 10px;
             border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            margin-bottom: 8px;
-            background: var(--bg-card);
+            border-radius: 4px;
+            margin-bottom: 6px;
+            background: var(--bg-white);
+        }
+        .evidence-item:hover {
+            background: var(--bg-gray);
         }
         .evidence-checkbox input {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             margin-top: 2px;
-            accent-color: var(--primary);
+            accent-color: var(--accent);
         }
         .evidence-content h5 {
-            margin: 0 0 4px 0;
-            font-size: 14px;
+            margin: 0 0 2px 0;
+            font-size: 13px;
         }
         .evidence-content p {
             margin: 0;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
-        }
-        .response-notes {
-            margin-top: 16px;
         }
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
+            gap: 12px;
+            margin-bottom: 20px;
         }
         .summary-stat {
-            background: var(--bg-card);
+            background: var(--bg-white);
             border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 20px;
+            border-radius: 6px;
+            padding: 16px;
             text-align: center;
         }
         .summary-stat-value {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--accent);
         }
         .summary-stat-value.warning {
             color: var(--warning);
@@ -206,9 +195,11 @@
             color: var(--success);
         }
         .summary-stat-label {
-            font-size: 13px;
+            font-size: 11px;
             color: var(--text-muted);
             margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         @media (max-width: 600px) {
             .summary-grid {
@@ -218,138 +209,156 @@
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1>Legal Services Portal</h1>
-        <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="intake.html">Intake</a>
-            <a href="checklist.html">Checklists</a>
-            <a href="deadlines.html">Deadlines</a>
-            <a href="about.html">How It Works</a>
-            <a href="#" onclick="logout(); return false;">Logout</a>
-        </nav>
-    </header>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+                    Legal Portal
+                </div>
+            </div>
+            <div class="practice-selector">
+                <label>Practice Area</label>
+                <select class="practice-select" id="practiceSelect" onchange="switchPractice(this.value)">
+                    <option value="immigration" selected>Immigration</option>
+                    <option value="contracts">Contracts</option>
+                    <option value="estate">Estate Planning</option>
+                    <option value="general">General</option>
+                </select>
+            </div>
+            <nav class="workflow-nav">
+                <div class="workflow-label">Workflow</div>
+                <ul class="workflow-steps">
+                    <li class="workflow-step" onclick="window.location.href='intake.html'"><span class="step-indicator"><span class="step-number">1</span></span><span>Intake</span></li>
+                    <li class="workflow-step" onclick="window.location.href='checklist.html'"><span class="step-indicator"><span class="step-number">2</span></span><span>Documents</span></li>
+                    <li class="workflow-step" onclick="window.location.href='forms.html'"><span class="step-indicator"><span class="step-number">3</span></span><span>Forms</span></li>
+                    <li class="workflow-step" onclick="window.location.href='summary.html'"><span class="step-indicator"><span class="step-number">4</span></span><span>Summary</span></li>
+                    <li class="workflow-step" onclick="window.location.href='deadlines.html'"><span class="step-indicator"><span class="step-number">5</span></span><span>File</span></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="about.html">How It Works</a>
+                <a href="#" onclick="logout(); return false;">Sign Out</a>
+            </div>
+        </aside>
 
-    <main class="container">
-        <div class="draft-notice">
-            <strong>DRAFT - PENDING ATTORNEY REVIEW</strong><br>
-            RFE response strategy must be reviewed and approved by an attorney before submission.
-        </div>
+        <main class="main-content">
+            <header class="top-bar">
+                <span class="top-bar-title">Immigration — RFE Response</span>
+                <div class="top-bar-actions"><a href="dashboard.html">Dashboard</a></div>
+            </header>
 
-        <div class="card">
-            <h2>RFE Response Assistant</h2>
-            <p>Analyze Requests for Evidence (RFE), map requirements to available documents, and organize response packets.</p>
-        </div>
+            <div class="content-container wide">
+                <div class="draft-notice"><strong>DRAFT - PENDING ATTORNEY REVIEW</strong><br>RFE response strategy must be reviewed and approved by an attorney before submission.</div>
 
-        <!-- Step 1: RFE Details -->
-        <div class="card" id="step1">
-            <h3>Step 1: RFE Information</h3>
-            <div class="rfe-input-section">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Client Name</label>
-                        <input type="text" class="form-input" id="rfeClientName" placeholder="Client name">
+                <div class="card">
+                    <h2 style="margin-bottom: 8px;">RFE Response Assistant</h2>
+                    <p style="color: var(--text-secondary);">Analyze Requests for Evidence (RFE), map requirements to available documents, and organize response packets.</p>
+                </div>
+
+                <!-- Step 1: RFE Details -->
+                <div class="card" id="step1">
+                    <h3>Step 1: RFE Information</h3>
+                    <div class="rfe-input-section">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Client Name</label>
+                                <input type="text" class="form-input" id="rfeClientName" placeholder="Client name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Receipt Number</label>
+                                <input type="text" class="form-input" id="rfeReceiptNumber" placeholder="e.g., IOE0123456789">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Application Type</label>
+                                <select class="form-select" id="rfeAppType">
+                                    <option value="">Select application...</option>
+                                    <option value="i-485">I-485 - Adjustment of Status</option>
+                                    <option value="i-130">I-130 - Petition for Alien Relative</option>
+                                    <option value="i-589">I-589 - Asylum</option>
+                                    <option value="i-765">I-765 - Employment Authorization</option>
+                                    <option value="i-918">I-918 - U Visa</option>
+                                    <option value="n-400">N-400 - Naturalization</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">RFE Date (from notice)</label>
+                                <input type="date" class="form-input" id="rfeDate">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Response Days</label>
+                                <select class="form-select" id="rfeDays">
+                                    <option value="87">87 days (standard)</option>
+                                    <option value="30">30 days</option>
+                                    <option value="33">33 days</option>
+                                    <option value="84">84 days</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Receipt Number</label>
-                        <input type="text" class="form-input" id="rfeReceiptNumber" placeholder="e.g., IOE0123456789">
+                    <button class="btn btn-primary" onclick="calculateDeadline()">Calculate Deadline & Continue</button>
+                </div>
+
+                <!-- Deadline Banner -->
+                <div class="deadline-banner" id="deadlineBanner" style="display: none;">
+                    <div class="deadline-icon">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+                    </div>
+                    <div class="deadline-info">
+                        <h3 id="deadlineTitle">Response Due</h3>
+                        <p id="deadlineText"></p>
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Application Type</label>
-                        <select class="form-select" id="rfeAppType">
-                            <option value="">Select application...</option>
-                            <option value="i-485">I-485 - Adjustment of Status</option>
-                            <option value="i-130">I-130 - Petition for Alien Relative</option>
-                            <option value="i-589">I-589 - Asylum</option>
-                            <option value="i-765">I-765 - Employment Authorization</option>
-                            <option value="i-918">I-918 - U Visa</option>
-                            <option value="n-400">N-400 - Naturalization</option>
-                            <option value="other">Other</option>
-                        </select>
+
+                <!-- Step 2: Requirements -->
+                <div class="card" id="step2" style="display: none;">
+                    <h3>Step 2: RFE Requirements</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 16px;">Select all requirements listed in the RFE notice. Common requirements are pre-populated based on application type.</p>
+                    <div id="requirementsList"></div>
+                    <button class="btn btn-primary" onclick="showResponsePlan()">Generate Response Plan</button>
+                </div>
+
+                <!-- Step 3: Response Plan -->
+                <div id="step3" style="display: none;">
+                    <div class="summary-grid">
+                        <div class="summary-stat">
+                            <div class="summary-stat-value" id="totalRequirements">0</div>
+                            <div class="summary-stat-label">Total Requirements</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-stat-value success" id="completeCount">0</div>
+                            <div class="summary-stat-label">Evidence Ready</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-stat-value warning" id="pendingCount">0</div>
+                            <div class="summary-stat-label">Still Needed</div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">RFE Date (from notice)</label>
-                        <input type="date" class="form-input" id="rfeDate">
+
+                    <div class="card">
+                        <h3>Response Checklist</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 16px;">Track evidence gathering for each RFE requirement.</p>
+                        <div id="responseChecklist"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Next Steps</h3>
+                        <div id="nextSteps"></div>
+                        <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button class="btn btn-primary" onclick="window.print()">Print Checklist</button>
+                            <button class="btn btn-secondary" onclick="saveRFE()">Save RFE Response</button>
+                            <button class="btn btn-secondary" onclick="addToDeadlines()">Add to Deadline Tracker</button>
+                        </div>
                     </div>
                 </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Response Days</label>
-                        <select class="form-select" id="rfeDays">
-                            <option value="87">87 days (standard)</option>
-                            <option value="30">30 days</option>
-                            <option value="33">33 days</option>
-                            <option value="84">84 days</option>
-                        </select>
-                    </div>
-                </div>
             </div>
-            <button class="btn btn-primary" onclick="calculateDeadline()">Calculate Deadline & Continue</button>
-        </div>
-
-        <!-- Deadline Banner -->
-        <div class="deadline-banner" id="deadlineBanner" style="display: none;">
-            <div class="deadline-icon">
-                <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
-            </div>
-            <div class="deadline-info">
-                <h3 id="deadlineTitle">Response Due</h3>
-                <p id="deadlineText"></p>
-            </div>
-        </div>
-
-        <!-- Step 2: Requirements -->
-        <div class="card" id="step2" style="display: none;">
-            <h3>Step 2: RFE Requirements</h3>
-            <p>Select all requirements listed in the RFE notice. Common requirements are pre-populated based on application type.</p>
-
-            <div id="requirementsList">
-                <!-- Generated by JavaScript -->
-            </div>
-
-            <button class="btn btn-primary" onclick="showResponsePlan()">Generate Response Plan</button>
-        </div>
-
-        <!-- Step 3: Response Plan -->
-        <div id="step3" style="display: none;">
-            <div class="summary-grid">
-                <div class="summary-stat">
-                    <div class="summary-stat-value" id="totalRequirements">0</div>
-                    <div class="summary-stat-label">Total Requirements</div>
-                </div>
-                <div class="summary-stat">
-                    <div class="summary-stat-value success" id="completeCount">0</div>
-                    <div class="summary-stat-label">Evidence Ready</div>
-                </div>
-                <div class="summary-stat">
-                    <div class="summary-stat-value warning" id="pendingCount">0</div>
-                    <div class="summary-stat-label">Still Needed</div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>Response Checklist</h3>
-                <p>Track evidence gathering for each RFE requirement.</p>
-                <div id="responseChecklist">
-                    <!-- Generated by JavaScript -->
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>Next Steps</h3>
-                <div id="nextSteps">
-                    <!-- Generated by JavaScript -->
-                </div>
-                <div style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
-                    <button class="btn btn-primary" onclick="window.print()">Print Checklist</button>
-                    <button class="btn btn-secondary" onclick="saveRFE()">Save RFE Response</button>
-                    <button class="btn btn-outline" onclick="addToDeadlines()">Add to Deadline Tracker</button>
-                </div>
-            </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script>
         let rfeData = {
@@ -456,12 +465,12 @@
                         </div>
                         <div class="requirement-status">
                             <input type="checkbox" ${req.selected ? 'checked' : ''} onclick="event.stopPropagation(); toggleSelected(${index})">
-                            <span style="font-size: 13px; color: var(--text-muted);">Include</span>
+                            <span style="font-size: 12px; color: var(--text-muted);">Include</span>
                         </div>
                     </div>
                     <div class="requirement-body" id="req-body-${index}">
                         <div class="requirement-text">${req.desc}</div>
-                        <h5 style="margin-bottom: 12px;">Suggested Evidence:</h5>
+                        <h5 style="margin-bottom: 10px; font-size: 13px;">Suggested Evidence:</h5>
                         <div class="evidence-list">
                             ${req.evidence.map((ev, evIndex) => `
                                 <div class="evidence-item">
@@ -519,12 +528,12 @@
                 const evidenceComplete = Object.values(req.evidenceStatus || {}).filter(v => v).length;
                 const totalEv = req.evidence.length;
                 return `
-                    <div style="padding: 16px; border-bottom: 1px solid var(--border);">
+                    <div style="padding: 12px; border-bottom: 1px solid var(--border);">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <strong>${req.title}</strong>
+                            <strong style="font-size: 13px;">${req.title}</strong>
                             <span class="badge ${evidenceComplete === totalEv ? 'badge-complete' : 'badge-pending'}">${evidenceComplete}/${totalEv} ready</span>
                         </div>
-                        <p style="font-size: 13px; color: var(--text-muted); margin: 8px 0 0;">${req.evidence.join(' | ')}</p>
+                        <p style="font-size: 12px; color: var(--text-muted); margin: 6px 0 0;">${req.evidence.join(' | ')}</p>
                     </div>
                 `;
             }).join('');
@@ -540,7 +549,7 @@
             });
 
             document.getElementById('nextSteps').innerHTML = pendingItems.length > 0
-                ? `<ul style="margin-left: 20px;">${pendingItems.slice(0, 10).map(item => `<li style="margin-bottom: 8px;">${item}</li>`).join('')}</ul>${pendingItems.length > 10 ? `<p class="text-muted">...and ${pendingItems.length - 10} more items</p>` : ''}`
+                ? `<ul style="margin-left: 20px; font-size: 13px;">${pendingItems.slice(0, 10).map(item => `<li style="margin-bottom: 6px;">${item}</li>`).join('')}</ul>${pendingItems.length > 10 ? `<p class="text-muted">...and ${pendingItems.length - 10} more items</p>` : ''}`
                 : '<p style="color: var(--success);">All evidence appears to be ready! Review and compile response packet.</p>';
         }
 
@@ -571,6 +580,7 @@
             alert('Deadline added to tracker!');
         }
 
+        function switchPractice(p) { localStorage.setItem('legal-portal-practice', p); window.location.href = 'dashboard.html'; }
         function logout() {
             localStorage.removeItem('legal-portal-auth');
             localStorage.removeItem('legal-portal-auth-time');

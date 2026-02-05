@@ -3,397 +3,380 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Legal Services Portal - Dashboard</title>
+    <title>Legal Services Portal</title>
     <link rel="stylesheet" href="style.css">
     <script>
-        // Auth check - redirect to login if not authenticated
         (function() {
             var auth = localStorage.getItem('legal-portal-auth');
             var authTime = localStorage.getItem('legal-portal-auth-time');
-            var maxAge = 24 * 60 * 60 * 1000; // 24 hours
+            var maxAge = 24 * 60 * 60 * 1000;
             if (auth !== 'authenticated' || !authTime || (Date.now() - parseInt(authTime)) > maxAge) {
                 window.location.href = 'index.html';
             }
         })();
     </script>
-    <style>
-        /* Dashboard-specific styles */
-        .welcome-section {
-            text-align: center;
-            padding: 48px 40px;
-            margin-bottom: 32px;
-        }
-        .welcome-section h2 {
-            font-size: 1.75rem;
-            margin-bottom: 12px;
-            letter-spacing: -0.03em;
-        }
-        .welcome-section p {
-            font-size: 16px;
-            max-width: 480px;
-            margin: 0 auto;
-            color: var(--text-secondary);
-        }
-
-        .tile-icon {
-            width: 52px;
-            height: 52px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: var(--radius-lg);
-            background: var(--primary-lighter);
-        }
-        .tile-icon svg {
-            width: 26px;
-            height: 26px;
-            stroke: var(--primary);
-            stroke-width: 1.75;
-            fill: none;
-        }
-        .dashboard-tile.accent .tile-icon {
-            background: var(--accent-light);
-        }
-        .dashboard-tile.accent .tile-icon svg {
-            stroke: var(--accent-dark);
-        }
-
-        /* Workflow section - horizontal, grounded */
-        .workflow-section {
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            padding: 40px;
-            margin-bottom: 32px;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-sm);
-        }
-        .workflow-section h3 {
-            color: var(--text-primary);
-            margin-bottom: 8px;
-            font-size: 1.125rem;
-        }
-        .workflow-section > p {
-            color: var(--text-secondary);
-            margin-bottom: 32px;
-            font-size: 14px;
-        }
-        .workflow-steps {
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 8px;
-        }
-        .workflow-step {
-            flex: 1;
-            min-width: 120px;
-            text-align: center;
-            position: relative;
-        }
-        .workflow-step-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: var(--bg-card);
-            border: 2px solid var(--border-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 14px;
-            position: relative;
-            z-index: 1;
-            transition: all var(--transition);
-        }
-        .workflow-step-icon svg {
-            width: 24px;
-            height: 24px;
-            stroke: var(--text-muted);
-            stroke-width: 1.75;
-            fill: none;
-            transition: all var(--transition);
-        }
-        .workflow-step.complete .workflow-step-icon {
-            background: var(--success);
-            border-color: var(--success);
-        }
-        .workflow-step.complete .workflow-step-icon svg {
-            stroke: white;
-        }
-        .workflow-step-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-            letter-spacing: -0.01em;
-        }
-        .workflow-step-desc {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-        .workflow-arrow {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding-top: 18px;
-            color: var(--border-dark);
-            flex-shrink: 0;
-        }
-        .workflow-arrow svg {
-            width: 18px;
-            height: 18px;
-            stroke: var(--border-dark);
-            stroke-width: 2;
-            fill: none;
-        }
-
-        /* Tool grid */
-        .tool-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-        }
-
-        /* Section header with badge */
-        .section-header-row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-bottom: 24px;
-        }
-        .section-header-row h3 {
-            margin: 0;
-            color: var(--text-primary);
-            font-size: 1.125rem;
-        }
-        .section-badge {
-            background: var(--primary-light);
-            color: var(--primary-dark);
-            font-size: 11px;
-            font-weight: 600;
-            padding: 5px 12px;
-            border-radius: var(--radius-full);
-            letter-spacing: 0.03em;
-            text-transform: uppercase;
-        }
-
-        /* Notices card */
-        .notices-card {
-            margin-top: 40px;
-            background: var(--bg-subtle);
-            border: 1px solid var(--border);
-        }
-        .notices-card h3 {
-            font-size: 1rem;
-            margin-bottom: 16px;
-        }
-        .notices-card ul {
-            margin: 0 0 0 20px;
-            padding: 0;
-        }
-        .notices-card li {
-            color: var(--text-secondary);
-            font-size: 14px;
-            margin-bottom: 8px;
-            line-height: 1.5;
-        }
-        .notices-card li:last-child {
-            margin-bottom: 0;
-        }
-    </style>
 </head>
 <body>
-    <header class="header">
-        <h1>Legal Services Portal</h1>
-        <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="intake.html">Intake</a>
-            <a href="checklist.html">Checklists</a>
-            <a href="deadlines.html">Deadlines</a>
-            <a href="about.html">How It Works</a>
-            <a href="#" onclick="logout(); return false;">Logout</a>
-        </nav>
-    </header>
-
-    <main class="container">
-        <div class="card welcome-section">
-            <h2>Welcome back</h2>
-            <p>Streamline your immigration case management with guided workflows. Select a tool below to get started.</p>
-        </div>
-
-        <div class="alert alert-warning">
-            <strong>DRAFT - PILOT VERSION</strong><br>
-            All documents and forms generated by this system are drafts pending attorney review.
-            This tool does not provide legal advice.
-        </div>
-
-        <!-- Workflow Section -->
-        <div class="workflow-section">
-            <h3>Case Workflow</h3>
-            <p>Follow these steps for a complete case file. Each step builds on the previous.</p>
-            <div class="workflow-steps">
-                <div class="workflow-step" id="step-intake">
-                    <div class="workflow-step-icon">
-                        <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    <div class="app-shell">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
                     </div>
-                    <div class="workflow-step-label">1. Intake</div>
-                    <div class="workflow-step-desc">Collect client info</div>
-                </div>
-                <div class="workflow-arrow">
-                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </div>
-                <div class="workflow-step" id="step-checklist">
-                    <div class="workflow-step-icon">
-                        <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                    </div>
-                    <div class="workflow-step-label">2. Documents</div>
-                    <div class="workflow-step-desc">Gather evidence</div>
-                </div>
-                <div class="workflow-arrow">
-                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </div>
-                <div class="workflow-step" id="step-forms">
-                    <div class="workflow-step-icon">
-                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
-                    </div>
-                    <div class="workflow-step-label">3. Forms</div>
-                    <div class="workflow-step-desc">Auto-populate</div>
-                </div>
-                <div class="workflow-arrow">
-                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </div>
-                <div class="workflow-step" id="step-summary">
-                    <div class="workflow-step-icon">
-                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
-                    </div>
-                    <div class="workflow-step-label">4. Summary</div>
-                    <div class="workflow-step-desc">Attorney review</div>
-                </div>
-                <div class="workflow-arrow">
-                    <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </div>
-                <div class="workflow-step" id="step-file">
-                    <div class="workflow-step-icon">
-                        <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
-                    </div>
-                    <div class="workflow-step-label">5. File</div>
-                    <div class="workflow-step-desc">Submit case</div>
+                    Legal Portal
                 </div>
             </div>
-        </div>
 
-        <!-- Core Tools -->
-        <div class="section-header-row">
-            <h3>Case Management</h3>
-            <span class="section-badge">Core Tools</span>
-        </div>
-        <div class="tool-grid">
-            <a href="intake.html" class="dashboard-tile" style="text-decoration: none; color: inherit;">
-                <div class="tile-icon">
-                    <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <!-- Practice Selector -->
+            <div class="practice-selector">
+                <label>Practice Area</label>
+                <select class="practice-select" id="practiceSelect" onchange="switchPractice(this.value)">
+                    <option value="immigration">Immigration</option>
+                    <option value="contracts">Contracts</option>
+                    <option value="estate">Estate Planning</option>
+                    <option value="general">General</option>
+                </select>
+            </div>
+
+            <!-- Workflow Steps -->
+            <nav class="workflow-nav">
+                <div class="workflow-label">Workflow</div>
+                <ul class="workflow-steps" id="workflowSteps">
+                    <!-- Populated by JavaScript -->
+                </ul>
+            </nav>
+
+            <!-- Sidebar Footer -->
+            <div class="sidebar-footer">
+                <a href="about.html">How It Works</a>
+                <a href="#" onclick="logout(); return false;">Sign Out</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Bar -->
+            <header class="top-bar">
+                <span class="top-bar-title" id="currentStepTitle">Immigration — Intake</span>
+                <div class="top-bar-actions">
+                    <a href="about.html">Help</a>
                 </div>
-                <h3>Client Intake</h3>
-                <p class="tile-label">Collect biographical, immigration, and case-specific information in a guided form.</p>
-                <span class="btn btn-primary btn-sm" style="margin-top: 16px;">Start Intake</span>
-            </a>
+            </header>
 
-            <a href="checklist.html" class="dashboard-tile accent" style="text-decoration: none; color: inherit;">
-                <div class="tile-icon">
-                    <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-                </div>
-                <h3>Document Checklist</h3>
-                <p class="tile-label">Generate case-specific document requirements and track submissions.</p>
-                <span class="btn btn-accent btn-sm" style="margin-top: 16px;">Open Checklists</span>
-            </a>
-
-            <a href="forms.html" class="dashboard-tile" style="text-decoration: none; color: inherit;">
-                <div class="tile-icon">
-                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
-                </div>
-                <h3>Form Assembly</h3>
-                <p class="tile-label">Auto-populate USCIS forms from client intake data. Review and export.</p>
-                <span class="btn btn-primary btn-sm" style="margin-top: 16px;">Build Forms</span>
-            </a>
-
-            <a href="deadlines.html" class="dashboard-tile accent" style="text-decoration: none; color: inherit;">
-                <div class="tile-icon">
-                    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
-                </div>
-                <h3>Deadline Tracker</h3>
-                <p class="tile-label">Monitor filing deadlines, calculate key dates, and receive alerts.</p>
-                <span class="btn btn-accent btn-sm" style="margin-top: 16px;">Track Deadlines</span>
-            </a>
-
-            <a href="summary.html" class="dashboard-tile" style="text-decoration: none; color: inherit;">
-                <div class="tile-icon">
-                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>
-                </div>
-                <h3>Case Summary</h3>
-                <p class="tile-label">Generate comprehensive case summaries for attorney review and court prep.</p>
-                <span class="btn btn-primary btn-sm" style="margin-top: 16px;">Generate Summary</span>
-            </a>
-
-            <a href="rfe.html" class="dashboard-tile accent" style="text-decoration: none; color: inherit;">
-                <div class="tile-icon">
-                    <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M22 6l-10 7L2 6"/></svg>
-                </div>
-                <h3>RFE Response</h3>
-                <p class="tile-label">Analyze RFE notices, map requirements, and organize response packets.</p>
-                <span class="btn btn-accent btn-sm" style="margin-top: 16px;">Respond to RFE</span>
-            </a>
-        </div>
-
-        <!-- Additional Tools -->
-        <div class="section-header-row" style="margin-top: 40px;">
-            <h3>Additional Tools</h3>
-            <span class="section-badge">Specialized</span>
-        </div>
-        <div class="tool-grid">
-            <a href="redline.html" class="dashboard-tile" style="text-decoration: none; color: inherit;">
-                <div class="tile-icon">
-                    <svg viewBox="0 0 24 24"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8z"/><path d="M15 3v4a2 2 0 0 0 2 2h4"/><path d="M10 12l-2 2 2 2"/><path d="M14 12l2 2-2 2"/></svg>
-                </div>
-                <h3>Redline Assistant</h3>
-                <p class="tile-label">Compare contracts and get plain-English summaries of changes with suggested edits.</p>
-                <span class="btn btn-primary btn-sm" style="margin-top: 16px;">Compare Documents</span>
-            </a>
-        </div>
-
-        <div class="card notices-card">
-            <h3>Important Notices</h3>
-            <ul>
-                <li>This tool does NOT provide legal advice</li>
-                <li>All outputs require attorney review before filing</li>
-                <li>Client data is stored locally in your browser</li>
-                <li>Always verify form editions are current before filing</li>
-            </ul>
-            <p style="margin-top: 20px; margin-bottom: 0;">
-                <a href="about.html">Learn more about how this tool works</a>
-            </p>
-        </div>
-    </main>
+            <!-- Content Area -->
+            <div class="content-container" id="contentArea">
+                <!-- Tool content loads here -->
+            </div>
+        </main>
+    </div>
 
     <script>
+        // Practice workflows
+        const workflows = {
+            immigration: {
+                label: 'Immigration',
+                steps: [
+                    { id: 'intake', name: 'Intake', icon: '1', page: 'intake.html' },
+                    { id: 'documents', name: 'Documents', icon: '2', page: 'checklist.html' },
+                    { id: 'forms', name: 'Forms', icon: '3', page: 'forms.html' },
+                    { id: 'summary', name: 'Summary', icon: '4', page: 'summary.html' },
+                    { id: 'file', name: 'File', icon: '5', page: 'deadlines.html' }
+                ]
+            },
+            contracts: {
+                label: 'Contracts',
+                steps: [
+                    { id: 'upload', name: 'Upload', icon: '1', page: null },
+                    { id: 'compare', name: 'Compare', icon: '2', page: 'redline.html' },
+                    { id: 'review', name: 'Review', icon: '3', page: null },
+                    { id: 'export', name: 'Export', icon: '4', page: null }
+                ]
+            },
+            estate: {
+                label: 'Estate Planning',
+                steps: [
+                    { id: 'client', name: 'Client Info', icon: '1', page: null },
+                    { id: 'assets', name: 'Assets', icon: '2', page: null },
+                    { id: 'documents', name: 'Documents', icon: '3', page: null },
+                    { id: 'review', name: 'Review', icon: '4', page: null }
+                ]
+            },
+            general: {
+                label: 'General',
+                steps: [
+                    { id: 'intake', name: 'Intake', icon: '1', page: 'intake.html' },
+                    { id: 'documents', name: 'Documents', icon: '2', page: 'checklist.html' },
+                    { id: 'deadlines', name: 'Deadlines', icon: '3', page: 'deadlines.html' }
+                ]
+            }
+        };
+
+        let currentPractice = localStorage.getItem('legal-portal-practice') || 'immigration';
+        let currentStep = localStorage.getItem('legal-portal-step') || 'intake';
+
+        // Initialize
+        document.getElementById('practiceSelect').value = currentPractice;
+        renderWorkflow();
+        loadStep(currentStep);
+
+        function switchPractice(practice) {
+            currentPractice = practice;
+            localStorage.setItem('legal-portal-practice', practice);
+            currentStep = workflows[practice].steps[0].id;
+            localStorage.setItem('legal-portal-step', currentStep);
+            renderWorkflow();
+            loadStep(currentStep);
+        }
+
+        function renderWorkflow() {
+            const workflow = workflows[currentPractice];
+            const container = document.getElementById('workflowSteps');
+
+            container.innerHTML = workflow.steps.map(step => `
+                <li class="workflow-step ${step.id === currentStep ? 'active' : ''}"
+                    onclick="loadStep('${step.id}')"
+                    data-step="${step.id}">
+                    <span class="step-indicator">
+                        <span class="step-number">${step.icon}</span>
+                    </span>
+                    <span>${step.name}</span>
+                </li>
+            `).join('');
+        }
+
+        function loadStep(stepId) {
+            currentStep = stepId;
+            localStorage.setItem('legal-portal-step', stepId);
+
+            // Update active state in sidebar
+            document.querySelectorAll('.workflow-step').forEach(el => {
+                el.classList.toggle('active', el.dataset.step === stepId);
+            });
+
+            // Update top bar title
+            const workflow = workflows[currentPractice];
+            const step = workflow.steps.find(s => s.id === stepId);
+            document.getElementById('currentStepTitle').textContent =
+                `${workflow.label} — ${step.name}`;
+
+            // Load content
+            const contentArea = document.getElementById('contentArea');
+
+            if (step.page) {
+                // Load actual tool content inline
+                loadToolContent(step, contentArea);
+            } else {
+                // Placeholder for unbuilt tools
+                contentArea.innerHTML = `
+                    <div class="page-header">
+                        <h1>${step.name}</h1>
+                        <p>This tool is coming soon.</p>
+                    </div>
+                    <div class="card">
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <path d="M9 9h6M9 12h6M9 15h4"/>
+                            </svg>
+                            <h3>${step.name}</h3>
+                            <p>This feature is under development.</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function loadToolContent(step, container) {
+            // For now, show tool description and link to full page
+            const toolDescriptions = {
+                intake: {
+                    title: 'Client Intake',
+                    description: 'Collect client information with a guided questionnaire. Data flows to other tools automatically.',
+                    actions: [
+                        { label: 'Start New Intake', primary: true, action: "window.location.href='intake.html'" },
+                        { label: 'View Existing Clients', action: "showClients()" }
+                    ]
+                },
+                documents: {
+                    title: 'Document Checklist',
+                    description: 'Track required documents for each case. Generate checklists based on case type.',
+                    actions: [
+                        { label: 'Open Checklist', primary: true, action: "window.location.href='checklist.html'" }
+                    ]
+                },
+                forms: {
+                    title: 'Form Assembly',
+                    description: 'Auto-populate USCIS forms using intake data. Review and export for filing.',
+                    actions: [
+                        { label: 'Assemble Forms', primary: true, action: "window.location.href='forms.html'" }
+                    ]
+                },
+                summary: {
+                    title: 'Case Summary',
+                    description: 'Generate comprehensive case summaries for attorney review.',
+                    actions: [
+                        { label: 'Generate Summary', primary: true, action: "window.location.href='summary.html'" }
+                    ]
+                },
+                file: {
+                    title: 'Deadlines & Filing',
+                    description: 'Track critical deadlines and filing dates. Never miss a deadline.',
+                    actions: [
+                        { label: 'View Deadlines', primary: true, action: "window.location.href='deadlines.html'" }
+                    ]
+                },
+                compare: {
+                    title: 'Contract Comparison',
+                    description: 'Compare two documents and identify differences. Generate redlines.',
+                    actions: [
+                        { label: 'Compare Documents', primary: true, action: "window.location.href='redline.html'" }
+                    ]
+                },
+                deadlines: {
+                    title: 'Deadline Tracker',
+                    description: 'Track all case deadlines in one place.',
+                    actions: [
+                        { label: 'View Deadlines', primary: true, action: "window.location.href='deadlines.html'" }
+                    ]
+                }
+            };
+
+            const tool = toolDescriptions[step.id] || {
+                title: step.name,
+                description: 'Tool description not available.',
+                actions: []
+            };
+
+            // Check for existing clients
+            const clients = JSON.parse(localStorage.getItem('legal-portal-intakes') || '[]');
+
+            let clientsSection = '';
+            if (step.id === 'intake' && clients.length > 0) {
+                clientsSection = `
+                    <div class="card" style="margin-top: 16px;">
+                        <div class="card-header">
+                            <h3>Recent Clients</h3>
+                        </div>
+                        <div style="margin: -8px -8px 0;">
+                            ${clients.slice(0, 5).map(client => `
+                                <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+                                    <div>
+                                        <div style="font-weight: 500;">${client.firstName || ''} ${client.lastName || 'Unnamed'}</div>
+                                        <div style="font-size: 13px; color: var(--text-muted);">${client.caseType || 'No case type'}</div>
+                                    </div>
+                                    <span class="badge badge-pending">Draft</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = `
+                <div class="page-header">
+                    <h1>${tool.title}</h1>
+                    <p>${tool.description}</p>
+                </div>
+
+                <div class="card">
+                    <div style="display: flex; gap: 12px;">
+                        ${tool.actions.map(action => `
+                            <button class="btn ${action.primary ? 'btn-primary' : 'btn-secondary'}"
+                                    onclick="${action.action}">
+                                ${action.label}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+
+                ${clientsSection}
+            `;
+        }
+
+        function showClients() {
+            const clients = JSON.parse(localStorage.getItem('legal-portal-intakes') || '[]');
+            const container = document.getElementById('contentArea');
+
+            if (clients.length === 0) {
+                container.innerHTML = `
+                    <div class="page-header">
+                        <h1>Clients</h1>
+                        <p>No clients yet. Start an intake to add your first client.</p>
+                    </div>
+                    <div class="card">
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                            </svg>
+                            <h3>No Clients</h3>
+                            <p>Start a new intake to add your first client.</p>
+                            <button class="btn btn-primary" onclick="window.location.href='intake.html'">
+                                Start New Intake
+                            </button>
+                        </div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="page-header">
+                        <h1>Clients</h1>
+                        <p>${clients.length} client${clients.length !== 1 ? 's' : ''} in system.</p>
+                    </div>
+                    <div class="card" style="padding: 0; overflow: hidden;">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Case Type</th>
+                                    <th>Status</th>
+                                    <th>Intake Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${clients.map(client => `
+                                    <tr>
+                                        <td style="font-weight: 500;">${client.firstName || ''} ${client.lastName || 'Unnamed'}</td>
+                                        <td>${formatCaseType(client.caseType)}</td>
+                                        <td><span class="badge badge-pending">Draft</span></td>
+                                        <td>${client.meta?.intakeDate ? new Date(client.meta.intakeDate).toLocaleDateString() : '—'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div style="margin-top: 16px;">
+                        <button class="btn btn-primary" onclick="window.location.href='intake.html'">
+                            Start New Intake
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function formatCaseType(type) {
+            const types = {
+                'asylum': 'Asylum',
+                'family': 'Family-Based',
+                'naturalization': 'Naturalization',
+                'u_visa': 'U Visa',
+                't_visa': 'T Visa',
+                'vawa': 'VAWA',
+                'tps': 'TPS',
+                'daca': 'DACA',
+                'work_permit': 'Work Permit',
+                'removal_defense': 'Removal Defense'
+            };
+            return types[type] || type || '—';
+        }
+
         function logout() {
             localStorage.removeItem('legal-portal-auth');
             localStorage.removeItem('legal-portal-auth-time');
             window.location.href = 'index.html';
         }
-
-        // Check workflow progress based on localStorage data
-        function updateWorkflowProgress() {
-            const intakes = JSON.parse(localStorage.getItem('legal-portal-intakes') || '[]');
-            const checklists = JSON.parse(localStorage.getItem('legal-portal-checklists') || '[]');
-
-            if (intakes.length > 0) {
-                document.getElementById('step-intake').classList.add('complete');
-            }
-            if (checklists.length > 0) {
-                document.getElementById('step-checklist').classList.add('complete');
-            }
-        }
-
-        updateWorkflowProgress();
     </script>
 </body>
 </html>

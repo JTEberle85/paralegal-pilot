@@ -6,7 +6,6 @@
     <title>Legal Services Portal - Client Intake</title>
     <link rel="stylesheet" href="style.css">
     <script>
-        // Auth check
         (function() {
             var auth = localStorage.getItem('legal-portal-auth');
             var authTime = localStorage.getItem('legal-portal-auth-time');
@@ -17,913 +16,403 @@
         })();
     </script>
     <style>
-        /* Intake-specific refinements */
-        .intake-header {
-            text-align: center;
-            margin-bottom: 8px;
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding: 0;
+            position: relative;
         }
-        .intake-header h2 {
-            font-size: 1.5rem;
-            margin-bottom: 8px;
+        .progress-steps::before {
+            content: "";
+            position: absolute;
+            top: 16px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: var(--border);
         }
-        .intake-header p {
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-white);
+            border: 2px solid var(--border);
             color: var(--text-muted);
-            font-size: 14px;
-            margin: 0;
-        }
-
-        /* Section subheadings */
-        .form-section h4 {
-            font-size: 1rem;
-            color: var(--text-primary);
-            margin-top: 32px;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-        .form-section h4:first-of-type {
-            margin-top: 0;
-        }
-
-        /* Review section styling */
-        .review-sections h4 {
-            font-size: 0.9375rem;
-            margin-top: 28px;
-            margin-bottom: 16px;
-            color: var(--text-primary);
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-        .review-sections h4:first-child {
-            margin-top: 0;
-        }
-        .review-sections .table {
-            margin-bottom: 0;
-        }
-        .review-sections .table td:first-child {
-            width: 180px;
-            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
             font-size: 13px;
         }
-        .review-sections .table td:last-child {
-            color: var(--text-primary);
+        .progress-step.completed .step-number {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
         }
+        .progress-step.completed .step-number::after {
+            content: "✓";
+            font-size: 12px;
+        }
+        .progress-step.completed .step-number span { display: none; }
+        .progress-step.active .step-number {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        .step-label {
+            margin-top: 8px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .progress-step.active .step-label { color: var(--accent); }
+        .progress-step.completed .step-label { color: var(--success); }
 
-        /* Case-specific sections */
+        .section-header {
+            background: var(--bg-gray);
+            padding: 16px 20px;
+            margin: -24px -24px 24px -24px;
+            border-radius: 8px 8px 0 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-header h3 { margin: 0; font-size: 16px; }
+
+        .form-section h4 {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-top: 28px;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        .form-section h4:first-of-type { margin-top: 0; }
+
         .case-specific-section {
             margin-top: 24px;
             padding-top: 24px;
             border-top: 1px solid var(--border);
         }
-        .case-specific-section h4 {
-            margin-top: 0;
+        .case-specific-section h4 { margin-top: 0; border-bottom: none; padding-bottom: 0; }
+
+        .review-sections h4 {
+            font-size: 14px;
+            margin-top: 24px;
+            margin-bottom: 12px;
             border-bottom: none;
             padding-bottom: 0;
+        }
+        .review-sections h4:first-child { margin-top: 0; }
+        .review-sections .table td:first-child {
+            width: 160px;
+            color: var(--text-muted);
+            font-size: 13px;
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1>Legal Services Portal</h1>
-        <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="intake.html">Intake</a>
-            <a href="checklist.html">Checklists</a>
-            <a href="deadlines.html">Deadlines</a>
-            <a href="about.html">How It Works</a>
-            <a href="#" onclick="logout(); return false;">Logout</a>
-        </nav>
-    </header>
-
-    <main class="container">
-        <div class="draft-notice">
-            <strong>DRAFT - PENDING ATTORNEY REVIEW</strong><br>
-            This intake form does not constitute legal advice. All information will be reviewed by an attorney.
-        </div>
-
-        <!-- Progress Steps -->
-        <div class="progress-steps" id="progressSteps">
-            <div class="progress-step active" data-step="1">
-                <div class="step-number">1</div>
-                <div class="step-label">Biographical</div>
-            </div>
-            <div class="progress-step" data-step="2">
-                <div class="step-number">2</div>
-                <div class="step-label">Contact</div>
-            </div>
-            <div class="progress-step" data-step="3">
-                <div class="step-number">3</div>
-                <div class="step-label">Immigration</div>
-            </div>
-            <div class="progress-step" data-step="4">
-                <div class="step-number">4</div>
-                <div class="step-label">Family</div>
-            </div>
-            <div class="progress-step" data-step="5">
-                <div class="step-number">5</div>
-                <div class="step-label">Case Info</div>
-            </div>
-            <div class="progress-step" data-step="6">
-                <div class="step-number">6</div>
-                <div class="step-label">Review</div>
-            </div>
-        </div>
-
-        <form id="intakeForm">
-            <!-- Section 1: Biographical Information -->
-            <div class="card form-section active" data-section="1">
-                <div class="section-header">
-                    <h3>Biographical Information</h3>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label form-label-required">Last Name (Family Name)</label>
-                        <input type="text" class="form-input" name="lastName" required>
-                        <div class="form-hint">As shown on passport or official documents</div>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label form-label-required">First Name (Given Name)</label>
-                        <input type="text" class="form-input" name="firstName" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Middle Name</label>
-                        <input type="text" class="form-input" name="middleName">
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Other Names Used</label>
-                    <input type="text" class="form-input" name="otherNames" placeholder="Maiden name, nicknames, aliases (separate with commas)">
-                    <div class="form-hint">Include all names ever used</div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label form-label-required">Date of Birth</label>
-                        <input type="date" class="form-input" name="dateOfBirth" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label form-label-required">Country of Birth</label>
-                        <input type="text" class="form-input" name="countryOfBirth" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">City of Birth</label>
-                        <input type="text" class="form-input" name="cityOfBirth">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label form-label-required">Country of Citizenship</label>
-                        <input type="text" class="form-input" name="countryOfCitizenship" required>
-                        <div class="form-hint">May be different from country of birth</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label form-label-required">Gender</label>
-                        <select class="form-select" name="gender" required>
-                            <option value="">Select...</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label form-label-required">Marital Status</label>
-                        <select class="form-select" name="maritalStatus" required>
-                            <option value="">Select...</option>
-                            <option value="single">Single (Never Married)</option>
-                            <option value="married">Married</option>
-                            <option value="divorced">Divorced</option>
-                            <option value="widowed">Widowed</option>
-                            <option value="separated">Separated</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">A-Number (if known)</label>
-                        <input type="text" class="form-input" name="aNumber" placeholder="9 digits" pattern="[0-9]{8,9}" title="Enter 8 or 9 digits">
-                        <div class="form-hint">From any prior USCIS correspondence</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Social Security Number</label>
-                        <input type="text" class="form-input" name="ssn" placeholder="XXX-XX-XXXX" pattern="[0-9]{3}-?[0-9]{2}-?[0-9]{4}" title="Enter SSN as XXX-XX-XXXX or 9 digits">
-                        <div class="form-hint">If issued one</div>
-                    </div>
-                </div>
-
-                <div class="form-navigation">
-                    <div></div>
-                    <button type="button" class="btn btn-primary" onclick="nextSection()">Continue</button>
+                    Legal Portal
                 </div>
             </div>
-
-            <!-- Section 2: Contact Information -->
-            <div class="card form-section" data-section="2">
-                <div class="section-header">
-                    <h3>Contact Information</h3>
-                </div>
-
-                <h4>Current Address</h4>
-                <div class="form-row">
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label class="form-label form-label-required">Street Address</label>
-                        <input type="text" class="form-input" name="streetAddress" required>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Apartment/Unit</label>
-                    <input type="text" class="form-input" name="apartment" placeholder="Apt, Suite, Unit, etc.">
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label form-label-required">City</label>
-                        <input type="text" class="form-input" name="city" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label form-label-required">State</label>
-                        <input type="text" class="form-input" name="state" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label form-label-required">ZIP Code</label>
-                        <input type="text" class="form-input" name="zipCode" required>
-                    </div>
-                </div>
-
-                <div class="form-checkbox" style="margin: 24px 0;">
-                    <input type="checkbox" id="mailingDifferent" name="mailingDifferent" onchange="toggleMailingAddress()">
-                    <label for="mailingDifferent">Mailing address is different from current address</label>
-                </div>
-
-                <div id="mailingAddressSection" style="display: none;">
-                    <h4>Mailing Address</h4>
-                    <div class="form-group">
-                        <label class="form-label">Street Address</label>
-                        <input type="text" class="form-input" name="mailingStreet">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">City</label>
-                            <input type="text" class="form-input" name="mailingCity">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">State</label>
-                            <input type="text" class="form-input" name="mailingState">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">ZIP Code</label>
-                            <input type="text" class="form-input" name="mailingZip">
-                        </div>
-                    </div>
-                </div>
-
-                <h4>Phone & Email</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label form-label-required">Primary Phone</label>
-                        <input type="tel" class="form-input" name="phone" required pattern="[0-9()\-\s\+]{10,}" title="Enter a valid phone number">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Phone Type</label>
-                        <select class="form-select" name="phoneType">
-                            <option value="mobile">Mobile</option>
-                            <option value="home">Home</option>
-                            <option value="work">Work</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Alternative Phone</label>
-                        <input type="tel" class="form-input" name="altPhone">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" class="form-input" name="email">
-                    </div>
-                </div>
-
-                <div class="alert alert-info" style="margin-top: 28px;">
-                    <strong>Safety Question</strong>
-                </div>
-                <div class="form-checkbox">
-                    <input type="checkbox" id="safeToContact" name="safeToContact" checked>
-                    <label for="safeToContact">It is safe to contact the client at this phone number and address</label>
-                </div>
-                <div class="form-group" style="margin-top: 16px;">
-                    <label class="form-label">Contact Notes (if safety concerns)</label>
-                    <textarea class="form-textarea" name="contactNotes" placeholder="Note any restrictions on when/how to contact"></textarea>
-                </div>
-
-                <div class="form-row" style="margin-top: 24px;">
-                    <div class="form-group">
-                        <label class="form-label">Preferred Language</label>
-                        <input type="text" class="form-input" name="preferredLanguage" placeholder="e.g., Spanish, Dari, Pashto">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Interpreter Needed?</label>
-                        <select class="form-select" name="needsInterpreter">
-                            <option value="no">No</option>
-                            <option value="yes">Yes</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-navigation">
-                    <button type="button" class="btn btn-outline" onclick="prevSection()">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="nextSection()">Continue</button>
-                </div>
+            <div class="practice-selector">
+                <label>Practice Area</label>
+                <select class="practice-select" id="practiceSelect" onchange="switchPractice(this.value)">
+                    <option value="immigration" selected>Immigration</option>
+                    <option value="contracts">Contracts</option>
+                    <option value="estate">Estate Planning</option>
+                    <option value="general">General</option>
+                </select>
             </div>
-
-            <!-- Section 3: Immigration History -->
-            <div class="card form-section" data-section="3">
-                <div class="section-header">
-                    <h3>Immigration History</h3>
-                </div>
-
-                <h4>Most Recent Entry to United States</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label form-label-required">Date of Entry</label>
-                        <input type="date" class="form-input" name="entryDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Place of Entry</label>
-                        <input type="text" class="form-input" name="entryPlace" placeholder="City, State (e.g., Miami, FL)">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label form-label-required">Status at Entry</label>
-                        <select class="form-select" name="entryStatus" required onchange="toggleEntryStatusOther()">
-                            <option value="">Select...</option>
-                            <option value="tourist_b1b2">Tourist (B-1/B-2)</option>
-                            <option value="student_f1">Student (F-1)</option>
-                            <option value="worker_h1b">Worker (H-1B)</option>
-                            <option value="fiance_k1">Fiancé (K-1)</option>
-                            <option value="refugee">Refugee</option>
-                            <option value="asylee">Asylee</option>
-                            <option value="parolee">Parolee (Humanitarian/Advance)</option>
-                            <option value="ewi">Entered Without Inspection (EWI)</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="entryStatusOtherGroup" style="display: none;">
-                        <label class="form-label">Specify Other Status</label>
-                        <input type="text" class="form-input" name="entryStatusOther">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">I-94 Number</label>
-                        <input type="text" class="form-input" name="i94Number" placeholder="11-digit number">
-                        <div class="form-hint">Found on I-94 record or stamp in passport</div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">I-94 Expiration / Admitted Until</label>
-                        <input type="date" class="form-input" name="i94Expiration">
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Current Immigration Status</label>
-                        <input type="text" class="form-input" name="currentStatus" placeholder="e.g., Overstay, Pending Asylum, LPR">
-                    </div>
-                </div>
-
-                <h4>Passport Information</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Passport Number</label>
-                        <input type="text" class="form-input" name="passportNumber">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Issuing Country</label>
-                        <input type="text" class="form-input" name="passportCountry">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Expiration Date</label>
-                        <input type="date" class="form-input" name="passportExpiration">
-                    </div>
-                </div>
-
-                <h4>Prior Immigration Applications</h4>
-                <div class="form-group">
-                    <label class="form-label">Have you filed any prior immigration applications?</label>
-                    <select class="form-select" name="hasPriorApplications" onchange="togglePriorApplications()">
-                        <option value="no">No</option>
-                        <option value="yes">Yes</option>
-                    </select>
-                </div>
-                <div id="priorApplicationsSection" style="display: none;">
-                    <div class="form-group">
-                        <label class="form-label">Describe prior applications</label>
-                        <textarea class="form-textarea" name="priorApplicationsDetail" placeholder="List type of application, date filed, and result (approved/denied/pending)"></textarea>
-                    </div>
-                </div>
-
-                <div class="alert alert-warning" style="margin-top: 28px;">
-                    <strong>Important Questions</strong>
-                </div>
-                <div class="form-checkbox" style="margin-bottom: 16px;">
-                    <input type="checkbox" id="priorDeportation" name="priorDeportation" onchange="toggleDeportationDetails()">
-                    <label for="priorDeportation">Have you ever been deported, removed, or ordered removed from the United States?</label>
-                </div>
-                <div id="deportationDetailsSection" style="display: none;">
-                    <div class="form-group">
-                        <label class="form-label">Please provide details</label>
-                        <textarea class="form-textarea" name="deportationDetails" placeholder="Date, circumstances, and any related documents"></textarea>
-                    </div>
-                </div>
-
-                <div class="form-navigation">
-                    <button type="button" class="btn btn-outline" onclick="prevSection()">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="nextSection()">Continue</button>
-                </div>
+            <nav class="workflow-nav">
+                <div class="workflow-label">Workflow</div>
+                <ul class="workflow-steps" id="workflowSteps">
+                    <li class="workflow-step active" onclick="window.location.href='intake.html'"><span class="step-indicator"><span class="step-number">1</span></span><span>Intake</span></li>
+                    <li class="workflow-step" onclick="window.location.href='checklist.html'"><span class="step-indicator"><span class="step-number">2</span></span><span>Documents</span></li>
+                    <li class="workflow-step" onclick="window.location.href='forms.html'"><span class="step-indicator"><span class="step-number">3</span></span><span>Forms</span></li>
+                    <li class="workflow-step" onclick="window.location.href='summary.html'"><span class="step-indicator"><span class="step-number">4</span></span><span>Summary</span></li>
+                    <li class="workflow-step" onclick="window.location.href='deadlines.html'"><span class="step-indicator"><span class="step-number">5</span></span><span>File</span></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="about.html">How It Works</a>
+                <a href="#" onclick="logout(); return false;">Sign Out</a>
             </div>
+        </aside>
 
-            <!-- Section 4: Family Information -->
-            <div class="card form-section" data-section="4">
-                <div class="section-header">
-                    <h3>Family Information</h3>
+        <main class="main-content">
+            <header class="top-bar">
+                <span class="top-bar-title">Immigration — Intake</span>
+                <div class="top-bar-actions">
+                    <a href="dashboard.html">Dashboard</a>
                 </div>
+            </header>
 
-                <div id="spouseSection">
-                    <h4>Spouse Information</h4>
-                    <p class="form-hint" style="margin-bottom: 20px;">Complete if currently married</p>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Spouse's Last Name</label>
-                            <input type="text" class="form-input" name="spouseLastName">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Spouse's First Name</label>
-                            <input type="text" class="form-input" name="spouseFirstName">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Date of Birth</label>
-                            <input type="date" class="form-input" name="spouseDOB">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Country of Birth</label>
-                            <input type="text" class="form-input" name="spouseCountryOfBirth">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Immigration Status</label>
-                            <input type="text" class="form-input" name="spouseImmigrationStatus" placeholder="e.g., USC, LPR, Pending">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Marriage Date</label>
-                            <input type="date" class="form-input" name="marriageDate">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Marriage Location</label>
-                            <input type="text" class="form-input" name="marriagePlace" placeholder="City, State/Country">
-                        </div>
-                    </div>
-                    <div class="form-checkbox" style="margin-top: 16px;">
-                        <input type="checkbox" id="livingTogether" name="livingTogether" checked>
-                        <label for="livingTogether">Currently living together with spouse</label>
-                    </div>
-                </div>
-
-                <h4>Children</h4>
-                <div class="form-group">
-                    <label class="form-label">Do you have children?</label>
-                    <select class="form-select" name="hasChildren" onchange="toggleChildrenSection()">
-                        <option value="no">No</option>
-                        <option value="yes">Yes</option>
-                    </select>
-                </div>
-                <div id="childrenSection" style="display: none;">
-                    <div class="alert alert-info">
-                        List all children, including those living outside the US
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Children Information</label>
-                        <textarea class="form-textarea" name="childrenDetails" placeholder="For each child, list:
-- Full name
-- Date of birth
-- Country of birth
-- Immigration status
-- Current location (with you, in US elsewhere, abroad)"></textarea>
-                    </div>
-                </div>
-
-                <h4>Parents</h4>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Mother's Full Name</label>
-                        <input type="text" class="form-input" name="motherName">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Mother's Country of Birth</label>
-                        <input type="text" class="form-input" name="motherCountry">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Father's Full Name</label>
-                        <input type="text" class="form-input" name="fatherName">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Father's Country of Birth</label>
-                        <input type="text" class="form-input" name="fatherCountry">
-                    </div>
-                </div>
-
-                <div class="form-navigation">
-                    <button type="button" class="btn btn-outline" onclick="prevSection()">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="nextSection()">Continue</button>
-                </div>
-            </div>
-
-            <!-- Section 5: Case-Specific Information -->
-            <div class="card form-section" data-section="5">
-                <div class="section-header">
-                    <h3>Case Information</h3>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label form-label-required">What type of help are you seeking?</label>
-                    <select class="form-select" name="caseType" required onchange="toggleCaseSpecificSections()">
-                        <option value="">Select primary case type...</option>
-                        <option value="asylum">Asylum / Withholding of Removal</option>
-                        <option value="family">Family-Based Petition (I-130/I-485)</option>
-                        <option value="naturalization">Citizenship / Naturalization</option>
-                        <option value="u_visa">U Visa (Crime Victim)</option>
-                        <option value="t_visa">T Visa (Trafficking Victim)</option>
-                        <option value="vawa">VAWA (Domestic Violence)</option>
-                        <option value="tps">TPS (Temporary Protected Status)</option>
-                        <option value="daca">DACA</option>
-                        <option value="work_permit">Work Permit / EAD</option>
-                        <option value="removal_defense">Removal Defense / Immigration Court</option>
-                        <option value="other">Other / Not Sure</option>
-                    </select>
-                </div>
-
-                <!-- Asylum-specific questions -->
-                <div id="asylumQuestions" class="case-specific-section" style="display: none;">
-                    <h4>Asylum Information</h4>
-                    <div class="alert alert-warning">
-                        <strong>1-Year Deadline:</strong> Asylum must generally be filed within 1 year of your last entry to the US. Attorney will review any deadline concerns.
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Country where you fear persecution</label>
-                        <input type="text" class="form-input" name="asylumCountry">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Why do you fear return? (Check all that apply)</label>
-                        <div class="form-checkbox">
-                            <input type="checkbox" name="asylumBasis" value="race"> <label>Race</label>
-                        </div>
-                        <div class="form-checkbox">
-                            <input type="checkbox" name="asylumBasis" value="religion"> <label>Religion</label>
-                        </div>
-                        <div class="form-checkbox">
-                            <input type="checkbox" name="asylumBasis" value="nationality"> <label>Nationality</label>
-                        </div>
-                        <div class="form-checkbox">
-                            <input type="checkbox" name="asylumBasis" value="political"> <label>Political Opinion</label>
-                        </div>
-                        <div class="form-checkbox">
-                            <input type="checkbox" name="asylumBasis" value="social_group"> <label>Particular Social Group</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Brief summary of what happened</label>
-                        <textarea class="form-textarea" name="asylumSummary" placeholder="We will gather more details later. For now, please briefly describe why you fear return to your country."></textarea>
-                        <div class="form-hint">This information is confidential and will only be shared with your attorney.</div>
-                    </div>
-                </div>
-
-                <!-- U Visa specific questions -->
-                <div id="uVisaQuestions" class="case-specific-section" style="display: none;">
-                    <h4>U Visa Information</h4>
-                    <div class="form-group">
-                        <label class="form-label">Type of crime you were a victim of</label>
-                        <input type="text" class="form-input" name="uVisaCrime" placeholder="e.g., domestic violence, assault, robbery">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">Approximate date of crime</label>
-                            <input type="date" class="form-input" name="uVisaCrimeDate">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Location (city, state)</label>
-                            <input type="text" class="form-input" name="uVisaCrimeLocation">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Law enforcement agency involved</label>
-                        <input type="text" class="form-input" name="uVisaLawEnforcement" placeholder="e.g., Montgomery County Police">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Have you contacted law enforcement about certification?</label>
-                        <select class="form-select" name="uVisaCertification">
-                            <option value="no">No, not yet</option>
-                            <option value="requested">Yes, certification requested</option>
-                            <option value="received">Yes, certification received</option>
-                            <option value="denied">Certification was denied</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- VAWA specific questions -->
-                <div id="vawaQuestions" class="case-specific-section" style="display: none;">
-                    <h4>VAWA Information</h4>
-                    <div class="alert alert-info">
-                        <strong>Confidentiality:</strong> VAWA cases have special confidentiality protections under federal law.
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Your relationship to the abuser</label>
-                        <select class="form-select" name="vawaRelationship">
-                            <option value="">Select...</option>
-                            <option value="spouse">Spouse</option>
-                            <option value="former_spouse">Former Spouse</option>
-                            <option value="parent">Parent (if you are under 21)</option>
-                            <option value="child">Child over 21</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Abuser's immigration status</label>
-                        <input type="text" class="form-input" name="vawaAbuserStatus" placeholder="e.g., US Citizen, Lawful Permanent Resident">
-                    </div>
-                </div>
-
-                <!-- Family-based specific -->
-                <div id="familyQuestions" class="case-specific-section" style="display: none;">
-                    <h4>Family Petition Information</h4>
-                    <div class="form-group">
-                        <label class="form-label">Who is petitioning for you?</label>
-                        <select class="form-select" name="familyPetitioner">
-                            <option value="">Select...</option>
-                            <option value="spouse">Spouse</option>
-                            <option value="parent">Parent</option>
-                            <option value="child">Adult Child (21+)</option>
-                            <option value="sibling">Sibling</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Petitioner's immigration status</label>
-                        <select class="form-select" name="familyPetitionerStatus">
-                            <option value="">Select...</option>
-                            <option value="usc">US Citizen</option>
-                            <option value="lpr">Lawful Permanent Resident (Green Card)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Criminal history (always shown) -->
-                <h4>Important Background Questions</h4>
-                <div class="alert alert-warning">
-                    Please answer honestly. This information helps the attorney assess your case. A "yes" answer does not necessarily disqualify you from relief.
-                </div>
-                <div class="form-checkbox" style="margin-bottom: 16px;">
-                    <input type="checkbox" name="hasArrests">
-                    <label>Have you ever been arrested? (even if not convicted)</label>
-                </div>
-                <div class="form-checkbox" style="margin-bottom: 16px;">
-                    <input type="checkbox" name="hasConvictions">
-                    <label>Have you ever been convicted of a crime?</label>
-                </div>
-                <div class="form-checkbox" style="margin-bottom: 16px;">
-                    <input type="checkbox" name="hasPendingCharges">
-                    <label>Do you have any pending criminal charges?</label>
-                </div>
-                <div class="form-checkbox" style="margin-bottom: 16px;">
-                    <input type="checkbox" name="hasImmigrationViolations">
-                    <label>Have you ever violated immigration laws? (overstay, unauthorized work, etc.)</label>
-                </div>
-
-                <div class="form-group" style="margin-top: 20px;">
-                    <label class="form-label">If you checked any boxes above, please provide details</label>
-                    <textarea class="form-textarea" name="criminalDetails" placeholder="Include dates, locations, charges, and outcomes"></textarea>
-                </div>
-
-                <div class="form-group" style="margin-top: 24px;">
-                    <label class="form-label">Additional Notes</label>
-                    <textarea class="form-textarea" name="additionalNotes" placeholder="Is there anything else you think is important for the attorney to know?"></textarea>
-                </div>
-
-                <div class="form-navigation">
-                    <button type="button" class="btn btn-outline" onclick="prevSection()">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="nextSection()">Review Intake</button>
-                </div>
-            </div>
-
-            <!-- Section 6: Review -->
-            <div class="card form-section" data-section="6">
-                <div class="section-header">
-                    <h3>Review & Submit</h3>
-                </div>
-
-                <div class="draft-notice" style="margin-bottom: 32px;">
+            <div class="content-container wide">
+                <div class="draft-notice">
                     <strong>DRAFT - PENDING ATTORNEY REVIEW</strong><br>
-                    Please review the information below. This does not constitute legal advice.
+                    This intake form does not constitute legal advice. All information will be reviewed by an attorney.
                 </div>
 
-                <div id="reviewContent">
-                    <!-- Populated by JavaScript -->
+                <div class="progress-steps" id="progressSteps">
+                    <div class="progress-step active" data-step="1"><div class="step-number"><span>1</span></div><div class="step-label">Biographical</div></div>
+                    <div class="progress-step" data-step="2"><div class="step-number"><span>2</span></div><div class="step-label">Contact</div></div>
+                    <div class="progress-step" data-step="3"><div class="step-number"><span>3</span></div><div class="step-label">Immigration</div></div>
+                    <div class="progress-step" data-step="4"><div class="step-number"><span>4</span></div><div class="step-label">Family</div></div>
+                    <div class="progress-step" data-step="5"><div class="step-number"><span>5</span></div><div class="step-label">Case Info</div></div>
+                    <div class="progress-step" data-step="6"><div class="step-number"><span>6</span></div><div class="step-label">Review</div></div>
                 </div>
 
-                <div class="alert alert-info" style="margin-top: 28px;">
-                    <strong>What happens next?</strong>
-                    <ol style="margin: 12px 0 0 20px; padding: 0;">
-                        <li style="margin-bottom: 6px;">An attorney will review this intake</li>
-                        <li style="margin-bottom: 6px;">We will contact you to schedule a consultation</li>
-                        <li>You may be asked to provide additional documents</li>
-                    </ol>
-                </div>
+                <form id="intakeForm">
+                    <!-- Section 1: Biographical -->
+                    <div class="card form-section active" data-section="1">
+                        <div class="section-header"><h3>Biographical Information</h3></div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label required">Last Name (Family Name)</label><input type="text" class="form-input" name="lastName" required><div class="form-hint">As shown on passport or official documents</div></div>
+                            <div class="form-group"><label class="form-label required">First Name (Given Name)</label><input type="text" class="form-input" name="firstName" required></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Middle Name</label><input type="text" class="form-input" name="middleName"></div>
+                        <div class="form-group"><label class="form-label">Other Names Used</label><input type="text" class="form-input" name="otherNames" placeholder="Maiden name, nicknames, aliases"><div class="form-hint">Include all names ever used</div></div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label required">Date of Birth</label><input type="date" class="form-input" name="dateOfBirth" required></div>
+                            <div class="form-group"><label class="form-label required">Country of Birth</label><input type="text" class="form-input" name="countryOfBirth" required></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">City of Birth</label><input type="text" class="form-input" name="cityOfBirth"></div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label required">Country of Citizenship</label><input type="text" class="form-input" name="countryOfCitizenship" required></div>
+                            <div class="form-group"><label class="form-label required">Gender</label><select class="form-select" name="gender" required><option value="">Select...</option><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+                        </div>
+                        <div class="form-group"><label class="form-label required">Marital Status</label><select class="form-select" name="maritalStatus" required><option value="">Select...</option><option value="single">Single</option><option value="married">Married</option><option value="divorced">Divorced</option><option value="widowed">Widowed</option><option value="separated">Separated</option></select></div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">A-Number (if known)</label><input type="text" class="form-input" name="aNumber" placeholder="9 digits"></div>
+                            <div class="form-group"><label class="form-label">Social Security Number</label><input type="text" class="form-input" name="ssn" placeholder="XXX-XX-XXXX"></div>
+                        </div>
+                        <div class="form-navigation"><div></div><button type="button" class="btn btn-primary" onclick="nextSection()">Continue</button></div>
+                    </div>
 
-                <div class="form-checkbox" style="margin: 28px 0;">
-                    <input type="checkbox" id="confirmAccurate" name="confirmAccurate" required>
-                    <label for="confirmAccurate">I confirm that the information provided is true and accurate to the best of my knowledge</label>
-                </div>
+                    <!-- Section 2: Contact -->
+                    <div class="card form-section" data-section="2">
+                        <div class="section-header"><h3>Contact Information</h3></div>
+                        <h4>Current Address</h4>
+                        <div class="form-group"><label class="form-label required">Street Address</label><input type="text" class="form-input" name="streetAddress" required></div>
+                        <div class="form-group"><label class="form-label">Apartment/Unit</label><input type="text" class="form-input" name="apartment"></div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label required">City</label><input type="text" class="form-input" name="city" required></div>
+                            <div class="form-group"><label class="form-label required">State</label><input type="text" class="form-input" name="state" required></div>
+                        </div>
+                        <div class="form-group"><label class="form-label required">ZIP Code</label><input type="text" class="form-input" name="zipCode" required></div>
+                        <h4>Phone & Email</h4>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label required">Primary Phone</label><input type="tel" class="form-input" name="phone" required></div>
+                            <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" name="email"></div>
+                        </div>
+                        <div class="alert alert-info" style="margin-top: 24px;"><strong>Safety Question</strong></div>
+                        <div class="form-checkbox"><input type="checkbox" id="safeToContact" name="safeToContact" checked><span>It is safe to contact the client at this phone number and address</span></div>
+                        <div class="form-group" style="margin-top: 16px;"><label class="form-label">Contact Notes</label><textarea class="form-textarea" name="contactNotes" placeholder="Note any restrictions"></textarea></div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Preferred Language</label><input type="text" class="form-input" name="preferredLanguage"></div>
+                            <div class="form-group"><label class="form-label">Interpreter Needed?</label><select class="form-select" name="needsInterpreter"><option value="no">No</option><option value="yes">Yes</option></select></div>
+                        </div>
+                        <div class="form-navigation"><button type="button" class="btn btn-secondary" onclick="prevSection()">Back</button><button type="button" class="btn btn-primary" onclick="nextSection()">Continue</button></div>
+                    </div>
 
-                <div class="form-navigation">
-                    <button type="button" class="btn btn-outline" onclick="prevSection()">Back to Edit</button>
-                    <button type="submit" class="btn btn-accent btn-lg">Submit Intake</button>
-                </div>
+                    <!-- Section 3: Immigration -->
+                    <div class="card form-section" data-section="3">
+                        <div class="section-header"><h3>Immigration History</h3></div>
+                        <h4>Most Recent Entry to United States</h4>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label required">Date of Entry</label><input type="date" class="form-input" name="entryDate" required></div>
+                            <div class="form-group"><label class="form-label">Place of Entry</label><input type="text" class="form-input" name="entryPlace" placeholder="City, State"></div>
+                        </div>
+                        <div class="form-group"><label class="form-label required">Status at Entry</label><select class="form-select" name="entryStatus" required onchange="toggleEntryStatusOther()"><option value="">Select...</option><option value="tourist_b1b2">Tourist (B-1/B-2)</option><option value="student_f1">Student (F-1)</option><option value="worker_h1b">Worker (H-1B)</option><option value="fiance_k1">Fiancé (K-1)</option><option value="refugee">Refugee</option><option value="asylee">Asylee</option><option value="parolee">Parolee</option><option value="ewi">Entered Without Inspection</option><option value="other">Other</option></select></div>
+                        <div class="form-group" id="entryStatusOtherGroup" style="display: none;"><label class="form-label">Specify Other Status</label><input type="text" class="form-input" name="entryStatusOther"></div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">I-94 Number</label><input type="text" class="form-input" name="i94Number"></div>
+                            <div class="form-group"><label class="form-label">Current Immigration Status</label><input type="text" class="form-input" name="currentStatus" placeholder="e.g., Overstay, Pending"></div>
+                        </div>
+                        <h4>Passport Information</h4>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Passport Number</label><input type="text" class="form-input" name="passportNumber"></div>
+                            <div class="form-group"><label class="form-label">Issuing Country</label><input type="text" class="form-input" name="passportCountry"></div>
+                        </div>
+                        <div class="alert alert-warning" style="margin-top: 24px;"><strong>Important Questions</strong></div>
+                        <div class="form-checkbox" style="margin-bottom: 16px;"><input type="checkbox" id="priorDeportation" name="priorDeportation" onchange="toggleDeportationDetails()"><span>Have you ever been deported or ordered removed?</span></div>
+                        <div id="deportationDetailsSection" style="display: none;"><div class="form-group"><label class="form-label">Please provide details</label><textarea class="form-textarea" name="deportationDetails"></textarea></div></div>
+                        <div class="form-navigation"><button type="button" class="btn btn-secondary" onclick="prevSection()">Back</button><button type="button" class="btn btn-primary" onclick="nextSection()">Continue</button></div>
+                    </div>
+
+                    <!-- Section 4: Family -->
+                    <div class="card form-section" data-section="4">
+                        <div class="section-header"><h3>Family Information</h3></div>
+                        <h4>Spouse Information</h4>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Spouse's Last Name</label><input type="text" class="form-input" name="spouseLastName"></div>
+                            <div class="form-group"><label class="form-label">Spouse's First Name</label><input type="text" class="form-input" name="spouseFirstName"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Date of Birth</label><input type="date" class="form-input" name="spouseDOB"></div>
+                            <div class="form-group"><label class="form-label">Immigration Status</label><input type="text" class="form-input" name="spouseImmigrationStatus" placeholder="e.g., USC, LPR"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Marriage Date</label><input type="date" class="form-input" name="marriageDate"></div>
+                            <div class="form-group"><label class="form-label">Marriage Location</label><input type="text" class="form-input" name="marriagePlace"></div>
+                        </div>
+                        <h4>Children</h4>
+                        <div class="form-group"><label class="form-label">Do you have children?</label><select class="form-select" name="hasChildren" onchange="toggleChildrenSection()"><option value="no">No</option><option value="yes">Yes</option></select></div>
+                        <div id="childrenSection" style="display: none;"><div class="form-group"><label class="form-label">Children Information</label><textarea class="form-textarea" name="childrenDetails" placeholder="For each child list: name, DOB, country of birth, status, location"></textarea></div></div>
+                        <h4>Parents</h4>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Mother's Full Name</label><input type="text" class="form-input" name="motherName"></div>
+                            <div class="form-group"><label class="form-label">Mother's Country</label><input type="text" class="form-input" name="motherCountry"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group"><label class="form-label">Father's Full Name</label><input type="text" class="form-input" name="fatherName"></div>
+                            <div class="form-group"><label class="form-label">Father's Country</label><input type="text" class="form-input" name="fatherCountry"></div>
+                        </div>
+                        <div class="form-navigation"><button type="button" class="btn btn-secondary" onclick="prevSection()">Back</button><button type="button" class="btn btn-primary" onclick="nextSection()">Continue</button></div>
+                    </div>
+
+                    <!-- Section 5: Case Info -->
+                    <div class="card form-section" data-section="5">
+                        <div class="section-header"><h3>Case Information</h3></div>
+                        <div class="form-group"><label class="form-label required">What type of help are you seeking?</label><select class="form-select" name="caseType" required onchange="toggleCaseSpecificSections()"><option value="">Select...</option><option value="asylum">Asylum</option><option value="family">Family-Based Petition</option><option value="naturalization">Naturalization</option><option value="u_visa">U Visa</option><option value="t_visa">T Visa</option><option value="vawa">VAWA</option><option value="tps">TPS</option><option value="daca">DACA</option><option value="work_permit">Work Permit</option><option value="removal_defense">Removal Defense</option><option value="other">Other</option></select></div>
+
+                        <div id="asylumQuestions" class="case-specific-section" style="display: none;">
+                            <h4>Asylum Information</h4>
+                            <div class="alert alert-warning"><strong>1-Year Deadline:</strong> Asylum must generally be filed within 1 year of entry.</div>
+                            <div class="form-group"><label class="form-label">Country where you fear persecution</label><input type="text" class="form-input" name="asylumCountry"></div>
+                            <div class="form-group"><label class="form-label">Brief summary of what happened</label><textarea class="form-textarea" name="asylumSummary"></textarea></div>
+                        </div>
+
+                        <div id="uVisaQuestions" class="case-specific-section" style="display: none;">
+                            <h4>U Visa Information</h4>
+                            <div class="form-group"><label class="form-label">Type of crime</label><input type="text" class="form-input" name="uVisaCrime"></div>
+                            <div class="form-group"><label class="form-label">Law enforcement agency</label><input type="text" class="form-input" name="uVisaLawEnforcement"></div>
+                        </div>
+
+                        <div id="familyQuestions" class="case-specific-section" style="display: none;">
+                            <h4>Family Petition Information</h4>
+                            <div class="form-group"><label class="form-label">Who is petitioning for you?</label><select class="form-select" name="familyPetitioner"><option value="">Select...</option><option value="spouse">Spouse</option><option value="parent">Parent</option><option value="child">Adult Child</option><option value="sibling">Sibling</option></select></div>
+                        </div>
+
+                        <h4>Background Questions</h4>
+                        <div class="alert alert-warning">Please answer honestly. A "yes" does not disqualify you.</div>
+                        <div class="form-checkbox" style="margin-bottom: 12px;"><input type="checkbox" name="hasArrests"><span>Ever been arrested?</span></div>
+                        <div class="form-checkbox" style="margin-bottom: 12px;"><input type="checkbox" name="hasConvictions"><span>Ever been convicted?</span></div>
+                        <div class="form-checkbox" style="margin-bottom: 12px;"><input type="checkbox" name="hasPendingCharges"><span>Pending criminal charges?</span></div>
+                        <div class="form-group" style="margin-top: 16px;"><label class="form-label">If checked any above, provide details</label><textarea class="form-textarea" name="criminalDetails"></textarea></div>
+                        <div class="form-group"><label class="form-label">Additional Notes</label><textarea class="form-textarea" name="additionalNotes"></textarea></div>
+                        <div class="form-navigation"><button type="button" class="btn btn-secondary" onclick="prevSection()">Back</button><button type="button" class="btn btn-primary" onclick="nextSection()">Review</button></div>
+                    </div>
+
+                    <!-- Section 6: Review -->
+                    <div class="card form-section" data-section="6">
+                        <div class="section-header"><h3>Review & Submit</h3></div>
+                        <div class="draft-notice" style="margin-bottom: 24px;"><strong>DRAFT - PENDING ATTORNEY REVIEW</strong></div>
+                        <div id="reviewContent"></div>
+                        <div class="alert alert-info" style="margin-top: 24px;"><strong>What happens next?</strong><br>1. Attorney reviews intake<br>2. We contact you for consultation<br>3. You may need additional documents</div>
+                        <div class="form-checkbox" style="margin: 24px 0;"><input type="checkbox" id="confirmAccurate" name="confirmAccurate" required><span>I confirm the information is true and accurate</span></div>
+                        <div class="form-navigation"><button type="button" class="btn btn-secondary" onclick="prevSection()">Back</button><button type="submit" class="btn btn-primary btn-lg">Submit Intake</button></div>
+                    </div>
+                </form>
             </div>
-        </form>
-    </main>
+        </main>
+    </div>
 
     <script>
         let currentSection = 1;
         const totalSections = 6;
 
         function updateProgress() {
-            const steps = document.querySelectorAll('.progress-step');
-            steps.forEach((step, index) => {
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
                 const stepNum = index + 1;
                 step.classList.remove('active', 'completed');
-                if (stepNum < currentSection) {
-                    step.classList.add('completed');
-                } else if (stepNum === currentSection) {
-                    step.classList.add('active');
-                }
+                if (stepNum < currentSection) step.classList.add('completed');
+                else if (stepNum === currentSection) step.classList.add('active');
             });
         }
 
         function showSection(sectionNum) {
-            const sections = document.querySelectorAll('.form-section');
-            sections.forEach(section => {
-                section.classList.remove('active');
-                if (parseInt(section.dataset.section) === sectionNum) {
-                    section.classList.add('active');
-                }
+            document.querySelectorAll('.form-section').forEach(section => {
+                section.classList.toggle('active', parseInt(section.dataset.section) === sectionNum);
             });
             currentSection = sectionNum;
             updateProgress();
             window.scrollTo(0, 0);
-
-            if (sectionNum === 6) {
-                generateReview();
-            }
+            if (sectionNum === 6) generateReview();
         }
 
         function nextSection() {
-            // Validate current section before advancing
-            const currentSectionEl = document.querySelector(`.form-section[data-section="${currentSection}"]`);
-            const requiredFields = currentSectionEl.querySelectorAll('[required]');
+            const currentEl = document.querySelector(`.form-section[data-section="${currentSection}"]`);
+            const required = currentEl.querySelectorAll('[required]');
             let valid = true;
-
-            requiredFields.forEach(field => {
-                if (!field.value) {
-                    field.classList.add('error');
-                    valid = false;
-                } else {
-                    field.classList.remove('error');
-                }
+            required.forEach(field => {
+                if (!field.value) { field.style.borderColor = 'var(--danger)'; valid = false; }
+                else { field.style.borderColor = ''; }
             });
-
-            if (!valid) {
-                alert('Please complete all required fields before continuing.');
-                return;
-            }
-
-            if (currentSection < totalSections) {
-                showSection(currentSection + 1);
-            }
+            if (!valid) { alert('Please complete required fields.'); return; }
+            if (currentSection < totalSections) showSection(currentSection + 1);
         }
 
-        function prevSection() {
-            if (currentSection > 1) {
-                showSection(currentSection - 1);
-            }
-        }
-
-        function toggleMailingAddress() {
-            const section = document.getElementById('mailingAddressSection');
-            const checkbox = document.getElementById('mailingDifferent');
-            section.style.display = checkbox.checked ? 'block' : 'none';
-        }
+        function prevSection() { if (currentSection > 1) showSection(currentSection - 1); }
 
         function toggleEntryStatusOther() {
-            const select = document.querySelector('[name="entryStatus"]');
-            const otherGroup = document.getElementById('entryStatusOtherGroup');
-            otherGroup.style.display = select.value === 'other' ? 'block' : 'none';
-        }
-
-        function togglePriorApplications() {
-            const select = document.querySelector('[name="hasPriorApplications"]');
-            const section = document.getElementById('priorApplicationsSection');
-            section.style.display = select.value === 'yes' ? 'block' : 'none';
+            document.getElementById('entryStatusOtherGroup').style.display =
+                document.querySelector('[name="entryStatus"]').value === 'other' ? 'block' : 'none';
         }
 
         function toggleDeportationDetails() {
-            const checkbox = document.getElementById('priorDeportation');
-            const section = document.getElementById('deportationDetailsSection');
-            section.style.display = checkbox.checked ? 'block' : 'none';
+            document.getElementById('deportationDetailsSection').style.display =
+                document.getElementById('priorDeportation').checked ? 'block' : 'none';
         }
 
         function toggleChildrenSection() {
-            const select = document.querySelector('[name="hasChildren"]');
-            const section = document.getElementById('childrenSection');
-            section.style.display = select.value === 'yes' ? 'block' : 'none';
+            document.getElementById('childrenSection').style.display =
+                document.querySelector('[name="hasChildren"]').value === 'yes' ? 'block' : 'none';
         }
 
         function toggleCaseSpecificSections() {
-            const caseType = document.querySelector('[name="caseType"]').value;
-
-            // Hide all case-specific sections
+            const type = document.querySelector('[name="caseType"]').value;
             document.querySelectorAll('.case-specific-section').forEach(s => s.style.display = 'none');
-
-            // Show relevant section
-            const sectionMap = {
-                'asylum': 'asylumQuestions',
-                'u_visa': 'uVisaQuestions',
-                'vawa': 'vawaQuestions',
-                'family': 'familyQuestions'
-            };
-
-            if (sectionMap[caseType]) {
-                document.getElementById(sectionMap[caseType]).style.display = 'block';
-            }
+            const map = { 'asylum': 'asylumQuestions', 'u_visa': 'uVisaQuestions', 'family': 'familyQuestions' };
+            if (map[type]) document.getElementById(map[type]).style.display = 'block';
         }
 
         function generateReview() {
             const form = document.getElementById('intakeForm');
-            const formData = new FormData(form);
+            const data = new FormData(form);
+            document.getElementById('reviewContent').innerHTML = `
+                <div class="review-sections">
+                    <h4>Biographical</h4>
+                    <table class="table"><tr><td>Name</td><td>${data.get('firstName')||''} ${data.get('lastName')||''}</td></tr><tr><td>DOB</td><td>${data.get('dateOfBirth')||'-'}</td></tr><tr><td>Country</td><td>${data.get('countryOfBirth')||'-'}</td></tr></table>
+                    <h4>Contact</h4>
+                    <table class="table"><tr><td>Address</td><td>${data.get('streetAddress')||''}, ${data.get('city')||''}, ${data.get('state')||''}</td></tr><tr><td>Phone</td><td>${data.get('phone')||'-'}</td></tr></table>
+                    <h4>Immigration</h4>
+                    <table class="table"><tr><td>Entry Date</td><td>${data.get('entryDate')||'-'}</td></tr><tr><td>Status</td><td>${data.get('entryStatus')||'-'}</td></tr></table>
+                    <h4>Case</h4>
+                    <table class="table"><tr><td>Type</td><td>${data.get('caseType')||'-'}</td></tr></table>
+                </div>`;
+        }
 
-            let html = '<div class="review-sections">';
-
-            // Biographical
-            html += `
-                <h4>Biographical Information</h4>
-                <table class="table">
-                    <tr><td><strong>Name</strong></td><td>${formData.get('firstName') || ''} ${formData.get('middleName') || ''} ${formData.get('lastName') || ''}</td></tr>
-                    <tr><td><strong>Date of Birth</strong></td><td>${formData.get('dateOfBirth') || 'Not provided'}</td></tr>
-                    <tr><td><strong>Country of Birth</strong></td><td>${formData.get('countryOfBirth') || 'Not provided'}</td></tr>
-                    <tr><td><strong>Citizenship</strong></td><td>${formData.get('countryOfCitizenship') || 'Not provided'}</td></tr>
-                    <tr><td><strong>A-Number</strong></td><td>${formData.get('aNumber') || 'None'}</td></tr>
-                </table>
-            `;
-
-            // Contact
-            html += `
-                <h4 style="margin-top: 28px;">Contact Information</h4>
-                <table class="table">
-                    <tr><td><strong>Address</strong></td><td>${formData.get('streetAddress') || ''}, ${formData.get('city') || ''}, ${formData.get('state') || ''} ${formData.get('zipCode') || ''}</td></tr>
-                    <tr><td><strong>Phone</strong></td><td>${formData.get('phone') || 'Not provided'}</td></tr>
-                    <tr><td><strong>Email</strong></td><td>${formData.get('email') || 'Not provided'}</td></tr>
-                    <tr><td><strong>Safe to Contact</strong></td><td>${formData.get('safeToContact') ? 'Yes' : 'NO - See notes'}</td></tr>
-                </table>
-            `;
-
-            // Immigration
-            html += `
-                <h4 style="margin-top: 28px;">Immigration History</h4>
-                <table class="table">
-                    <tr><td><strong>Entry Date</strong></td><td>${formData.get('entryDate') || 'Not provided'}</td></tr>
-                    <tr><td><strong>Entry Status</strong></td><td>${formData.get('entryStatus') || 'Not provided'}</td></tr>
-                    <tr><td><strong>Current Status</strong></td><td>${formData.get('currentStatus') || 'Not provided'}</td></tr>
-                    <tr><td><strong>Prior Deportation</strong></td><td>${formData.get('priorDeportation') ? 'YES - FLAG FOR REVIEW' : 'No'}</td></tr>
-                </table>
-            `;
-
-            // Case Info
-            html += `
-                <h4 style="margin-top: 28px;">Case Information</h4>
-                <table class="table">
-                    <tr><td><strong>Case Type</strong></td><td>${formData.get('caseType') || 'Not specified'}</td></tr>
-                    <tr><td><strong>Criminal History</strong></td><td>${formData.get('hasArrests') || formData.get('hasConvictions') ? 'YES - FLAG FOR REVIEW' : 'None disclosed'}</td></tr>
-                </table>
-            `;
-
-            html += '</div>';
-
-            document.getElementById('reviewContent').innerHTML = html;
+        function switchPractice(practice) {
+            localStorage.setItem('legal-portal-practice', practice);
+            window.location.href = 'dashboard.html';
         }
 
         function logout() {
@@ -932,32 +421,16 @@
             window.location.href = 'index.html';
         }
 
-        // Form submission
         document.getElementById('intakeForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
-            const formData = new FormData(this);
             const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
-            });
-
-            // Add metadata
-            data.meta = {
-                intakeDate: new Date().toISOString(),
-                status: 'draft'
-            };
-
-            // Store locally
-            const intakes = JSON.parse(localStorage.getItem('legal-portal-intakes') || '[]');
+            new FormData(this).forEach((v, k) => data[k] = v);
+            data.meta = { intakeDate: new Date().toISOString(), status: 'draft' };
             data.id = Date.now().toString();
+            const intakes = JSON.parse(localStorage.getItem('legal-portal-intakes') || '[]');
             intakes.push(data);
             localStorage.setItem('legal-portal-intakes', JSON.stringify(intakes));
-
-            // Show success
-            alert('Intake submitted successfully!\n\nThis draft has been saved and is pending attorney review.\n\nIntake ID: ' + data.id);
-
-            // Redirect to dashboard
+            alert('Intake submitted! ID: ' + data.id);
             window.location.href = 'dashboard.html';
         });
     </script>

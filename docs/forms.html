@@ -19,28 +19,29 @@
         .form-selector {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin: 24px 0;
+            gap: 12px;
+            margin: 20px 0;
         }
         .form-option {
-            border: 2px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
             cursor: pointer;
-            transition: all var(--transition);
-            background: var(--bg-card);
+            transition: all 0.15s ease;
+            background: var(--bg-white);
         }
         .form-option:hover {
-            border-color: var(--primary);
-            background: var(--primary-lighter);
+            border-color: var(--accent);
+            background: #F0F7FF;
         }
         .form-option.selected {
-            border-color: var(--primary);
-            background: var(--primary-light);
+            border-color: var(--accent);
+            background: #E8F2FF;
         }
         .form-option h4 {
             margin: 0 0 4px 0;
             font-size: 15px;
+            color: var(--accent);
         }
         .form-option p {
             margin: 0;
@@ -48,62 +49,63 @@
             color: var(--text-muted);
         }
         .client-selector {
-            background: var(--bg-subtle);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            margin-bottom: 24px;
+            background: var(--bg-gray);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 20px;
         }
         .client-card {
             display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 16px;
-            background: var(--bg-card);
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg-white);
             border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            margin-bottom: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
             cursor: pointer;
-            transition: all var(--transition);
+            transition: all 0.15s ease;
         }
         .client-card:hover {
-            border-color: var(--primary);
+            border-color: var(--accent);
         }
         .client-card.selected {
-            border-color: var(--primary);
-            background: var(--primary-lighter);
+            border-color: var(--accent);
+            background: #F0F7FF;
         }
         .client-avatar {
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: var(--primary-light);
+            background: var(--accent);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            color: var(--primary);
-            font-size: 18px;
+            color: white;
+            font-size: 14px;
         }
         .client-info h4 {
-            margin: 0 0 4px 0;
+            margin: 0 0 2px 0;
+            font-size: 14px;
         }
         .client-info p {
             margin: 0;
-            font-size: 13px;
+            font-size: 12px;
             color: var(--text-muted);
         }
         .field-mapping {
-            background: var(--bg-card);
+            background: var(--bg-white);
             border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
+            border-radius: 6px;
             overflow: hidden;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         .field-row {
             display: grid;
             grid-template-columns: 1fr 1fr auto;
-            gap: 16px;
-            padding: 14px 20px;
+            gap: 12px;
+            padding: 12px 16px;
             border-bottom: 1px solid var(--border);
             align-items: center;
         }
@@ -111,15 +113,15 @@
             border-bottom: none;
         }
         .field-row:nth-child(even) {
-            background: var(--bg-subtle);
+            background: var(--bg-gray);
         }
         .field-label {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             color: var(--text-primary);
         }
         .field-value {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--text-secondary);
         }
         .field-value.missing {
@@ -127,190 +129,213 @@
             font-style: italic;
         }
         .field-status {
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 12px;
         }
         .field-status.complete {
-            background: var(--success-light);
+            background: #ECFDF5;
             color: var(--success);
         }
         .field-status.missing {
-            background: var(--danger-light);
+            background: #FEF2F2;
             color: var(--danger);
         }
         .preview-section {
-            background: var(--bg-subtle);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            margin: 24px 0;
+            background: var(--bg-gray);
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
         }
         .form-preview {
             background: white;
             border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 40px;
-            max-width: 800px;
+            border-radius: 6px;
+            padding: 32px;
+            max-width: 700px;
             margin: 0 auto;
-            box-shadow: var(--shadow-md);
         }
         .form-preview h2 {
             text-align: center;
-            border-bottom: 2px solid #000;
-            padding-bottom: 16px;
-            margin-bottom: 24px;
+            border-bottom: 2px solid var(--text-primary);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
         }
         .preview-field {
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .preview-field label {
-            font-size: 11px;
+            font-size: 10px;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: var(--text-muted);
             display: block;
             margin-bottom: 2px;
         }
         .preview-field .value {
             font-size: 14px;
-            padding: 8px 0;
+            padding: 6px 0;
             border-bottom: 1px solid var(--border);
-            min-height: 24px;
+            min-height: 20px;
         }
         .preview-field .value.filled {
             color: var(--text-primary);
         }
         .preview-field .value.empty {
-            color: var(--text-subtle);
+            color: var(--text-muted);
             font-style: italic;
         }
     </style>
 </head>
 <body>
-    <header class="header">
-        <h1>Legal Services Portal</h1>
-        <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <a href="intake.html">Intake</a>
-            <a href="checklist.html">Checklists</a>
-            <a href="deadlines.html">Deadlines</a>
-            <a href="about.html">How It Works</a>
-            <a href="#" onclick="logout(); return false;">Logout</a>
-        </nav>
-    </header>
-
-    <main class="container">
-        <div class="draft-notice">
-            <strong>DRAFT - PENDING ATTORNEY REVIEW</strong><br>
-            Auto-populated forms must be reviewed and verified before filing.
-        </div>
-
-        <div class="card">
-            <h2>Form Assembly</h2>
-            <p>Auto-populate USCIS forms using data from client intake. Select a client and form to begin.</p>
-        </div>
-
-        <!-- Step 1: Select Client -->
-        <div class="card" id="step1">
-            <h3>Step 1: Select Client</h3>
-            <div class="client-selector" id="clientList">
-                <p class="text-muted">Loading clients...</p>
-            </div>
-        </div>
-
-        <!-- Step 2: Select Form -->
-        <div class="card" id="step2" style="display: none;">
-            <h3>Step 2: Select Form</h3>
-            <p>Choose the USCIS form to populate based on case type.</p>
-            <div class="form-selector">
-                <div class="form-option" data-form="i-589" onclick="selectForm('i-589')">
-                    <h4>I-589</h4>
-                    <p>Application for Asylum and Withholding of Removal</p>
-                </div>
-                <div class="form-option" data-form="i-130" onclick="selectForm('i-130')">
-                    <h4>I-130</h4>
-                    <p>Petition for Alien Relative</p>
-                </div>
-                <div class="form-option" data-form="i-485" onclick="selectForm('i-485')">
-                    <h4>I-485</h4>
-                    <p>Application to Register Permanent Residence</p>
-                </div>
-                <div class="form-option" data-form="i-765" onclick="selectForm('i-765')">
-                    <h4>I-765</h4>
-                    <p>Application for Employment Authorization</p>
-                </div>
-                <div class="form-option" data-form="i-918" onclick="selectForm('i-918')">
-                    <h4>I-918</h4>
-                    <p>Petition for U Nonimmigrant Status</p>
-                </div>
-                <div class="form-option" data-form="n-400" onclick="selectForm('n-400')">
-                    <h4>N-400</h4>
-                    <p>Application for Naturalization</p>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+                    Legal Portal
                 </div>
             </div>
-            <button class="btn btn-outline" onclick="backToStep1()">Back to Client Selection</button>
-        </div>
-
-        <!-- Step 3: Review Mapping -->
-        <div class="card" id="step3" style="display: none;">
-            <h3>Step 3: Review Field Mapping</h3>
-            <p>Review the data that will be used to populate the form. Missing fields are highlighted.</p>
-
-            <div class="alert alert-info">
-                <strong>Data Source:</strong> <span id="clientNameDisplay"></span> |
-                <strong>Form:</strong> <span id="formNameDisplay"></span>
+            <div class="practice-selector">
+                <label>Practice Area</label>
+                <select class="practice-select" id="practiceSelect" onchange="switchPractice(this.value)">
+                    <option value="immigration" selected>Immigration</option>
+                    <option value="contracts">Contracts</option>
+                    <option value="estate">Estate Planning</option>
+                    <option value="general">General</option>
+                </select>
             </div>
-
-            <div class="field-mapping" id="fieldMapping">
-                <!-- Populated by JavaScript -->
+            <nav class="workflow-nav">
+                <div class="workflow-label">Workflow</div>
+                <ul class="workflow-steps">
+                    <li class="workflow-step" onclick="window.location.href='intake.html'"><span class="step-indicator"><span class="step-number">1</span></span><span>Intake</span></li>
+                    <li class="workflow-step" onclick="window.location.href='checklist.html'"><span class="step-indicator"><span class="step-number">2</span></span><span>Documents</span></li>
+                    <li class="workflow-step active" onclick="window.location.href='forms.html'"><span class="step-indicator"><span class="step-number">3</span></span><span>Forms</span></li>
+                    <li class="workflow-step" onclick="window.location.href='summary.html'"><span class="step-indicator"><span class="step-number">4</span></span><span>Summary</span></li>
+                    <li class="workflow-step" onclick="window.location.href='deadlines.html'"><span class="step-indicator"><span class="step-number">5</span></span><span>File</span></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="about.html">How It Works</a>
+                <a href="#" onclick="logout(); return false;">Sign Out</a>
             </div>
+        </aside>
 
-            <div id="missingFieldsAlert" class="alert alert-warning" style="display: none;">
-                <strong>Missing Required Fields</strong><br>
-                Some required fields are missing. The form can still be generated, but you'll need to complete these manually.
-            </div>
+        <main class="main-content">
+            <header class="top-bar">
+                <span class="top-bar-title">Immigration — Forms</span>
+                <div class="top-bar-actions"><a href="dashboard.html">Dashboard</a></div>
+            </header>
 
-            <div style="display: flex; gap: 12px; margin-top: 24px;">
-                <button class="btn btn-outline" onclick="backToStep2()">Back</button>
-                <button class="btn btn-primary" onclick="generatePreview()">Generate Form Preview</button>
-            </div>
-        </div>
+            <div class="content-container wide">
+                <div class="draft-notice"><strong>DRAFT - PENDING ATTORNEY REVIEW</strong><br>Auto-populated forms must be reviewed and verified before filing.</div>
 
-        <!-- Step 4: Preview & Export -->
-        <div class="card" id="step4" style="display: none;">
-            <h3>Step 4: Preview & Export</h3>
-            <p>Review the populated form below. Make any necessary corrections before exporting.</p>
+                <div class="card">
+                    <h2 style="margin-bottom: 8px;">Form Assembly</h2>
+                    <p style="color: var(--text-secondary);">Auto-populate USCIS forms using data from client intake. Select a client and form to begin.</p>
+                </div>
 
-            <div class="preview-section">
-                <div class="form-preview" id="formPreview">
-                    <!-- Generated form preview -->
+                <!-- Step 1: Select Client -->
+                <div class="card" id="step1">
+                    <h3>Step 1: Select Client</h3>
+                    <div class="client-selector" id="clientList">
+                        <p class="text-muted">Loading clients...</p>
+                    </div>
+                </div>
+
+                <!-- Step 2: Select Form -->
+                <div class="card" id="step2" style="display: none;">
+                    <h3>Step 2: Select Form</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 16px;">Choose the USCIS form to populate based on case type.</p>
+                    <div class="form-selector">
+                        <div class="form-option" data-form="i-589" onclick="selectForm('i-589')">
+                            <h4>I-589</h4>
+                            <p>Application for Asylum and Withholding of Removal</p>
+                        </div>
+                        <div class="form-option" data-form="i-130" onclick="selectForm('i-130')">
+                            <h4>I-130</h4>
+                            <p>Petition for Alien Relative</p>
+                        </div>
+                        <div class="form-option" data-form="i-485" onclick="selectForm('i-485')">
+                            <h4>I-485</h4>
+                            <p>Application to Register Permanent Residence</p>
+                        </div>
+                        <div class="form-option" data-form="i-765" onclick="selectForm('i-765')">
+                            <h4>I-765</h4>
+                            <p>Application for Employment Authorization</p>
+                        </div>
+                        <div class="form-option" data-form="i-918" onclick="selectForm('i-918')">
+                            <h4>I-918</h4>
+                            <p>Petition for U Nonimmigrant Status</p>
+                        </div>
+                        <div class="form-option" data-form="n-400" onclick="selectForm('n-400')">
+                            <h4>N-400</h4>
+                            <p>Application for Naturalization</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="backToStep1()">Back to Client Selection</button>
+                </div>
+
+                <!-- Step 3: Review Mapping -->
+                <div class="card" id="step3" style="display: none;">
+                    <h3>Step 3: Review Field Mapping</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 16px;">Review the data that will be used to populate the form. Missing fields are highlighted.</p>
+
+                    <div class="alert alert-info">
+                        <strong>Data Source:</strong> <span id="clientNameDisplay"></span> |
+                        <strong>Form:</strong> <span id="formNameDisplay"></span>
+                    </div>
+
+                    <div class="field-mapping" id="fieldMapping"></div>
+
+                    <div id="missingFieldsAlert" class="alert alert-warning" style="display: none;">
+                        <strong>Missing Required Fields</strong><br>
+                        Some required fields are missing. The form can still be generated, but you'll need to complete these manually.
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 20px;">
+                        <button class="btn btn-secondary" onclick="backToStep2()">Back</button>
+                        <button class="btn btn-primary" onclick="generatePreview()">Generate Form Preview</button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Preview & Export -->
+                <div class="card" id="step4" style="display: none;">
+                    <h3>Step 4: Preview & Export</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 16px;">Review the populated form below. Make any necessary corrections before exporting.</p>
+
+                    <div class="preview-section">
+                        <div class="form-preview" id="formPreview"></div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button class="btn btn-secondary" onclick="backToStep3()">Back to Review</button>
+                        <button class="btn btn-primary" onclick="exportForm('pdf')">Export as PDF</button>
+                        <button class="btn btn-secondary" onclick="exportForm('print')">Print Form</button>
+                    </div>
+                </div>
+
+                <!-- No Clients Message -->
+                <div class="card" id="noClients" style="display: none;">
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom: 16px;">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        <h3>No Client Intakes Found</h3>
+                        <p class="text-muted">Complete a client intake form first to use Form Assembly.</p>
+                        <a href="intake.html" class="btn btn-primary" style="margin-top: 16px;">Start Client Intake</a>
+                    </div>
                 </div>
             </div>
-
-            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                <button class="btn btn-outline" onclick="backToStep3()">Back to Review</button>
-                <button class="btn btn-primary" onclick="exportForm('pdf')">Export as PDF</button>
-                <button class="btn btn-secondary" onclick="exportForm('print')">Print Form</button>
-            </div>
-        </div>
-
-        <!-- No Clients Message -->
-        <div class="card" id="noClients" style="display: none;">
-            <div style="text-align: center; padding: 40px 20px;">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom: 16px;">
-                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                    <circle cx="9" cy="7" r="4"/>
-                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
-                <h3>No Client Intakes Found</h3>
-                <p>Complete a client intake form first to use Form Assembly.</p>
-                <a href="intake.html" class="btn btn-primary" style="margin-top: 16px;">Start Client Intake</a>
-            </div>
-        </div>
-    </main>
+        </main>
+    </div>
 
     <script>
         let selectedClient = null;
@@ -514,7 +539,7 @@
             const form = formFields[selectedForm];
             let previewHtml = `
                 <h2>${form.name}</h2>
-                <p style="text-align: center; color: var(--text-muted); margin-bottom: 32px;">
+                <p style="text-align: center; color: var(--text-muted); margin-bottom: 24px;">
                     DRAFT - FOR REVIEW ONLY - NOT FOR FILING
                 </p>
             `;
@@ -555,6 +580,7 @@
             }
         }
 
+        function switchPractice(p) { localStorage.setItem('legal-portal-practice', p); window.location.href = 'dashboard.html'; }
         function logout() {
             localStorage.removeItem('legal-portal-auth');
             localStorage.removeItem('legal-portal-auth-time');
