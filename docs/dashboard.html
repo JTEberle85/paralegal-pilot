@@ -15,10 +15,337 @@
             }
         })();
     </script>
+    <style>
+        /* Landing Page Styles */
+        .landing-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-white);
+        }
+        .landing-header {
+            padding: 20px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+        .landing-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 17px;
+            color: var(--text-primary);
+        }
+        .landing-logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .landing-logo-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+        .landing-nav {
+            display: flex;
+            gap: 20px;
+        }
+        .landing-nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .landing-nav a:hover {
+            color: var(--accent);
+        }
+        .landing-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 24px 80px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .landing-hero {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+        .landing-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+        .landing-hero p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 480px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .how-it-works {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+            margin-bottom: 56px;
+            flex-wrap: wrap;
+        }
+        .how-step {
+            text-align: center;
+            max-width: 180px;
+        }
+        .how-step-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #F0F7FF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+        }
+        .how-step-icon svg {
+            width: 26px;
+            height: 26px;
+            stroke: var(--accent);
+            stroke-width: 1.75;
+            fill: none;
+        }
+        .how-step-number {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 4px;
+        }
+        .how-step-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        .practice-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            width: 100%;
+            max-width: 700px;
+        }
+        @media (max-width: 600px) {
+            .practice-cards {
+                grid-template-columns: 1fr;
+            }
+            .how-it-works {
+                gap: 32px;
+            }
+        }
+        .practice-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .practice-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+        }
+        .practice-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            background: #F0F7FF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+        .practice-card-icon svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--accent);
+            stroke-width: 1.75;
+            fill: none;
+        }
+        .practice-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+        .practice-card p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+        .practice-card .btn-start {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .practice-card .btn-start:hover {
+            background: var(--accent-hover);
+        }
+        .practice-card .btn-start svg {
+            width: 14px;
+            height: 14px;
+            stroke: white;
+            fill: none;
+        }
+
+        /* First-time user banner */
+        .first-time-banner {
+            background: #F0F7FF;
+            border: 1px solid #BFDBFE;
+            border-radius: 6px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .first-time-banner p {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        .first-time-banner strong {
+            color: var(--accent);
+        }
+        .first-time-banner button {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 4px;
+            font-size: 18px;
+            line-height: 1;
+        }
+        .first-time-banner button:hover {
+            color: var(--text-secondary);
+        }
+
+        /* App shell with sidebar (shown after selection) */
+        .app-shell {
+            display: none;
+        }
+        .app-shell.active {
+            display: flex;
+        }
+        .landing-page.hidden {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <div class="app-shell">
-        <!-- Left Sidebar -->
+    <!-- Landing Page (before practice selection) -->
+    <div class="landing-page" id="landingPage">
+        <header class="landing-header">
+            <div class="landing-logo">
+                <div class="landing-logo-icon">
+                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                </div>
+                Legal Portal
+            </div>
+            <nav class="landing-nav">
+                <a href="about.html">How It Works</a>
+                <a href="#" onclick="logout(); return false;">Sign Out</a>
+            </nav>
+        </header>
+
+        <main class="landing-main">
+            <div class="landing-hero">
+                <h1>Legal Services, Powered by AI</h1>
+                <p>The modern way to manage cases. Choose your practice area to get started.</p>
+            </div>
+
+            <div class="how-it-works">
+                <div class="how-step">
+                    <div class="how-step-icon">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>
+                    </div>
+                    <div class="how-step-number">Step 1</div>
+                    <div class="how-step-text">Select your practice area</div>
+                </div>
+                <div class="how-step">
+                    <div class="how-step-icon">
+                        <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg>
+                    </div>
+                    <div class="how-step-number">Step 2</div>
+                    <div class="how-step-text">Follow the guided workflow</div>
+                </div>
+                <div class="how-step">
+                    <div class="how-step-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 2a4 4 0 0 0-4 4v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2h-2V6a4 4 0 0 0-4-4z"/><circle cx="12" cy="15" r="2"/></svg>
+                    </div>
+                    <div class="how-step-number">Step 3</div>
+                    <div class="how-step-text">AI assists at every step</div>
+                </div>
+            </div>
+
+            <div class="practice-cards">
+                <div class="practice-card" onclick="selectPractice('immigration')">
+                    <div class="practice-card-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </div>
+                    <h3>Immigration</h3>
+                    <p>Asylum, family-based petitions, naturalization, work permits, and removal defense.</p>
+                    <button class="btn-start">Get Started <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+                </div>
+
+                <div class="practice-card" onclick="selectPractice('contracts')">
+                    <div class="practice-card-icon">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                    </div>
+                    <h3>Contracts</h3>
+                    <p>Compare documents, generate redlines, and review contract changes with AI assistance.</p>
+                    <button class="btn-start">Get Started <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+                </div>
+
+                <div class="practice-card" onclick="selectPractice('estate')">
+                    <div class="practice-card-icon">
+                        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+                    </div>
+                    <h3>Estate Planning</h3>
+                    <p>Wills, trusts, asset inventories, and estate documentation workflows.</p>
+                    <button class="btn-start">Get Started <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+                </div>
+
+                <div class="practice-card" onclick="selectPractice('general')">
+                    <div class="practice-card-icon">
+                        <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <h3>General</h3>
+                    <p>Flexible workflow for intake, document tracking, and deadline management.</p>
+                    <button class="btn-start">Get Started <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- App Shell (shown after practice selection) -->
+    <div class="app-shell" id="appShell">
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo">
@@ -29,10 +356,10 @@
                 </div>
             </div>
 
-            <!-- Practice Selector -->
             <div class="practice-selector">
                 <label>Practice Area</label>
                 <select class="practice-select" id="practiceSelect" onchange="switchPractice(this.value)">
+                    <option value="">Choose practice...</option>
                     <option value="immigration">Immigration</option>
                     <option value="contracts">Contracts</option>
                     <option value="estate">Estate Planning</option>
@@ -40,43 +367,35 @@
                 </select>
             </div>
 
-            <!-- Workflow Steps -->
             <nav class="workflow-nav">
                 <div class="workflow-label">Workflow</div>
-                <ul class="workflow-steps" id="workflowSteps">
-                    <!-- Populated by JavaScript -->
-                </ul>
+                <ul class="workflow-steps" id="workflowSteps"></ul>
             </nav>
 
-            <!-- Sidebar Footer -->
             <div class="sidebar-footer">
                 <a href="about.html">How It Works</a>
                 <a href="#" onclick="logout(); return false;">Sign Out</a>
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Top Bar -->
             <header class="top-bar">
-                <span class="top-bar-title" id="currentStepTitle">Immigration — Intake</span>
+                <span class="top-bar-title" id="currentStepTitle">Welcome</span>
                 <div class="top-bar-actions">
+                    <a href="#" onclick="showLanding(); return false;">Change Practice</a>
                     <a href="about.html">Help</a>
                 </div>
             </header>
 
-            <!-- Content Area -->
-            <div class="content-container" id="contentArea">
-                <!-- Tool content loads here -->
-            </div>
+            <div class="content-container" id="contentArea"></div>
         </main>
     </div>
 
     <script>
-        // Practice workflows
         const workflows = {
             immigration: {
                 label: 'Immigration',
+                description: 'Complete workflow for immigration cases',
                 steps: [
                     { id: 'intake', name: 'Intake', icon: '1', page: 'intake.html' },
                     { id: 'documents', name: 'Documents', icon: '2', page: 'checklist.html' },
@@ -87,6 +406,7 @@
             },
             contracts: {
                 label: 'Contracts',
+                description: 'Contract review and comparison tools',
                 steps: [
                     { id: 'upload', name: 'Upload', icon: '1', page: null },
                     { id: 'compare', name: 'Compare', icon: '2', page: 'redline.html' },
@@ -96,6 +416,7 @@
             },
             estate: {
                 label: 'Estate Planning',
+                description: 'Estate planning document workflow',
                 steps: [
                     { id: 'client', name: 'Client Info', icon: '1', page: null },
                     { id: 'assets', name: 'Assets', icon: '2', page: null },
@@ -105,6 +426,7 @@
             },
             general: {
                 label: 'General',
+                description: 'Flexible general-purpose workflow',
                 steps: [
                     { id: 'intake', name: 'Intake', icon: '1', page: 'intake.html' },
                     { id: 'documents', name: 'Documents', icon: '2', page: 'checklist.html' },
@@ -113,21 +435,52 @@
             }
         };
 
-        let currentPractice = localStorage.getItem('legal-portal-practice') || 'immigration';
-        let currentStep = localStorage.getItem('legal-portal-step') || 'intake';
+        let currentPractice = null;
+        let currentStep = null;
+        let isFirstTime = !localStorage.getItem('legal-portal-seen-tips');
 
-        // Initialize
-        document.getElementById('practiceSelect').value = currentPractice;
-        renderWorkflow();
-        loadStep(currentStep);
+        // Check if user has a practice selected already
+        const savedPractice = localStorage.getItem('legal-portal-practice');
+        if (savedPractice && workflows[savedPractice]) {
+            selectPractice(savedPractice, true);
+        }
 
-        function switchPractice(practice) {
+        function selectPractice(practice, skipSave = false) {
             currentPractice = practice;
-            localStorage.setItem('legal-portal-practice', practice);
+            if (!skipSave) {
+                localStorage.setItem('legal-portal-practice', practice);
+            }
+
+            // Hide landing, show app shell
+            document.getElementById('landingPage').classList.add('hidden');
+            document.getElementById('appShell').classList.add('active');
+
+            // Set dropdown
+            document.getElementById('practiceSelect').value = practice;
+
+            // Load first step
             currentStep = workflows[practice].steps[0].id;
             localStorage.setItem('legal-portal-step', currentStep);
+
             renderWorkflow();
             loadStep(currentStep);
+        }
+
+        function switchPractice(practice) {
+            if (!practice) {
+                showLanding();
+                return;
+            }
+            selectPractice(practice);
+        }
+
+        function showLanding() {
+            localStorage.removeItem('legal-portal-practice');
+            localStorage.removeItem('legal-portal-step');
+            currentPractice = null;
+            currentStep = null;
+            document.getElementById('landingPage').classList.remove('hidden');
+            document.getElementById('appShell').classList.remove('active');
         }
 
         function renderWorkflow() {
@@ -150,26 +503,32 @@
             currentStep = stepId;
             localStorage.setItem('legal-portal-step', stepId);
 
-            // Update active state in sidebar
             document.querySelectorAll('.workflow-step').forEach(el => {
                 el.classList.toggle('active', el.dataset.step === stepId);
             });
 
-            // Update top bar title
             const workflow = workflows[currentPractice];
             const step = workflow.steps.find(s => s.id === stepId);
-            document.getElementById('currentStepTitle').textContent =
-                `${workflow.label} — ${step.name}`;
+            document.getElementById('currentStepTitle').textContent = `${workflow.label} — ${step.name}`;
 
-            // Load content
             const contentArea = document.getElementById('contentArea');
 
+            // First-time banner
+            let bannerHtml = '';
+            if (isFirstTime) {
+                bannerHtml = `
+                    <div class="first-time-banner" id="firstTimeBanner">
+                        <p><strong>New here?</strong> Each step builds on the previous one. Start with Intake to begin a new case.</p>
+                        <button onclick="dismissTips()">×</button>
+                    </div>
+                `;
+            }
+
             if (step.page) {
-                // Load actual tool content inline
-                loadToolContent(step, contentArea);
+                loadToolContent(step, contentArea, bannerHtml);
             } else {
-                // Placeholder for unbuilt tools
                 contentArea.innerHTML = `
+                    ${bannerHtml}
                     <div class="page-header">
                         <h1>${step.name}</h1>
                         <p>This tool is coming soon.</p>
@@ -188,12 +547,19 @@
             }
         }
 
-        function loadToolContent(step, container) {
-            // For now, show tool description and link to full page
+        function dismissTips() {
+            isFirstTime = false;
+            localStorage.setItem('legal-portal-seen-tips', 'true');
+            const banner = document.getElementById('firstTimeBanner');
+            if (banner) banner.remove();
+        }
+
+        function loadToolContent(step, container, bannerHtml) {
             const toolDescriptions = {
                 intake: {
                     title: 'Client Intake',
                     description: 'Collect client information with a guided questionnaire. Data flows to other tools automatically.',
+                    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
                     actions: [
                         { label: 'Start New Intake', primary: true, action: "window.location.href='intake.html'" },
                         { label: 'View Existing Clients', action: "showClients()" }
@@ -202,6 +568,7 @@
                 documents: {
                     title: 'Document Checklist',
                     description: 'Track required documents for each case. Generate checklists based on case type.',
+                    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
                     actions: [
                         { label: 'Open Checklist', primary: true, action: "window.location.href='checklist.html'" }
                     ]
@@ -209,6 +576,7 @@
                 forms: {
                     title: 'Form Assembly',
                     description: 'Auto-populate USCIS forms using intake data. Review and export for filing.',
+                    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
                     actions: [
                         { label: 'Assemble Forms', primary: true, action: "window.location.href='forms.html'" }
                     ]
@@ -216,6 +584,7 @@
                 summary: {
                     title: 'Case Summary',
                     description: 'Generate comprehensive case summaries for attorney review.',
+                    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6"/><path d="M9 15h6"/></svg>',
                     actions: [
                         { label: 'Generate Summary', primary: true, action: "window.location.href='summary.html'" }
                     ]
@@ -223,6 +592,7 @@
                 file: {
                     title: 'Deadlines & Filing',
                     description: 'Track critical deadlines and filing dates. Never miss a deadline.',
+                    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>',
                     actions: [
                         { label: 'View Deadlines', primary: true, action: "window.location.href='deadlines.html'" }
                     ]
@@ -230,6 +600,7 @@
                 compare: {
                     title: 'Contract Comparison',
                     description: 'Compare two documents and identify differences. Generate redlines.',
+                    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>',
                     actions: [
                         { label: 'Compare Documents', primary: true, action: "window.location.href='redline.html'" }
                     ]
@@ -237,6 +608,7 @@
                 deadlines: {
                     title: 'Deadline Tracker',
                     description: 'Track all case deadlines in one place.',
+                    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>',
                     actions: [
                         { label: 'View Deadlines', primary: true, action: "window.location.href='deadlines.html'" }
                     ]
@@ -246,25 +618,23 @@
             const tool = toolDescriptions[step.id] || {
                 title: step.name,
                 description: 'Tool description not available.',
+                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>',
                 actions: []
             };
 
-            // Check for existing clients
             const clients = JSON.parse(localStorage.getItem('legal-portal-intakes') || '[]');
 
             let clientsSection = '';
             if (step.id === 'intake' && clients.length > 0) {
                 clientsSection = `
                     <div class="card" style="margin-top: 16px;">
-                        <div class="card-header">
-                            <h3>Recent Clients</h3>
-                        </div>
-                        <div style="margin: -8px -8px 0;">
+                        <h3 style="margin-bottom: 12px;">Recent Clients</h3>
+                        <div style="margin: 0 -16px;">
                             ${clients.slice(0, 5).map(client => `
-                                <div style="padding: 12px 16px; border-bottom: 1px solid var(--border-light); display: flex; justify-content: space-between; align-items: center;">
+                                <div style="padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
                                     <div>
                                         <div style="font-weight: 500;">${client.firstName || ''} ${client.lastName || 'Unnamed'}</div>
-                                        <div style="font-size: 13px; color: var(--text-muted);">${client.caseType || 'No case type'}</div>
+                                        <div style="font-size: 13px; color: var(--text-muted);">${formatCaseType(client.caseType)}</div>
                                     </div>
                                     <span class="badge badge-pending">Draft</span>
                                 </div>
@@ -275,6 +645,7 @@
             }
 
             container.innerHTML = `
+                ${bannerHtml}
                 <div class="page-header">
                     <h1>${tool.title}</h1>
                     <p>${tool.description}</p>
