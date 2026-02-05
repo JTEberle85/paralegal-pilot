@@ -202,10 +202,10 @@
     <div class="app-shell">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-logo">
+                <a href="#" onclick="goToLanding(); return false;" class="sidebar-logo" style="text-decoration: none; color: inherit;">
                     <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
                     Legal Portal
-                </div>
+                </a>
             </div>
             <div class="practice-selector">
                 <label>Practice Area</label>
@@ -451,6 +451,11 @@
 
     <script>
         function switchPractice(p) { localStorage.setItem('legal-portal-practice', p); window.location.href = 'dashboard.html'; }
+        function goToLanding() {
+            localStorage.removeItem('legal-portal-practice');
+            localStorage.removeItem('legal-portal-step');
+            window.location.href = 'dashboard.html';
+        }
         function logout() {
             localStorage.removeItem('legal-portal-auth');
             localStorage.removeItem('legal-portal-auth-time');
