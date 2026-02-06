@@ -344,13 +344,21 @@
 
             <div style="width: 100%; max-width: 700px; margin-top: 40px;">
                 <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin-bottom: 16px;">TNC Legal</h2>
-                <div class="practice-cards" style="grid-template-columns: 1fr;">
+                <div class="practice-cards">
                     <div class="practice-card" onclick="selectPractice('tnc_legal')">
                         <div class="practice-card-icon">
                             <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                         </div>
                         <h3>Regulatory Monitor</h3>
-                        <p>Predictive monitoring of regulatory changes affecting conservation. Upload memos, policy updates, and guidance docs for AI-powered impact analysis.</p>
+                        <p>Predictive monitoring of regulatory changes affecting conservation. AI-powered impact analysis of memos and policy updates.</p>
+                        <button class="btn-start">Get Started <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+                    </div>
+                    <div class="practice-card" onclick="window.location.href='discovery-assist.html'">
+                        <div class="practice-card-icon">
+                            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                        </div>
+                        <h3>Discovery Assist</h3>
+                        <p>Plan discovery searches across platforms, generate queries, prioritize document review, and flag privilege issues.</p>
                         <button class="btn-start">Get Started <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
                     </div>
                 </div>
@@ -477,7 +485,7 @@
                 description: 'Tools for The Nature Conservancy legal team',
                 steps: [
                     { id: 'reg_monitor', name: 'Reg Monitor', icon: '1', page: 'regulatory-monitor.html' },
-                    { id: 'contracts', name: 'Contracts', icon: '2', page: null },
+                    { id: 'discovery', name: 'Discovery', icon: '2', page: 'discovery-assist.html' },
                     { id: 'compliance', name: 'Compliance', icon: '3', page: null }
                 ]
             }
@@ -667,6 +675,14 @@
                     icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
                     actions: [
                         { label: 'Open Regulatory Monitor', primary: true, action: "window.location.href='regulatory-monitor.html'" }
+                    ]
+                },
+                discovery: {
+                    title: 'Discovery Assist',
+                    description: 'Plan discovery searches across multiple platforms, generate search queries, prioritize review, and flag privilege issues.',
+                    icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>',
+                    actions: [
+                        { label: 'Open Discovery Assist', primary: true, action: "window.location.href='discovery-assist.html'" }
                     ]
                 }
             };

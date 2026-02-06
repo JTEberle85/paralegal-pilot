@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Services Portal - Discovery Assist</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        (function() {
+            var auth = localStorage.getItem('legal-portal-auth');
+            var authTime = localStorage.getItem('legal-portal-auth-time');
+            var maxAge = 24 * 60 * 60 * 1000;
+            if (auth !== 'authenticated' || !authTime || (Date.now() - parseInt(authTime)) > maxAge) {
+                window.location.href = 'index.html';
+            }
+        })();
+    </script>
+    <style>
+        /* Progress steps */
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding: 0;
+            position: relative;
+        }
+        .progress-steps::before {
+            content: "";
+            position: absolute;
+            top: 16px;
+            left: 40px;
+            right: 40px;
+            height: 2px;
+            background: var(--border);
+        }
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+            cursor: pointer;
+        }
+        .progress-step .step-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--bg-white);
+            border: 2px solid var(--border);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.15s ease;
+        }
+        .progress-step.completed .step-num {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        .progress-step.active .step-num {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        .step-label {
+            margin-top: 8px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .progress-step.active .step-label { color: var(--accent); }
+        .progress-step.completed .step-label { color: var(--success); }
+
+        /* Wizard sections */
+        .wizard-section { display: none; }
+        .wizard-section.active { display: block; }
+
+        /* Source toggle cards */
+        .source-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+        @media (max-width: 768px) {
+            .source-grid { grid-template-columns: 1fr; }
+        }
+        .source-card {
+            border: 1px solid var(--border);
+            border-left: 3px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg-white);
+            overflow: hidden;
+            transition: all 0.15s ease;
+        }
+        .source-card.active {
+            border-left-color: var(--accent);
+            box-shadow: 0 1px 4px rgba(37, 99, 235, 0.08);
+        }
+        .source-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            cursor: pointer;
+        }
+        .source-card-header .source-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .source-card-header .source-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            background: var(--bg-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        .source-card.active .source-icon {
+            background: #EFF6FF;
+        }
+        .source-card-header .source-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        .source-card-config {
+            display: none;
+            padding: 0 16px 14px;
+            border-top: 1px solid var(--border);
+        }
+        .source-card.active .source-card-config {
+            display: block;
+        }
+        .source-card-config .form-group {
+            margin-top: 12px;
+        }
+
+        /* Toggle switch */
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 22px;
+            flex-shrink: 0;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #D1D5DB;
+            border-radius: 22px;
+            transition: 0.2s;
+        }
+        .toggle-slider::before {
+            content: "";
+            position: absolute;
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+        .toggle-switch input:checked + .toggle-slider {
+            background: var(--accent);
+        }
+        .toggle-switch input:checked + .toggle-slider::before {
+            transform: translateX(18px);
+        }
+
+        /* Upload zone (compact for local files) */
+        .upload-zone-compact {
+            border: 2px dashed var(--border);
+            border-radius: 6px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            background: var(--bg-white);
+            font-size: 13px;
+        }
+        .upload-zone-compact:hover {
+            border-color: var(--accent);
+            background: #F0F7FF;
+        }
+        .upload-zone-compact.dragover {
+            border-color: var(--accent);
+            background: #E8F2FF;
+        }
+        .upload-zone-compact.has-file {
+            border-color: var(--success);
+            background: #ECFDF5;
+        }
+        .upload-zone-compact input[type="file"] {
+            display: none;
+        }
+        .file-list-compact {
+            margin-top: 8px;
+            text-align: left;
+        }
+        .file-list-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 4px 0;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        .file-list-item .remove-file {
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+        }
+        .file-list-item .remove-file:hover {
+            color: var(--danger);
+        }
+
+        /* Document type checkboxes grid */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        @media (max-width: 600px) {
+            .checkbox-grid { grid-template-columns: 1fr; }
+        }
+        .checkbox-grid .form-checkbox {
+            margin: 0;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            transition: all 0.15s ease;
+        }
+        .checkbox-grid .form-checkbox:hover {
+            border-color: var(--accent);
+            background: #FAFBFF;
+        }
+        .checkbox-grid .form-checkbox.checked {
+            border-color: var(--accent);
+            background: #EFF6FF;
+        }
+
+        /* Output sections - collapsible */
+        .output-panel { display: none; }
+        .output-panel.visible { display: block; }
+
+        .collapsible-section {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .collapsible-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 16px;
+            background: var(--bg-gray);
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s ease;
+        }
+        .collapsible-header:hover {
+            background: #F0F2F5;
+        }
+        .collapsible-header h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .collapsible-header .section-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .collapsible-header .section-icon.blue { background: #EFF6FF; }
+        .collapsible-header .section-icon.amber { background: #FFFBEB; }
+        .collapsible-header .section-icon.green { background: #ECFDF5; }
+        .collapsible-header .section-icon.purple { background: #F5F3FF; }
+        .collapsible-header .section-icon.red { background: #FEF2F2; }
+        .collapsible-header .section-icon.teal { background: #F0FDFA; }
+        .collapsible-chevron {
+            font-size: 12px;
+            color: var(--text-muted);
+            transition: transform 0.2s ease;
+        }
+        .collapsible-section.collapsed .collapsible-chevron {
+            transform: rotate(-90deg);
+        }
+        .collapsible-body {
+            padding: 16px;
+            transition: all 0.2s ease;
+        }
+        .collapsible-section.collapsed .collapsible-body {
+            display: none;
+        }
+        .collapsible-section.collapsed .collapsible-header {
+            border-bottom: none;
+        }
+
+        /* Query blocks */
+        .query-block {
+            background: var(--bg-gray);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        .query-block:last-child { margin-bottom: 0; }
+        .query-block-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-white);
+        }
+        .query-block-header strong {
+            font-size: 13px;
+        }
+        .query-block-body {
+            padding: 12px 14px;
+        }
+        .query-block-body pre {
+            margin: 0;
+            font-size: 12px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            color: var(--text-secondary);
+        }
+        .btn-copy-sm {
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 500;
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+        }
+        .btn-copy-sm:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Phase cards */
+        .phase-card {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        .phase-card:last-child { margin-bottom: 0; }
+        .phase-card h5 {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+        .phase-card p {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .phase-card .effort-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #EFF6FF;
+            color: var(--accent);
+        }
+
+        /* Priority matrix table */
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .matrix-table th {
+            background: var(--bg-gray);
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+        .matrix-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        .matrix-table tr:last-child td { border-bottom: none; }
+        .relevance-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .relevance-badge.high { background: #FEF2F2; color: #B91C1C; }
+        .relevance-badge.medium { background: #FFFBEB; color: #92400E; }
+        .relevance-badge.low { background: #ECFDF5; color: #065F46; }
+
+        /* Coverage matrix - editable status */
+        .status-select {
+            padding: 4px 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 12px;
+            background: var(--bg-white);
+            cursor: pointer;
+        }
+        .status-select:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        /* Privilege flags */
+        .privilege-item {
+            border: 1px solid var(--border);
+            border-left: 3px solid #B91C1C;
+            border-radius: 6px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+        }
+        .privilege-item:last-child { margin-bottom: 0; }
+        .privilege-item strong {
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+        .privilege-item p {
+            margin: 6px 0 0 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Relevance check output */
+        .relevance-result {
+            display: none;
+            margin-top: 16px;
+        }
+        .relevance-result.visible { display: block; }
+        .relevance-verdict {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        .relevance-verdict.likely-relevant { background: #FEF2F2; color: #B91C1C; }
+        .relevance-verdict.possibly-relevant { background: #FFFBEB; color: #92400E; }
+        .relevance-verdict.likely-not { background: #ECFDF5; color: #065F46; }
+
+        /* Checklist items */
+        .criteria-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .criteria-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        .criteria-list li:last-child { border-bottom: none; }
+        .criteria-check {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+        .criteria-check.checked {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            font-size: 11px;
+        }
+
+        /* Form nav */
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        /* Info note */
+        .info-note {
+            background: #F0F7FF;
+            border: 1px solid #BFDBFE;
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .info-note .info-icon {
+            color: var(--accent);
+            font-size: 16px;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* Copy toast */
+        .copy-toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1F2937;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        .copy-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Demo note */
+        .demo-note {
+            background: #FFFBEB;
+            border: 1px solid #FDE68A;
+            border-left: 3px solid var(--warning);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .demo-note h4 { margin: 0 0 8px 0; color: #92400E; font-size: 14px; }
+        .demo-note p { margin: 0; color: var(--text-secondary); font-size: 13px; }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #E5E7EB;
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="#" onclick="goToLanding(); return false;" class="sidebar-logo" style="text-decoration: none; color: inherit;">
+                    <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+                    Legal Portal
+                </a>
+            </div>
+            <div class="practice-selector">
+                <label>Practice Area</label>
+                <select class="practice-select" id="practiceSelect" onchange="switchPractice(this.value)">
+                    <option value="immigration">Immigration</option>
+                    <option value="contracts">Contracts</option>
+                    <option value="estate">Estate Planning</option>
+                    <option value="general">General</option>
+                    <option value="tnc_legal" selected>TNC Legal</option>
+                </select>
+            </div>
+            <nav class="workflow-nav">
+                <div class="workflow-label">Workflow</div>
+                <ul class="workflow-steps">
+                    <li class="workflow-step" onclick="window.location.href='regulatory-monitor.html'"><span class="step-indicator"><span class="step-number">1</span></span><span>Reg Monitor</span></li>
+                    <li class="workflow-step active" onclick="window.location.href='discovery-assist.html'"><span class="step-indicator"><span class="step-number">2</span></span><span>Discovery</span></li>
+                    <li class="workflow-step" onclick="alert('Compliance tracker coming soon')"><span class="step-indicator"><span class="step-number">3</span></span><span>Compliance</span></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="about.html">How It Works</a>
+                <a href="#" onclick="logout(); return false;">Sign Out</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <span class="top-bar-title">TNC Legal — Discovery Assist</span>
+                <div class="top-bar-actions"><a href="dashboard.html">Dashboard</a></div>
+            </header>
+
+            <div class="content-container wide">
+                <div class="alert alert-warning"><strong>DRAFT - ATTORNEY REVIEW REQUIRED</strong><br>AI-generated discovery strategies are for planning purposes only. All search parameters, privilege determinations, and relevance decisions must be reviewed by legal counsel.</div>
+
+                <div class="card">
+                    <h2 style="margin-bottom: 8px;">Discovery Document Prioritization</h2>
+                    <p style="color: var(--text-secondary);">Plan discovery searches across multiple platforms, generate search queries, prioritize document review, and flag privilege issues.</p>
+                </div>
+
+                <!-- Progress Steps -->
+                <div class="progress-steps" id="progressSteps">
+                    <div class="progress-step active" onclick="goToStep(1)"><div class="step-num">1</div><div class="step-label">Sources</div></div>
+                    <div class="progress-step" onclick="goToStep(2)"><div class="step-num">2</div><div class="step-label">Case</div></div>
+                    <div class="progress-step" onclick="goToStep(3)"><div class="step-num">3</div><div class="step-label">Strategy</div></div>
+                    <div class="progress-step" onclick="goToStep(4)"><div class="step-num">4</div><div class="step-label">Review</div></div>
+                </div>
+
+                <!-- STEP 1: Configure Sources -->
+                <div class="wizard-section active" data-step="1">
+                    <div class="card">
+                        <h3>Configure Data Sources</h3>
+                        <div class="info-note">
+                            <span class="info-icon">ℹ️</span>
+                            <span>Configure where your documents live. The AI will generate platform-specific search strategies for each enabled source.</span>
+                        </div>
+
+                        <div class="source-grid">
+                            <!-- SharePoint -->
+                            <div class="source-card" id="source-sharepoint">
+                                <div class="source-card-header" onclick="toggleSource('sharepoint')">
+                                    <div class="source-info">
+                                        <div class="source-icon">📁</div>
+                                        <span class="source-name">SharePoint / OneDrive</span>
+                                    </div>
+                                    <label class="toggle-switch" onclick="event.stopPropagation()">
+                                        <input type="checkbox" id="toggle-sharepoint" onchange="toggleSource('sharepoint')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="source-card-config">
+                                    <div class="form-group">
+                                        <label class="form-label">Site URL or Library Name</label>
+                                        <input type="text" class="form-input" id="config-sharepoint" placeholder="e.g., TNC Legal Team Site / Conservation Docs">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Box -->
+                            <div class="source-card" id="source-box">
+                                <div class="source-card-header" onclick="toggleSource('box')">
+                                    <div class="source-info">
+                                        <div class="source-icon">📦</div>
+                                        <span class="source-name">Box</span>
+                                    </div>
+                                    <label class="toggle-switch" onclick="event.stopPropagation()">
+                                        <input type="checkbox" id="toggle-box" onchange="toggleSource('box')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="source-card-config">
+                                    <div class="form-group">
+                                        <label class="form-label">Folder Path or Shared Link</label>
+                                        <input type="text" class="form-input" id="config-box" placeholder="e.g., /Legal/TNC/Conservation Easements">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Outlook -->
+                            <div class="source-card" id="source-outlook">
+                                <div class="source-card-header" onclick="toggleSource('outlook')">
+                                    <div class="source-info">
+                                        <div class="source-icon">📧</div>
+                                        <span class="source-name">Outlook / Exchange</span>
+                                    </div>
+                                    <label class="toggle-switch" onclick="event.stopPropagation()">
+                                        <input type="checkbox" id="toggle-outlook" onchange="toggleSource('outlook')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="source-card-config">
+                                    <div class="form-group">
+                                        <label class="form-label">Mailbox Scope / Date Range</label>
+                                        <input type="text" class="form-input" id="config-outlook" placeholder="e.g., legal-team@tnc.org, Jan 2024 - Present">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Local Files -->
+                            <div class="source-card" id="source-local">
+                                <div class="source-card-header" onclick="toggleSource('local')">
+                                    <div class="source-info">
+                                        <div class="source-icon">💻</div>
+                                        <span class="source-name">Local Files</span>
+                                    </div>
+                                    <label class="toggle-switch" onclick="event.stopPropagation()">
+                                        <input type="checkbox" id="toggle-local" onchange="toggleSource('local')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="source-card-config">
+                                    <div class="upload-zone-compact" id="localUploadZone" onclick="document.getElementById('localFiles').click()">
+                                        <strong>Drop files here</strong> or click to upload
+                                        <input type="file" id="localFiles" multiple onchange="handleLocalFiles(this)">
+                                    </div>
+                                    <div class="file-list-compact" id="localFileList"></div>
+                                </div>
+                            </div>
+
+                            <!-- Network Drive -->
+                            <div class="source-card" id="source-network">
+                                <div class="source-card-header" onclick="toggleSource('network')">
+                                    <div class="source-info">
+                                        <div class="source-icon">🖧</div>
+                                        <span class="source-name">Network Drive / File Share</span>
+                                    </div>
+                                    <label class="toggle-switch" onclick="event.stopPropagation()">
+                                        <input type="checkbox" id="toggle-network" onchange="toggleSource('network')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="source-card-config">
+                                    <div class="form-group">
+                                        <label class="form-label">Network Path</label>
+                                        <input type="text" class="form-input" id="config-network" placeholder="e.g., \\\\server\\legal\\shared">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Other -->
+                            <div class="source-card" id="source-other">
+                                <div class="source-card-header" onclick="toggleSource('other')">
+                                    <div class="source-info">
+                                        <div class="source-icon">📋</div>
+                                        <span class="source-name">Other</span>
+                                    </div>
+                                    <label class="toggle-switch" onclick="event.stopPropagation()">
+                                        <input type="checkbox" id="toggle-other" onchange="toggleSource('other')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="source-card-config">
+                                    <div class="form-group">
+                                        <label class="form-label">Describe the Source</label>
+                                        <textarea class="form-textarea" id="config-other" rows="2" placeholder="e.g., Physical file room, third-party document management system..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <div></div>
+                            <button class="btn btn-primary" onclick="goToStep(2)">Continue to Case Details</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Define Case -->
+                <div class="wizard-section" data-step="2">
+                    <div class="card">
+                        <h3>Define Case Context</h3>
+
+                        <div class="form-group">
+                            <label class="form-label">Case Description</label>
+                            <textarea class="form-textarea" id="caseDescription" rows="5" placeholder="Describe the legal matter, key issues, parties involved, and relevant time period..."></textarea>
+                            <div class="form-hint">Include the matter name, key issues, relevant parties, and date ranges to help generate targeted search strategies.</div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label class="form-label">Key Terms</label>
+                            <input type="text" class="form-input" id="keyTerms" placeholder="Enter key terms, names, or phrases...">
+                            <div class="form-hint">Comma-separated. The AI will expand these with related terms and synonyms.</div>
+                        </div>
+
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label class="form-label">Document Types to Search</label>
+                            <div class="checkbox-grid" id="docTypeGrid">
+                                <label class="form-checkbox" onclick="this.classList.toggle('checked')"><input type="checkbox" value="emails" checked><span>Emails</span></label>
+                                <label class="form-checkbox checked" onclick="this.classList.toggle('checked')"><input type="checkbox" value="contracts" checked><span>Contracts / Agreements</span></label>
+                                <label class="form-checkbox" onclick="this.classList.toggle('checked')"><input type="checkbox" value="meeting_notes"><span>Meeting Notes</span></label>
+                                <label class="form-checkbox" onclick="this.classList.toggle('checked')"><input type="checkbox" value="memos"><span>Memos / Briefs</span></label>
+                                <label class="form-checkbox" onclick="this.classList.toggle('checked')"><input type="checkbox" value="financial"><span>Financial Records</span></label>
+                                <label class="form-checkbox" onclick="this.classList.toggle('checked')"><input type="checkbox" value="correspondence"><span>Correspondence</span></label>
+                                <label class="form-checkbox" onclick="this.classList.toggle('checked')"><input type="checkbox" value="reports"><span>Reports / Studies</span></label>
+                                <label class="form-checkbox" onclick="this.classList.toggle('checked')"><input type="checkbox" value="other_docs"><span>Other</span></label>
+                            </div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button class="btn btn-secondary" onclick="goToStep(1)">Back</button>
+                            <button class="btn btn-primary" id="generateBtn" onclick="generateStrategy()">Generate Discovery Strategy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 3: Strategy Output -->
+                <div class="wizard-section" data-step="3">
+                    <div class="demo-note">
+                        <h4>Demo Mode</h4>
+                        <p>This is a demonstration with sample discovery strategy output. When connected to the Claude API, this tool will generate strategies tailored to your specific case and enabled data sources.</p>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 20px;">Discovery Strategy</h3>
+
+                        <!-- a) Search Queries by Source -->
+                        <div class="collapsible-section" id="section-queries">
+                            <div class="collapsible-header" onclick="toggleCollapsible('section-queries')">
+                                <h4><span class="section-icon blue">🔍</span> Search Queries by Source</h4>
+                                <span class="collapsible-chevron">▼</span>
+                            </div>
+                            <div class="collapsible-body" id="queryBlocks">
+                                <!-- Populated by JS based on enabled sources -->
+                            </div>
+                        </div>
+
+                        <!-- b) Search Strategy -->
+                        <div class="collapsible-section" id="section-strategy">
+                            <div class="collapsible-header" onclick="toggleCollapsible('section-strategy')">
+                                <h4><span class="section-icon amber">📊</span> Search Strategy</h4>
+                                <span class="collapsible-chevron">▼</span>
+                            </div>
+                            <div class="collapsible-body">
+                                <div class="phase-card">
+                                    <h5>Phase 1 — Broad Sweep</h5>
+                                    <p>Cast a wide net using primary key terms across all enabled sources. Focus on identifying the full universe of potentially responsive documents. Use broad date ranges and core party names.</p>
+                                    <span class="effort-tag">Est. 2-3 days</span>
+                                </div>
+                                <div class="phase-card">
+                                    <h5>Phase 2 — Targeted Search</h5>
+                                    <p>Refine based on Phase 1 results. Apply expanded search terms, specific document types, and narrower date windows. Cross-reference custodian lists with communication patterns identified in Phase 1.</p>
+                                    <span class="effort-tag">Est. 3-5 days</span>
+                                </div>
+                                <div class="phase-card">
+                                    <h5>Phase 3 — Gap Fill</h5>
+                                    <p>Review coverage matrix for gaps. Run targeted searches for specific document types or custodians not well-represented in prior phases. Check for attachments, embedded files, and chain-of-custody gaps.</p>
+                                    <span class="effort-tag">Est. 1-2 days</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- c) Relevance Criteria -->
+                        <div class="collapsible-section" id="section-relevance">
+                            <div class="collapsible-header" onclick="toggleCollapsible('section-relevance')">
+                                <h4><span class="section-icon green">✅</span> Relevance Criteria</h4>
+                                <span class="collapsible-chevron">▼</span>
+                            </div>
+                            <div class="collapsible-body">
+                                <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 14px;">Use this checklist when reviewing documents. A document is likely relevant if it meets one or more criteria:</p>
+                                <ul class="criteria-list" id="criteriaList">
+                                    <li><span class="criteria-check" onclick="this.classList.toggle('checked'); if(this.classList.contains('checked')) this.textContent='✓'; else this.textContent='';"></span><span>References the specific conservation easement, property, or land parcel at issue</span></li>
+                                    <li><span class="criteria-check" onclick="this.classList.toggle('checked'); if(this.classList.contains('checked')) this.textContent='✓'; else this.textContent='';"></span><span>Communications between identified parties during the relevant time period</span></li>
+                                    <li><span class="criteria-check" onclick="this.classList.toggle('checked'); if(this.classList.contains('checked')) this.textContent='✓'; else this.textContent='';"></span><span>Documents discussing regulatory compliance, permit conditions, or enforcement actions</span></li>
+                                    <li><span class="criteria-check" onclick="this.classList.toggle('checked'); if(this.classList.contains('checked')) this.textContent='✓'; else this.textContent='';"></span><span>Financial records related to the transaction, mitigation credits, or carbon offsets</span></li>
+                                    <li><span class="criteria-check" onclick="this.classList.toggle('checked'); if(this.classList.contains('checked')) this.textContent='✓'; else this.textContent='';"></span><span>Meeting notes, memos, or reports discussing the matter or related decisions</span></li>
+                                    <li><span class="criteria-check" onclick="this.classList.toggle('checked'); if(this.classList.contains('checked')) this.textContent='✓'; else this.textContent='';"></span><span>Documents evidencing knowledge of environmental conditions on the property</span></li>
+                                    <li><span class="criteria-check" onclick="this.classList.toggle('checked'); if(this.classList.contains('checked')) this.textContent='✓'; else this.textContent='';"></span><span>Draft or executed agreements, amendments, or deed restrictions</span></li>
+                                    <li><span class="criteria-check" onclick="this.classList.toggle('checked'); if(this.classList.contains('checked')) this.textContent='✓'; else this.textContent='';"></span><span>Correspondence with government agencies, regulators, or co-holders</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- d) Review Priority Matrix -->
+                        <div class="collapsible-section" id="section-priority">
+                            <div class="collapsible-header" onclick="toggleCollapsible('section-priority')">
+                                <h4><span class="section-icon purple">📋</span> Review Priority Matrix</h4>
+                                <span class="collapsible-chevron">▼</span>
+                            </div>
+                            <div class="collapsible-body">
+                                <table class="matrix-table">
+                                    <thead>
+                                        <tr><th>Document Type</th><th>Likely Relevance</th><th>Priority Notes</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Conservation Easement Agreements</td><td><span class="relevance-badge high">High</span></td><td>Core documents — review first</td></tr>
+                                        <tr><td>Emails (key custodians)</td><td><span class="relevance-badge high">High</span></td><td>Focus on decision-makers and external counsel</td></tr>
+                                        <tr><td>Regulatory Correspondence</td><td><span class="relevance-badge high">High</span></td><td>Agency communications re: permits and compliance</td></tr>
+                                        <tr><td>Meeting Notes</td><td><span class="relevance-badge medium">Medium</span></td><td>Board and committee meetings during key dates</td></tr>
+                                        <tr><td>Financial Records</td><td><span class="relevance-badge medium">Medium</span></td><td>Transaction records, credit sales, appraisals</td></tr>
+                                        <tr><td>Internal Memos</td><td><span class="relevance-badge medium">Medium</span></td><td>Policy discussions and impact assessments</td></tr>
+                                        <tr><td>Reports / Studies</td><td><span class="relevance-badge low">Low</span></td><td>Environmental surveys unless directly cited</td></tr>
+                                        <tr><td>General Correspondence</td><td><span class="relevance-badge low">Low</span></td><td>Batch review — flag only if mentions key terms</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- e) Source Coverage Matrix -->
+                        <div class="collapsible-section" id="section-coverage">
+                            <div class="collapsible-header" onclick="toggleCollapsible('section-coverage')">
+                                <h4><span class="section-icon teal">📈</span> Source Coverage Matrix</h4>
+                                <span class="collapsible-chevron">▼</span>
+                            </div>
+                            <div class="collapsible-body">
+                                <table class="matrix-table" id="coverageTable">
+                                    <thead>
+                                        <tr><th>Data Source</th><th>Status</th><th>Est. Volume</th><th>Notes</th></tr>
+                                    </thead>
+                                    <tbody id="coverageBody">
+                                        <!-- Populated by JS based on enabled sources -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- f) Privilege Flags -->
+                        <div class="collapsible-section" id="section-privilege">
+                            <div class="collapsible-header" onclick="toggleCollapsible('section-privilege')">
+                                <h4><span class="section-icon red">🔒</span> Privilege Flags</h4>
+                                <span class="collapsible-chevron">▼</span>
+                            </div>
+                            <div class="collapsible-body">
+                                <div class="privilege-item">
+                                    <strong>Attorney-Client Privilege</strong>
+                                    <p>Watch for communications with internal or external counsel seeking or providing legal advice. Look for "privileged," "confidential," or attorney names in To/CC fields. Includes draft legal memos and strategy documents.</p>
+                                </div>
+                                <div class="privilege-item">
+                                    <strong>Work Product Doctrine</strong>
+                                    <p>Documents prepared in anticipation of litigation or for trial. Includes case assessments, litigation hold memos, investigation notes, and attorney mental impressions. Check document creation dates relative to when litigation was reasonably anticipated.</p>
+                                </div>
+                                <div class="privilege-item">
+                                    <strong>Joint Defense / Common Interest</strong>
+                                    <p>Communications with co-defendants, co-holders, or aligned parties under a joint defense agreement. Verify whether a formal JDA exists before asserting this privilege. Look for multi-party email threads involving outside counsel.</p>
+                                </div>
+                                <div class="privilege-item">
+                                    <strong>Settlement Communications</strong>
+                                    <p>Offers, counteroffers, and negotiation discussions related to dispute resolution. Protected under FRE 408. Flag any documents labeled "settlement," "without prejudice," or "for settlement purposes only."</p>
+                                </div>
+                                <div class="privilege-item">
+                                    <strong>Deliberative Process (Government Interactions)</strong>
+                                    <p>Pre-decisional communications with government agencies that reflect the agency's deliberative process. Relevant for TNC's interactions with EPA, USFWS, Army Corps, and state environmental agencies.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-navigation">
+                            <button class="btn btn-secondary" onclick="goToStep(2)">Back to Case Details</button>
+                            <button class="btn btn-primary" onclick="goToStep(4)">Continue to Review</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STEP 4: Review & Export -->
+                <div class="wizard-section" data-step="4">
+                    <div class="card">
+                        <h3>Document Relevance Check</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 16px;">Paste individual document text to quickly assess its relevance to this matter.</p>
+
+                        <div class="form-group">
+                            <label class="form-label">Document Text</label>
+                            <textarea class="form-textarea" id="docCheckText" rows="6" placeholder="Paste the text of a document you want to assess for relevance..."></textarea>
+                        </div>
+
+                        <button class="btn btn-primary" id="checkRelevanceBtn" onclick="checkRelevance()">Check Relevance</button>
+
+                        <div class="relevance-result" id="relevanceResult">
+                            <div class="relevance-verdict likely-relevant" id="relevanceVerdict">Likely Relevant</div>
+                            <div style="border: 1px solid var(--border); border-radius: 6px; padding: 16px; margin-top: 8px;">
+                                <h4 style="margin: 0 0 10px 0; font-size: 14px;">Assessment</h4>
+                                <p id="relevanceReasoning" style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin: 0;">This document references a conservation easement amendment and includes communications between TNC legal staff and a co-holder regarding boundary modifications. It directly relates to the key issues identified in the case context and mentions two of the named parties. The document falls within the relevant date range and discusses regulatory compliance conditions that are central to the dispute.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 16px;">
+                        <h3>Export</h3>
+                        <p style="color: var(--text-secondary); margin-bottom: 16px;">Compile the full discovery strategy into a shareable format.</p>
+                        <div class="action-buttons" style="margin-top: 0;">
+                            <button class="btn btn-primary" onclick="exportSearchPlan()">Export Search Plan to Clipboard</button>
+                            <button class="btn btn-secondary" onclick="goToStep(1)">Start New Search</button>
+                        </div>
+                    </div>
+
+                    <div class="form-navigation" style="border-top: none; padding-top: 0;">
+                        <button class="btn btn-secondary" onclick="goToStep(3)">Back to Strategy</button>
+                        <div></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <footer class="site-footer">
+                <div class="site-footer-content">
+                    <div class="site-footer-disclaimer">
+                        AI-generated content may contain errors. All outputs require attorney review before use.
+                    </div>
+                    <div class="site-footer-links">
+                        <span>&copy; 2026 Slalom Consulting. All rights reserved.</span>
+                        <span>Questions? <a href="mailto:josh.eberle@slalom.com">josh.eberle@slalom.com</a></span>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Copy Toast -->
+    <div class="copy-toast" id="copyToast">Copied to clipboard!</div>
+
+    <script>
+        // ——— State ———
+        let currentStep = 1;
+        let localFiles = [];
+        const enabledSources = {};
+
+        const sourceLabels = {
+            sharepoint: 'SharePoint / OneDrive',
+            box: 'Box',
+            outlook: 'Outlook / Exchange',
+            local: 'Local Files',
+            network: 'Network Drive / File Share',
+            other: 'Other'
+        };
+
+        // ——— Step Navigation ———
+        function goToStep(step) {
+            if (step === 3 && currentStep < 3) {
+                generateStrategy();
+                return;
+            }
+            currentStep = step;
+            document.querySelectorAll('.wizard-section').forEach(s => {
+                s.classList.toggle('active', parseInt(s.dataset.step) === step);
+            });
+            document.querySelectorAll('.progress-step').forEach((el, i) => {
+                el.classList.remove('active', 'completed');
+                if (i + 1 < step) el.classList.add('completed');
+                else if (i + 1 === step) el.classList.add('active');
+            });
+            window.scrollTo(0, 0);
+        }
+
+        // ——— Source Toggles ———
+        function toggleSource(source) {
+            const card = document.getElementById('source-' + source);
+            const toggle = document.getElementById('toggle-' + source);
+            const isActive = !card.classList.contains('active');
+
+            if (isActive) {
+                card.classList.add('active');
+                toggle.checked = true;
+                enabledSources[source] = true;
+            } else {
+                card.classList.remove('active');
+                toggle.checked = false;
+                delete enabledSources[source];
+            }
+        }
+
+        // ——— Local File Upload ———
+        function handleLocalFiles(input) {
+            Array.from(input.files).forEach(f => {
+                if (!localFiles.find(x => x.name === f.name)) localFiles.push(f);
+            });
+            renderLocalFiles();
+            input.value = '';
+        }
+
+        function removeLocalFile(i) {
+            localFiles.splice(i, 1);
+            renderLocalFiles();
+        }
+
+        function renderLocalFiles() {
+            const zone = document.getElementById('localUploadZone');
+            const list = document.getElementById('localFileList');
+            zone.classList.toggle('has-file', localFiles.length > 0);
+            list.innerHTML = localFiles.map((f, i) => `
+                <div class="file-list-item">
+                    <span>📄 ${f.name}</span>
+                    <span class="remove-file" onclick="removeLocalFile(${i})">&times;</span>
+                </div>
+            `).join('');
+        }
+
+        // Local file drop zone
+        const localZone = document.getElementById('localUploadZone');
+        localZone.addEventListener('dragover', e => { e.preventDefault(); localZone.classList.add('dragover'); });
+        localZone.addEventListener('dragleave', () => localZone.classList.remove('dragover'));
+        localZone.addEventListener('drop', e => {
+            e.preventDefault();
+            localZone.classList.remove('dragover');
+            Array.from(e.dataTransfer.files).forEach(f => {
+                if (!localFiles.find(x => x.name === f.name)) localFiles.push(f);
+            });
+            renderLocalFiles();
+        });
+
+        // ——— Generate Strategy ———
+        function generateStrategy() {
+            const caseDesc = document.getElementById('caseDescription').value.trim();
+            const keyTerms = document.getElementById('keyTerms').value.trim();
+            const activeSources = Object.keys(enabledSources);
+
+            if (!caseDesc) {
+                alert('Please describe the case before generating a strategy.');
+                if (currentStep !== 2) goToStep(2);
+                return;
+            }
+
+            if (activeSources.length === 0) {
+                alert('Please enable at least one data source.');
+                goToStep(1);
+                return;
+            }
+
+            // Build query blocks
+            buildQueryBlocks(activeSources, keyTerms);
+            // Build coverage matrix
+            buildCoverageMatrix(activeSources);
+
+            currentStep = 3;
+            document.querySelectorAll('.wizard-section').forEach(s => {
+                s.classList.toggle('active', parseInt(s.dataset.step) === 3);
+            });
+            document.querySelectorAll('.progress-step').forEach((el, i) => {
+                el.classList.remove('active', 'completed');
+                if (i + 1 < 3) el.classList.add('completed');
+                else if (i + 1 === 3) el.classList.add('active');
+            });
+            window.scrollTo(0, 0);
+        }
+
+        function buildQueryBlocks(sources, terms) {
+            const container = document.getElementById('queryBlocks');
+            const keywords = terms || 'conservation easement, mitigation banking, carbon credits';
+
+            const queryTemplates = {
+                sharepoint: {
+                    label: 'SharePoint / OneDrive (M365 Compliance Search — KeyQL)',
+                    query: `// M365 Compliance Center — Content Search Query
+(Keywords:"${keywords.split(',')[0].trim()}" OR "${keywords.split(',').slice(1).map(t=>t.trim()).join('" OR "')}")
+AND (FileType:docx OR FileType:pdf OR FileType:xlsx OR FileType:msg)
+AND (Date>=2024-01-01 AND Date<=2026-12-31)
+
+// Targeted custodian search
+Participants:"legal" AND Keywords:"${keywords.split(',')[0].trim()}"
+
+// SharePoint-specific site scope
+Site:"${document.getElementById('config-sharepoint').value || 'TNC Legal Team Site'}"
+Path:"https://tnc.sharepoint.com/sites/legal/*"`
+                },
+                box: {
+                    label: 'Box (Box Search Operators)',
+                    query: `// Box Content Search
+"${keywords.split(',')[0].trim()}" type:pdf,docx,xlsx
+owner:legal-team@tnc.org
+
+// Date-filtered search
+"${keywords.split(',').map(t=>t.trim()).join('" OR "')}"
+updated_at:>2024-01-01 updated_at:<2026-12-31
+
+// Folder-scoped search
+"${keywords.split(',')[0].trim()}" ancestor_folder_id:[folder_id]
+in:"${document.getElementById('config-box').value || '/Legal/TNC'}"`
+                },
+                outlook: {
+                    label: 'Outlook / Exchange (Search Syntax)',
+                    query: `// Outlook / Exchange Online Search
+subject:("${keywords.split(',')[0].trim()}") OR body:("${keywords.split(',')[0].trim()}")
+received:>01/01/2024 received:<12/31/2026
+
+// Sender/recipient filtered
+from:(legal OR counsel OR attorney) AND ("${keywords.split(',').map(t=>t.trim()).join('" OR "')}")
+
+// With attachments
+hasattachment:yes AND ("${keywords.split(',')[0].trim()}")
+kind:email`
+                },
+                local: {
+                    label: 'Local Files (Keyword Strategy)',
+                    query: `// Local file search strategy
+// Use OS search or desktop search tool with these terms:
+
+Primary terms: ${keywords || 'conservation easement, mitigation banking'}
+File types: *.pdf, *.docx, *.xlsx, *.msg, *.eml
+Date modified: 2024-01-01 to present
+
+// PowerShell (Windows):
+Get-ChildItem -Recurse -Include *.pdf,*.docx | Select-String "${keywords.split(',')[0].trim()}"
+
+// Terminal (Mac/Linux):
+find . -name "*.pdf" -o -name "*.docx" | xargs grep -l "${keywords.split(',')[0].trim()}"`
+                },
+                network: {
+                    label: 'Network Drive / File Share (Keyword Strategy)',
+                    query: `// Network drive search at: ${document.getElementById('config-network').value || '\\\\server\\legal\\shared'}
+
+Primary terms: ${keywords || 'conservation easement, mitigation banking'}
+File types: *.pdf, *.docx, *.xlsx, *.pptx
+Date range: 2024 - present
+
+// Recommended approach:
+// 1. Use Windows Search indexing or Spotlight for indexed shares
+// 2. For unindexed shares, use recursive search:
+dir /s /b "${document.getElementById('config-network').value || '\\\\server\\legal'}\\*.pdf"
+// 3. Consider copying to a staging area for full-text search`
+                },
+                other: {
+                    label: 'Other Source — General Strategy',
+                    query: `// Source: ${document.getElementById('config-other').value || 'Custom source'}
+
+Recommended search approach:
+1. Identify all keyword variants: ${keywords || 'conservation easement, mitigation banking'}
+2. Search across all available document types
+3. Export results to a staging area for centralized review
+4. Document the search methodology for defensibility
+
+Key terms to search:
+${(keywords || 'conservation easement, mitigation banking, carbon credits').split(',').map(t => '  - ' + t.trim()).join('\n')}`
+                }
+            };
+
+            container.innerHTML = sources.map(source => {
+                const template = queryTemplates[source] || queryTemplates.other;
+                return `
+                    <div class="query-block">
+                        <div class="query-block-header">
+                            <strong>${template.label}</strong>
+                            <button class="btn-copy-sm" onclick="copyQueryBlock(this)">Copy Queries</button>
+                        </div>
+                        <div class="query-block-body">
+                            <pre>${template.query}</pre>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function buildCoverageMatrix(sources) {
+            const volumeEstimates = {
+                sharepoint: '~2,000-5,000 docs',
+                box: '~500-1,500 docs',
+                outlook: '~5,000-15,000 emails',
+                local: '~50-200 docs',
+                network: '~1,000-3,000 docs',
+                other: 'TBD'
+            };
+
+            document.getElementById('coverageBody').innerHTML = sources.map(source => `
+                <tr>
+                    <td>${sourceLabels[source]}</td>
+                    <td>
+                        <select class="status-select" onchange="this.style.fontWeight = this.value !== 'not_started' ? '600' : '400'">
+                            <option value="not_started">Not Started</option>
+                            <option value="in_progress">In Progress</option>
+                            <option value="complete">Complete</option>
+                        </select>
+                    </td>
+                    <td>${volumeEstimates[source]}</td>
+                    <td><input type="text" class="form-input" style="padding: 4px 8px; font-size: 12px;" placeholder="Add notes..."></td>
+                </tr>
+            `).join('');
+        }
+
+        // ——— Collapsible Sections ———
+        function toggleCollapsible(id) {
+            document.getElementById(id).classList.toggle('collapsed');
+        }
+
+        // ——— Copy Helpers ———
+        function copyQueryBlock(btn) {
+            const pre = btn.closest('.query-block').querySelector('pre');
+            navigator.clipboard.writeText(pre.textContent).then(() => {
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy Queries', 2000);
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('copyToast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        // ——— Relevance Check ———
+        function checkRelevance() {
+            const text = document.getElementById('docCheckText').value.trim();
+            if (!text) {
+                alert('Please paste document text to check.');
+                return;
+            }
+
+            const btn = document.getElementById('checkRelevanceBtn');
+            btn.innerHTML = '<span class="loading-spinner"></span>Checking...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                // Demo: determine verdict based on keywords
+                const lower = text.toLowerCase();
+                const hitTerms = ['conservation', 'easement', 'mitigation', 'permit', 'compliance', 'endangered', 'habitat', 'carbon', 'water rights', 'deed'];
+                const hits = hitTerms.filter(t => lower.includes(t));
+
+                const result = document.getElementById('relevanceResult');
+                const verdict = document.getElementById('relevanceVerdict');
+                const reasoning = document.getElementById('relevanceReasoning');
+
+                if (hits.length >= 3) {
+                    verdict.className = 'relevance-verdict likely-relevant';
+                    verdict.textContent = 'Likely Relevant';
+                    reasoning.textContent = `This document contains ${hits.length} key terms related to the case context (${hits.join(', ')}). It appears to directly address subject matter central to the discovery scope. Recommend including in the review set and flagging for attorney review.`;
+                } else if (hits.length >= 1) {
+                    verdict.className = 'relevance-verdict possibly-relevant';
+                    verdict.textContent = 'Possibly Relevant';
+                    reasoning.textContent = `This document contains ${hits.length} term(s) related to the case (${hits.join(', ')}), but may only tangentially relate to the core issues. Recommend a quick manual review to determine if the context is directly related to the matter before including in the review set.`;
+                } else {
+                    verdict.className = 'relevance-verdict likely-not';
+                    verdict.textContent = 'Likely Not Relevant';
+                    reasoning.textContent = 'This document does not contain key terms or concepts related to the case context. It does not appear to reference the parties, properties, or regulatory issues identified in the case description. Consider excluding from the review set unless other factors suggest relevance.';
+                }
+
+                result.classList.add('visible');
+                btn.innerHTML = 'Check Relevance';
+                btn.disabled = false;
+            }, 1500);
+        }
+
+        // ——— Export Search Plan ———
+        function exportSearchPlan() {
+            const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const caseDesc = document.getElementById('caseDescription').value.trim();
+            const keyTerms = document.getElementById('keyTerms').value.trim();
+
+            let output = `DISCOVERY SEARCH PLAN\n`;
+            output += `Generated: ${date}\n`;
+            output += `${'='.repeat(60)}\n\n`;
+
+            output += `CASE CONTEXT\n${'-'.repeat(40)}\n`;
+            output += `${caseDesc || 'Not specified'}\n\n`;
+            output += `KEY TERMS: ${keyTerms || 'Not specified'}\n\n`;
+
+            // Enabled sources
+            const sources = Object.keys(enabledSources);
+            output += `ENABLED DATA SOURCES\n${'-'.repeat(40)}\n`;
+            sources.forEach(s => output += `• ${sourceLabels[s]}\n`);
+            output += '\n';
+
+            // Search queries
+            output += `SEARCH QUERIES BY SOURCE\n${'-'.repeat(40)}\n`;
+            document.querySelectorAll('.query-block').forEach(block => {
+                const label = block.querySelector('strong').textContent;
+                const query = block.querySelector('pre').textContent;
+                output += `\n[${label}]\n${query}\n`;
+            });
+            output += '\n';
+
+            // Strategy
+            output += `SEARCH STRATEGY\n${'-'.repeat(40)}\n`;
+            output += `Phase 1 — Broad Sweep (Est. 2-3 days)\n`;
+            output += `Phase 2 — Targeted Search (Est. 3-5 days)\n`;
+            output += `Phase 3 — Gap Fill (Est. 1-2 days)\n\n`;
+
+            // Priority matrix
+            output += `REVIEW PRIORITY MATRIX\n${'-'.repeat(40)}\n`;
+            document.querySelectorAll('#section-priority .matrix-table tbody tr').forEach(row => {
+                const cells = row.querySelectorAll('td');
+                output += `${cells[0].textContent.trim()} — ${cells[1].textContent.trim()} — ${cells[2].textContent.trim()}\n`;
+            });
+            output += '\n';
+
+            // Privilege flags
+            output += `PRIVILEGE FLAGS\n${'-'.repeat(40)}\n`;
+            document.querySelectorAll('.privilege-item').forEach(item => {
+                output += `• ${item.querySelector('strong').textContent}: ${item.querySelector('p').textContent.trim()}\n`;
+            });
+            output += '\n';
+
+            output += `${'='.repeat(60)}\n`;
+            output += `DRAFT - PENDING ATTORNEY REVIEW\n`;
+            output += `Generated by TNC Legal Discovery Assist\n`;
+
+            navigator.clipboard.writeText(output).then(() => {
+                showToast('Search plan copied to clipboard!');
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = output;
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+                showToast('Search plan copied to clipboard!');
+            });
+        }
+
+        // ——— Navigation Helpers ———
+        function switchPractice(p) { localStorage.setItem('legal-portal-practice', p); window.location.href = 'dashboard.html'; }
+        function goToLanding() {
+            localStorage.removeItem('legal-portal-practice');
+            localStorage.removeItem('legal-portal-step');
+            window.location.href = 'dashboard.html';
+        }
+        function logout() {
+            localStorage.removeItem('legal-portal-auth');
+            localStorage.removeItem('legal-portal-auth-time');
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <!-- Chat Assistant -->
+    <div data-chat-assistant
+         data-page-context="discovery-assist"
+         data-system-prompt="You are a litigation discovery assistant for The Nature Conservancy's legal team. You help attorneys and paralegals plan and execute document discovery across multiple platforms by generating search strategies, expanding search terms, creating relevance criteria, and assessing document relevance. When generating search queries, tailor the syntax to each connected data source the user has enabled. Use KeyQL format for M365/SharePoint compliance search, Box search operators for Box, Outlook search syntax for email, and standard keyword strategies for other sources. Help users understand the differences in search capabilities across platforms. Consider TNC-specific terminology when expanding search terms: conservation easements, land trusts, mitigation banking, carbon credits, habitat conservation plans, endangered species permits, deed restrictions, water rights, right of way agreements, etc. Help prioritize review by document type and likely relevance. Flag potential privilege issues including attorney-client privilege, work product doctrine, joint defense agreements, and settlement communications. You do not make legal determinations about discoverability, privilege, or work product protection. Those decisions must be made by a licensed attorney. You assist with the administrative and organizational aspects of discovery only. Never provide legal advice."></div>
+    <script src="js/config.js"></script>
+    <script src="js/chat-assistant.js"></script>
+</body>
+</html>
