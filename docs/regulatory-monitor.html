@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Services Portal - Regulatory Monitor</title>
+    <link rel="stylesheet" href="style.css">
+    <script>
+        (function() {
+            var auth = localStorage.getItem('legal-portal-auth');
+            var authTime = localStorage.getItem('legal-portal-auth-time');
+            var maxAge = 24 * 60 * 60 * 1000;
+            if (auth !== 'authenticated' || !authTime || (Date.now() - parseInt(authTime)) > maxAge) {
+                window.location.href = 'index.html';
+            }
+        })();
+    </script>
+    <style>
+        .upload-zone {
+            border: 2px dashed var(--border);
+            border-radius: 6px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            background: var(--bg-white);
+        }
+        .upload-zone:hover {
+            border-color: var(--accent);
+            background: #F0F7FF;
+        }
+        .upload-zone.dragover {
+            border-color: var(--accent);
+            background: #E8F2FF;
+        }
+        .upload-zone.has-file {
+            border-color: var(--success);
+            background: #ECFDF5;
+        }
+        .upload-zone .icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+        .upload-zone input[type="file"] {
+            display: none;
+        }
+        .upload-zone .file-name {
+            color: var(--success);
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .upload-zone .file-list {
+            margin-top: 12px;
+            text-align: left;
+            display: inline-block;
+        }
+        .upload-zone .file-list-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .upload-zone .file-list-item .remove-file {
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            line-height: 1;
+        }
+        .upload-zone .file-list-item .remove-file:hover {
+            color: var(--danger);
+        }
+
+        .toggle-group {
+            display: flex;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .toggle-option {
+            flex: 1;
+            padding: 10px 16px;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            background: var(--bg-white);
+            border: none;
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+        }
+        .toggle-option:first-child {
+            border-right: 1px solid var(--border);
+        }
+        .toggle-option.active {
+            background: var(--accent);
+            color: white;
+        }
+        .toggle-option:hover:not(.active) {
+            background: var(--bg-gray);
+        }
+
+        .output-panel {
+            display: none;
+        }
+        .output-panel.visible {
+            display: block;
+        }
+
+        .output-section {
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        .output-section-header {
+            background: var(--bg-gray);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .output-section-header h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .output-section-header .section-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .output-section-header .section-icon.blue {
+            background: #EFF6FF;
+        }
+        .output-section-header .section-icon.amber {
+            background: #FFFBEB;
+        }
+        .output-section-header .section-icon.green {
+            background: #ECFDF5;
+        }
+        .output-section-header .section-icon.purple {
+            background: #F5F3FF;
+        }
+        .output-section-body {
+            padding: 16px;
+        }
+        .output-section-body ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .output-section-body li {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .output-section-body li:last-child {
+            margin-bottom: 0;
+        }
+        .output-section-body p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .copy-toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1F2937;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        .copy-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .meta-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .meta-badge.area {
+            background: #EFF6FF;
+            color: var(--accent);
+        }
+        .meta-badge.type {
+            background: #F5F3FF;
+            color: #7C3AED;
+        }
+
+        .demo-note {
+            background: #FFFBEB;
+            border: 1px solid #FDE68A;
+            border-left: 3px solid var(--warning);
+            border-radius: 6px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .demo-note h4 {
+            margin: 0 0 8px 0;
+            color: #92400E;
+            font-size: 14px;
+        }
+        .demo-note p {
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #E5E7EB;
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="#" onclick="goToLanding(); return false;" class="sidebar-logo" style="text-decoration: none; color: inherit;">
+                    <div class="sidebar-logo-icon"><svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+                    Legal Portal
+                </a>
+            </div>
+            <div class="practice-selector">
+                <label>Practice Area</label>
+                <select class="practice-select" id="practiceSelect" onchange="switchPractice(this.value)">
+                    <option value="immigration">Immigration</option>
+                    <option value="contracts">Contracts</option>
+                    <option value="estate">Estate Planning</option>
+                    <option value="general">General</option>
+                    <option value="tnc_legal" selected>TNC Legal</option>
+                </select>
+            </div>
+            <nav class="workflow-nav">
+                <div class="workflow-label">Workflow</div>
+                <ul class="workflow-steps">
+                    <li class="workflow-step active" onclick="window.location.href='regulatory-monitor.html'"><span class="step-indicator"><span class="step-number">1</span></span><span>Reg Monitor</span></li>
+                    <li class="workflow-step" onclick="alert('Contract review tool coming soon')"><span class="step-indicator"><span class="step-number">2</span></span><span>Contracts</span></li>
+                    <li class="workflow-step" onclick="alert('Compliance tracker coming soon')"><span class="step-indicator"><span class="step-number">3</span></span><span>Compliance</span></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="about.html">How It Works</a>
+                <a href="#" onclick="logout(); return false;">Sign Out</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <span class="top-bar-title">TNC Legal — Regulatory Monitor</span>
+                <div class="top-bar-actions"><a href="dashboard.html">Dashboard</a></div>
+            </header>
+
+            <div class="content-container wide">
+                <div class="alert alert-warning"><strong>DRAFT - ATTORNEY REVIEW REQUIRED</strong><br>AI-generated analysis is for informational purposes only. All regulatory interpretations must be reviewed by legal counsel.</div>
+
+                <div class="card">
+                    <h2 style="margin-bottom: 8px;">Predictive Monitoring of Regulatory Changes</h2>
+                    <p style="color: var(--text-secondary);">Upload regulatory memos, policy updates, or guidance documents. Get AI-powered analysis of what changed and why it matters for TNC's conservation mission.</p>
+                </div>
+
+                <!-- Input Section -->
+                <div id="inputSection" class="card">
+                    <h3>Step 1: Provide Regulatory Content</h3>
+
+                    <div class="form-group">
+                        <label class="form-label">Paste regulatory text or describe what you need analyzed</label>
+                        <textarea id="regText" class="form-textarea" rows="6" style="min-height: 140px;" placeholder="Paste a regulatory memo, policy update, or guidance text here. Or describe a regulatory change you want help understanding..."></textarea>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 16px; margin: 16px 0; color: var(--text-muted); font-size: 13px;">
+                        <div style="flex: 1; height: 1px; background: var(--border);"></div>
+                        <span>or</span>
+                        <div style="flex: 1; height: 1px; background: var(--border);"></div>
+                    </div>
+
+                    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('docFiles').click()" style="padding: 24px 20px;">
+                        <div class="icon" style="font-size: 28px; margin-bottom: 8px;">📎</div>
+                        <p style="margin: 0;"><strong>Upload a document</strong> (PDF, DOCX, TXT)</p>
+                        <input type="file" id="docFiles" accept=".pdf,.docx,.txt" multiple onchange="handleFileSelect(this)">
+                        <div class="file-list" id="fileList"></div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label class="form-label">Regulatory Area</label>
+                        <select id="regArea" class="form-select">
+                            <option value="">Select regulatory area...</option>
+                            <option value="environmental">Environmental Law</option>
+                            <option value="land_use">Land Use & Zoning</option>
+                            <option value="tax_exempt">Tax-Exempt Compliance</option>
+                            <option value="international">International Conservation</option>
+                            <option value="water_rights">Water Rights</option>
+                            <option value="endangered_species">Endangered Species</option>
+                            <option value="climate_carbon">Climate / Carbon Markets</option>
+                            <option value="general">General</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label class="form-label">Summary Type</label>
+                        <div class="toggle-group">
+                            <button class="toggle-option active" id="toggleQuick" onclick="setSummaryType('quick')">Quick Summary</button>
+                            <button class="toggle-option" id="toggleDetailed" onclick="setSummaryType('detailed')">Detailed Analysis</button>
+                        </div>
+                        <div class="form-hint" style="margin-top: 6px;" id="summaryHint">High-level overview of key changes and immediate action items.</div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="analyzeDocuments()" id="analyzeBtn" style="margin-top: 20px;">Analyze Regulatory Changes</button>
+                </div>
+
+                <!-- Output Panel -->
+                <div id="outputPanel" class="output-panel">
+                    <div class="demo-note">
+                        <h4>Demo Mode</h4>
+                        <p>This is a demonstration with sample regulatory analysis. When connected to the Claude API, this tool will analyze your actual uploaded documents.</p>
+                    </div>
+
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+                            <h3 style="margin: 0;">Regulatory Analysis</h3>
+                            <div style="display: flex; gap: 8px;">
+                                <span class="meta-badge area" id="outputArea">Environmental Law</span>
+                                <span class="meta-badge type" id="outputType">Quick Summary</span>
+                            </div>
+                        </div>
+
+                        <!-- What Changed -->
+                        <div class="output-section">
+                            <div class="output-section-header">
+                                <div class="section-icon blue">📝</div>
+                                <h4>What Changed</h4>
+                            </div>
+                            <div class="output-section-body" id="whatChanged">
+                                <ul>
+                                    <li><strong>New wetlands delineation standards</strong> — The Army Corps of Engineers has revised the methodology for determining jurisdictional wetlands boundaries under the Clean Water Act, narrowing the definition of "waters of the United States" (WOTUS).</li>
+                                    <li><strong>Mitigation banking ratio adjustments</strong> — Required mitigation ratios for wetlands impacts have been updated from 2:1 to 1.5:1 for certain project categories in designated conservation priority areas.</li>
+                                    <li><strong>New 60-day public comment period</strong> — A proposed rule change opens a comment window for modifications to Section 404 permitting requirements affecting conservation easements on federal lands.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Why It Matters for TNC -->
+                        <div class="output-section">
+                            <div class="output-section-header">
+                                <div class="section-icon amber">⚡</div>
+                                <h4>Why It Matters for TNC</h4>
+                            </div>
+                            <div class="output-section-body" id="whyMatters">
+                                <ul>
+                                    <li><strong>Conservation easement enforcement</strong> — The narrowed WOTUS definition could reduce federal protections on approximately 15-20% of TNC-held wetlands properties, particularly isolated wetlands and ephemeral streams that no longer qualify as jurisdictional waters.</li>
+                                    <li><strong>Mitigation banking revenue impact</strong> — Lower mitigation ratios may reduce demand for TNC mitigation bank credits, potentially affecting revenue projections for the Southeast Conservation Region's banking program.</li>
+                                    <li><strong>Advocacy opportunity</strong> — The 60-day comment period is a critical window to advocate for maintaining strong protections for conservation lands under Section 404.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Action Items -->
+                        <div class="output-section">
+                            <div class="output-section-header">
+                                <div class="section-icon green">✅</div>
+                                <h4>Action Items</h4>
+                            </div>
+                            <div class="output-section-body" id="actionItems">
+                                <ul>
+                                    <li><strong>Inventory affected properties</strong> — Identify all TNC-held properties with isolated wetlands or ephemeral streams that may lose jurisdictional status under the revised WOTUS definition. <em>Priority: High — Complete within 30 days.</em></li>
+                                    <li><strong>Draft public comment</strong> — Prepare formal comments for the Section 404 rulemaking, emphasizing impacts on conservation easements. Coordinate with Government Relations. <em>Deadline: March 15, 2026.</em></li>
+                                    <li><strong>Update mitigation banking projections</strong> — Revise FY2026 revenue projections for affected mitigation banks to account for the new 1.5:1 ratio. <em>Priority: Medium.</em></li>
+                                    <li><strong>Attorney review required</strong> — Legal team should assess whether existing conservation easement language provides sufficient protection independent of federal jurisdictional status.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Stakeholder Talking Points -->
+                        <div class="output-section">
+                            <div class="output-section-header">
+                                <div class="section-icon purple">💬</div>
+                                <h4>Stakeholder Talking Points</h4>
+                            </div>
+                            <div class="output-section-body" id="talkingPoints">
+                                <ul>
+                                    <li><strong>For Board / Leadership:</strong> "Recent federal rule changes may reduce wetlands protections on some of our properties. Our legal team is assessing the impact and preparing formal comments during the open comment period. We have a clear action plan and timeline."</li>
+                                    <li><strong>For Field Staff:</strong> "New federal guidelines are changing how wetlands boundaries are drawn. This doesn't change our conservation commitments, but we need to inventory which properties might be affected. Your regional leads will share specifics soon."</li>
+                                    <li><strong>For Government Relations:</strong> "There's a 60-day window to comment on proposed Section 404 changes that could affect our conservation easements on federal lands. We need to coordinate a strong response highlighting real-world impacts to TNC properties."</li>
+                                    <li><strong>For Donors / Partners:</strong> "We're actively monitoring regulatory changes to ensure our conservation lands remain protected. Our legal team is engaged in the public comment process to advocate for strong environmental protections."</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="exportSummary()">Export Summary to Clipboard</button>
+                            <button class="btn btn-secondary" onclick="draftLogEntry()">Draft Tracking Log Entry</button>
+                            <button class="btn btn-secondary" onclick="resetAnalysis()">Analyze New Document</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="site-footer">
+                <div class="site-footer-content">
+                    <div class="site-footer-disclaimer">
+                        AI-generated content may contain errors. All outputs require attorney review before use.
+                    </div>
+                    <div class="site-footer-links">
+                        <span>&copy; 2026 Slalom Consulting. All rights reserved.</span>
+                        <span>Questions? <a href="mailto:josh.eberle@slalom.com">josh.eberle@slalom.com</a></span>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Copy Toast -->
+    <div class="copy-toast" id="copyToast">Copied to clipboard!</div>
+
+    <script>
+        let uploadedFiles = [];
+        let summaryType = 'quick';
+
+        const regAreaLabels = {
+            'environmental': 'Environmental Law',
+            'land_use': 'Land Use & Zoning',
+            'tax_exempt': 'Tax-Exempt Compliance',
+            'international': 'International Conservation',
+            'water_rights': 'Water Rights',
+            'endangered_species': 'Endangered Species',
+            'climate_carbon': 'Climate / Carbon Markets',
+            'general': 'General'
+        };
+
+        // File upload handling
+        function handleFileSelect(input) {
+            const files = Array.from(input.files);
+            files.forEach(file => {
+                if (!uploadedFiles.find(f => f.name === file.name)) {
+                    uploadedFiles.push(file);
+                }
+            });
+            renderFileList();
+            input.value = '';
+        }
+
+        function removeFile(index) {
+            uploadedFiles.splice(index, 1);
+            renderFileList();
+        }
+
+        function renderFileList() {
+            const zone = document.getElementById('uploadZone');
+            const list = document.getElementById('fileList');
+
+            if (uploadedFiles.length === 0) {
+                zone.classList.remove('has-file');
+                list.innerHTML = '';
+                return;
+            }
+
+            zone.classList.add('has-file');
+            list.innerHTML = uploadedFiles.map((file, i) => `
+                <div class="file-list-item">
+                    <span>📄 ${file.name}</span>
+                    <span class="remove-file" onclick="event.stopPropagation(); removeFile(${i});">&times;</span>
+                </div>
+            `).join('');
+        }
+
+        // Drag and drop
+        const zone = document.getElementById('uploadZone');
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zone.classList.add('dragover');
+        });
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('dragover');
+        });
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files);
+            files.forEach(file => {
+                if (!uploadedFiles.find(f => f.name === file.name)) {
+                    uploadedFiles.push(file);
+                }
+            });
+            renderFileList();
+        });
+
+        // Summary type toggle
+        function setSummaryType(type) {
+            summaryType = type;
+            document.getElementById('toggleQuick').classList.toggle('active', type === 'quick');
+            document.getElementById('toggleDetailed').classList.toggle('active', type === 'detailed');
+            document.getElementById('summaryHint').textContent = type === 'quick'
+                ? 'High-level overview of key changes and immediate action items.'
+                : 'In-depth analysis with legal context, historical comparison, and detailed recommendations.';
+        }
+
+        // Analyze documents
+        function analyzeDocuments() {
+            const regText = document.getElementById('regText').value.trim();
+            if (uploadedFiles.length === 0 && !regText) {
+                alert('Please paste regulatory text or upload at least one document.');
+                return;
+            }
+
+            const regArea = document.getElementById('regArea').value;
+            if (!regArea) {
+                alert('Please select a regulatory area.');
+                return;
+            }
+
+            const btn = document.getElementById('analyzeBtn');
+            btn.innerHTML = '<span class="loading-spinner"></span>Analyzing...';
+            btn.disabled = true;
+
+            // Update output badges
+            document.getElementById('outputArea').textContent = regAreaLabels[regArea] || regArea;
+            document.getElementById('outputType').textContent = summaryType === 'quick' ? 'Quick Summary' : 'Detailed Analysis';
+
+            setTimeout(() => {
+                document.getElementById('inputSection').style.display = 'none';
+                document.getElementById('outputPanel').classList.add('visible');
+                btn.innerHTML = 'Analyze Regulatory Changes';
+                btn.disabled = false;
+            }, 2000);
+        }
+
+        // Export summary to clipboard
+        function exportSummary() {
+            const area = document.getElementById('outputArea').textContent;
+            const type = document.getElementById('outputType').textContent;
+            const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            const sections = [
+                { id: 'whatChanged', title: 'WHAT CHANGED' },
+                { id: 'whyMatters', title: 'WHY IT MATTERS FOR TNC' },
+                { id: 'actionItems', title: 'ACTION ITEMS' },
+                { id: 'talkingPoints', title: 'STAKEHOLDER TALKING POINTS' }
+            ];
+
+            let output = `REGULATORY CHANGE ANALYSIS\n`;
+            output += `Date: ${date}\n`;
+            output += `Area: ${area}\n`;
+            output += `Type: ${type}\n`;
+            output += `${'='.repeat(50)}\n\n`;
+
+            sections.forEach(section => {
+                const el = document.getElementById(section.id);
+                const items = el.querySelectorAll('li');
+                output += `${section.title}\n${'-'.repeat(section.title.length)}\n`;
+                items.forEach(item => {
+                    output += `• ${item.textContent.trim()}\n`;
+                });
+                output += '\n';
+            });
+
+            output += `${'='.repeat(50)}\n`;
+            output += `DRAFT - PENDING ATTORNEY REVIEW\n`;
+            output += `Generated by TNC Legal Regulatory Monitor\n`;
+
+            navigator.clipboard.writeText(output).then(() => {
+                showToast('Summary copied to clipboard!');
+            }).catch(() => {
+                // Fallback for older browsers
+                const textarea = document.createElement('textarea');
+                textarea.value = output;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('Summary copied to clipboard!');
+            });
+        }
+
+        // Draft tracking log entry
+        function draftLogEntry() {
+            const area = document.getElementById('outputArea').textContent;
+            const date = new Date().toLocaleDateString('en-US');
+            const firstChange = document.querySelector('#whatChanged li strong');
+            const changeSummary = firstChange ? firstChange.textContent : 'Regulatory update analyzed';
+
+            const logEntry = `${date}\t${area}\t${changeSummary}\tPending attorney review`;
+
+            navigator.clipboard.writeText(logEntry).then(() => {
+                showToast('Log entry copied to clipboard!');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = logEntry;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast('Log entry copied to clipboard!');
+            });
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('copyToast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        // Reset for new analysis
+        function resetAnalysis() {
+            uploadedFiles = [];
+            renderFileList();
+            document.getElementById('regText').value = '';
+            document.getElementById('regArea').value = '';
+            setSummaryType('quick');
+            document.getElementById('inputSection').style.display = 'block';
+            document.getElementById('outputPanel').classList.remove('visible');
+        }
+
+        // Navigation helpers
+        function switchPractice(p) { localStorage.setItem('legal-portal-practice', p); window.location.href = 'dashboard.html'; }
+        function goToLanding() {
+            localStorage.removeItem('legal-portal-practice');
+            localStorage.removeItem('legal-portal-step');
+            window.location.href = 'dashboard.html';
+        }
+        function logout() {
+            localStorage.removeItem('legal-portal-auth');
+            localStorage.removeItem('legal-portal-auth-time');
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <!-- Chat Assistant -->
+    <div data-chat-assistant
+         data-page-context="regulatory-monitor"
+         data-system-prompt="You are a regulatory analysis assistant for The Nature Conservancy's legal team. You help attorneys and paralegals understand regulatory changes, policy updates, and new guidance that affects conservation work. When analyzing documents, break down: (1) what specifically changed, (2) why it matters for a conservation nonprofit, (3) what actions the legal team should consider, and (4) plain-language talking points for communicating changes to non-legal stakeholders. You complement but do not replace tools like Lexis+AI. Focus on practical impact analysis, not legal advice. Always flag if a change requires attorney review or could affect ongoing conservation agreements. Never provide legal advice or make compliance determinations."></div>
+    <script src="js/config.js"></script>
+    <script src="js/chat-assistant.js"></script>
+</body>
+</html>
